@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "520182917938",
+    "project_id": "collecta-125aa",
+    "storage_bucket": "collecta-125aa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:520182917938:android:83c0ca78f9b538371f452b",
+        "android_client_info": {
+          "package_name": "com.collecta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "520182917938-u5sf92i9fruisq8egil7jeti15t9tbqa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBARA8lE2koZRK7G3PmMdy_J_MGXrb2gLA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "520182917938-u5sf92i9fruisq8egil7jeti15t9tbqa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:520182917938:android:ae4b3a5de69efc051f452b",
+        "android_client_info": {
+          "package_name": "com.example.collecta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "520182917938-u5sf92i9fruisq8egil7jeti15t9tbqa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBARA8lE2koZRK7G3PmMdy_J_MGXrb2gLA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "520182917938-u5sf92i9fruisq8egil7jeti15t9tbqa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
