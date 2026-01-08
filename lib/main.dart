@@ -122,15 +122,31 @@
 // }
 
 
+
+
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:collecta/screens/entering.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+
+  // Initialize Firebase safely (prevents duplicate app error)
+  try {
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      print('Firebase initialized successfully.');
+    } else {
+      print('Firebase already initialized, skipping.');
+    }
+  } catch (e) {
+    print('Error initializing Firebase: $e');
+  }
+
   runApp(const MyApp());
 }
 
@@ -145,7 +161,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Firebase Flutter Demo'),
+      home: const EnteringScreen(), // דף הכניסה הראשי
     );
   }
 }
