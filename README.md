@@ -3,6 +3,7 @@
 A new Flutter project.
 
 ## Getting Started
+clone repo then type in terminal: flutter pub get
 
 This project is a starting point for a Flutter application.
 
