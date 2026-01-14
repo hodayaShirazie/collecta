@@ -1,7 +1,7 @@
 // lib/app/routes.dart
 import 'package:flutter/material.dart';
 import 'package:collecta/ui/screens/entering.dart';
-import 'package:collecta/ui/screens/home.dart';
+//import 'package:collecta/ui/screens/home.dart';
 
 class Routes {
   static const entering = '/entering';
@@ -9,6 +9,6 @@ class Routes {
 
   static Map<String, WidgetBuilder> routesMap = {
     entering: (context) => const EnteringScreen(),
-    home: (context) => const HomeScreen(),
+    //home: (context) => const HomeScreen(),
   };
 }
