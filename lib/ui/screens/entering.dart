@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:collecta/app/routes.dart';
 
 class EnteringScreen extends StatelessWidget {
   const EnteringScreen({super.key});
@@ -72,6 +73,18 @@ class EnteringScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+                const SizedBox(height: 40),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, Routes.debug);
+                    },
+                    child: const Text('בדיקת חיבור ל-Database'),
+                  ),
+                ),
+
               ],
             ),
           ),
