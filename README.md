@@ -19,50 +19,56 @@ samples, guidance on mobile development, and a full API reference.
 
 # Poject structure
 
-lib/
-├── main.dart                    
+
+collecta/
+
+│── functions/
+│   └── index.js
 │
-├── app/                         
-│   ├── app.dart                 
-│   ├── routes.dart              
-│   ├── theme.dart               
-│   └── env.dart              
-│
-├── config/
-│   ├── firebase_config.dart     
-│   ├── database_config.dart     
-│   └── permissions.dart         
-│
-├── data/
-│   ├── models/                  
-│   │   └── user_model.dart
+├── lib/
 │   │
-│   ├── datasources/             
-│   │   ├── remote/
-│   │   │   └── firestore_source.dart
-│   │   └── local/
-│   │       └── local_storage.dart
+│   ├── main.dart
 │   │
-│   └── repositories/            
-│       └── user_repository.dart
+│   ├── app/
+│   │   ├── app.dart
+│   │   ├── routes.dart
+│   │   └── theme.dart
+│   │
+│   ├── config/
+│   │   ├── firebase_options.dart
+│   │   ├── api_config.dart
+│   │   └── permissions.dart
+│   │
+│   ├── data/
+│   │   ├── models/
+│   │   |   ├── organization_model.dart
+│   │   │   └── user_model.dart
+│   │   │
+│   │   ├── datasources/
+│   │   │   ├── remote/
+│   │   │   │   └── api_source.dart
+│   │   │   └── local/
+│   │   │       └── local_storage.dart
+│   │   │
+│   │   └── repositories/
+│   │       ├── organization_repository.dart
+│   │       └── user_repository.dart
+│   │
+│   ├── services/
+│   │   ├── user_service.dart
+│   │   └── organization_service.dart
+│   │
+│   │
+│   ├── ui/
+│   │   └── screens/
+│   │           ├── debug_firestore_screen.dart
+│   │           └── entering.dart
+
+│   │
+│   └── assets/ //TODO CHECK LOCATION
 │
-├── services/                    
-│   ├── auth_service.dart
-│   ├── user_service.dart
-│   └── country_service.dart
+├── tools/
+│   └── seed_firestore.dart
 │
-├── state/                       
-│   ├── app_state.dart
-│   └── auth_state.dart
-│
-├── ui/
-│   ├── screens/                 
-│   ├── widgets/                 
-│   └── dialogs/
-│
-├── utils/
-│   ├── validators.dart
-│   ├── formatters.dart
-│   └── logger.dart
-│
-└── assets/
+├── .env
+└── pubspec.yaml

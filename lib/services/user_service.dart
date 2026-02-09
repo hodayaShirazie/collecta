@@ -7,4 +7,4 @@ class UserService {
   Future<List<UserModel>> fetchUsers() {
     return _repo.getUsers();
   }
-}
+} 
