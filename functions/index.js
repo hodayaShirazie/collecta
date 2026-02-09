@@ -57,3 +57,20 @@ exports.getUsers = functions.https.onRequest((req, res) => {
     }
   });
 });
+
+exports.getOrganizations = functions.https.onRequest((req, res) => {
+  corsHandler(req, res, async () => {
+    try {
+      const snapshot = await db.collection("organization").get();
+      const organizations = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      res.status(200).json(organizations);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+});
+
+
