@@ -15,4 +15,18 @@ class ApiSource {
       json.decode(response.body),
     );
   }
+
+
+  Future<List<Map<String, dynamic>>> getOrganizations() async {
+    final response =
+        await http.get(Uri.parse('${ApiConfig.baseUrl}/getOrganizations'));
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to fetch organizations');
+    }
+
+    return List<Map<String, dynamic>>.from(
+      json.decode(response.body),
+    );
+  }
 }

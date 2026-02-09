@@ -11,10 +11,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Collecta Firebase App',
-      theme: AppTheme.lightTheme,           // Theme אחיד
-      darkTheme: AppTheme.darkTheme,        // Optional: Dark mode
-      initialRoute: Routes.entering,        // route התחלה
-      routes: Routes.routesMap,             // כל המסכים
+      theme: AppTheme.lightTheme,           
+      darkTheme: AppTheme.darkTheme,        
+      initialRoute: Routes.entering,        
+      routes: Routes.routesMap,        
       debugShowCheckedModeBanner: false,
     );
   }
