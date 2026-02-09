@@ -30,7 +30,8 @@ lib/
 │
 ├── config/
 │   ├── firebase_config.dart     
-│   ├── database_config.dart     
+│   ├── database_config.dart  
+│   ├── api_config.dart   
 │   └── permissions.dart         
 │
 ├── data/
@@ -39,7 +40,8 @@ lib/
 │   │
 │   ├── datasources/             
 │   │   ├── remote/
-│   │   │   └── firestore_source.dart
+│   │   │   └── firestore_source.dart // DELETE
+│   │   │   └── api_source.dart 
 │   │   └── local/
 │   │       └── local_storage.dart
 │   │
@@ -66,3 +68,6 @@ lib/
 │   └── logger.dart
 │
 └── assets/
+
+
+

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/user_service.dart';
-import '../../services/organization_service.dart';
+//import '../../services/organization_service.dart';
 
 class DebugFirestoreScreen extends StatelessWidget {
   const DebugFirestoreScreen({super.key});
@@ -8,7 +8,7 @@ class DebugFirestoreScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userService = UserService();
-    final orgService = OrganizationService();
+    //final orgService = OrganizationService();
 
     return Scaffold(
       appBar: AppBar(title: const Text('Firestore Debug')),
@@ -16,23 +16,23 @@ class DebugFirestoreScreen extends StatelessWidget {
         child: Column(
           children: [
             const Text('Organizations', style: TextStyle(fontSize: 20)),
-            FutureBuilder(
-              future: orgService.fetchOrganizations(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const CircularProgressIndicator();
-                }
-                final orgs = snapshot.data!;
-                return Column(
-                  children: orgs
-                      .map((o) => ListTile(
-                            title: Text(o.name),
-                            subtitle: Text(o.id),
-                          ))
-                      .toList(),
-                );
-              },
-            ),
+            // FutureBuilder(
+            //   future: orgService.fetchOrganizations(),
+            //   builder: (context, snapshot) {
+            //     if (!snapshot.hasData) {
+            //       return const CircularProgressIndicator();
+            //     }
+            //     final orgs = snapshot.data!;
+            //     return Column(
+            //       children: orgs
+            //           .map((o) => ListTile(
+            //                 title: Text(o.name),
+            //                 subtitle: Text(o.id),
+            //               ))
+            //           .toList(),
+            //     );
+            //   },
+            // ),
             const Divider(),
             const Text('Users', style: TextStyle(fontSize: 20)),
             FutureBuilder(
