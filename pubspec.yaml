@@ -31,6 +31,9 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^1.2.0
+  firebase_auth: ^6.1.3
+  google_sign_in: ^6.1.0
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -43,6 +46,13 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.13.1
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logo/Collecta_logo.png"
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -60,7 +70,8 @@ flutter:
     - assets/images/logo/latet_logo.png
     - assets/images/logo/latetBackgroundImg.png
     - assets/images/logo/latet_food_security_logo.png
-  
+    - assets/images/logo/Collecta_logo.png
+    - assets/images/logo/coins_logo.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
