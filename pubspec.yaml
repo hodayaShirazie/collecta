@@ -58,6 +58,9 @@ dev_dependencies:
 flutter:
   assets:
     - assets/images/logo/latet_logo.png
+    - assets/images/logo/latetBackgroundImg.png
+    - assets/images/logo/latet_food_security_logo.png
+  
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
