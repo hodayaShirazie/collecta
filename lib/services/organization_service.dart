@@ -7,4 +7,9 @@ class OrganizationService {
   Future<List<OrganizationModel>> fetchOrganizations() {
     return _repo.getOrganizations();
   }
+
+  Future<OrganizationModel> fetchOrganization(String id) async {
+    final orgs = await fetchOrganizations();
+    return orgs.firstWhere((o) => o.id == id);
+  }
 }

@@ -1,94 +1,199 @@
+// import 'package:flutter/material.dart';
+// import 'package:collecta/app/routes.dart';
+
+// class EnteringScreen extends StatelessWidget {
+//   const EnteringScreen({super.key});
+
+//   void _navigateToDriver(BuildContext context) {
+//     // כאן אפשר להוסיף ניווט לדף נהג
+//     // Navigator.pushNamed(context, '/driver');
+//   }
+
+//   void _navigateToDonor(BuildContext context) {
+//     // כאן אפשר להוסיף ניווט לדף תורם
+//     // Navigator.pushNamed(context, '/donor');
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: SafeArea(
+//         child: Center(
+//           child: Padding(
+//             padding: const EdgeInsets.symmetric(horizontal: 24.0),
+//             child: Column(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 // לוגו עליון
+//                 Image.asset(
+//                   'assets/images/logo/latet_logo.png', // הנתיב הנכון ללוגו שלך
+//                   height: 80,
+//                 ),
+//                 const SizedBox(height: 40),
+
+//                 // לוגו אמצעי
+//                 // Image.asset(
+//                 //   'assets/images/logo/logo_middle.png',
+//                 //   height: 120,
+//                 // ),
+//                 const SizedBox(height: 60),
+
+//                 // כפתור כניסה כנהג
+//                 SizedBox(
+//                   width: double.infinity,
+//                   child: ElevatedButton.icon(
+//                     onPressed: () => _navigateToDriver(context),
+//                     icon: const Icon(Icons.local_shipping),
+//                     label: const Text('כניסה כנהג'),
+//                     style: ElevatedButton.styleFrom(
+//                       padding: const EdgeInsets.symmetric(vertical: 16),
+//                       textStyle: const TextStyle(fontSize: 18),
+//                       shape: RoundedRectangleBorder(
+//                         borderRadius: BorderRadius.circular(12),
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//                 const SizedBox(height: 20),
+
+//                 // כפתור כניסה כתרום
+//                 SizedBox(
+//                   width: double.infinity,
+//                   child: ElevatedButton.icon(
+//                     onPressed: () => _navigateToDonor(context),
+//                     icon: const Icon(Icons.favorite),
+//                     label: const Text('כניסה כתורם'),
+//                     style: ElevatedButton.styleFrom(
+//                       padding: const EdgeInsets.symmetric(vertical: 16),
+//                       textStyle: const TextStyle(fontSize: 18),
+//                       shape: RoundedRectangleBorder(
+//                         borderRadius: BorderRadius.circular(12),
+//                       ),
+//                       backgroundColor: Colors.pink, // צבע מותאם לכפתור
+//                     ),
+//                   ),
+//                 ),
+//                 const SizedBox(height: 40),
+
+//                 SizedBox(
+//                   width: double.infinity,
+//                   child: OutlinedButton(
+//                     onPressed: () {
+//                       Navigator.pushNamed(context, Routes.debug);
+//                     },
+//                     child: const Text('בדיקת חיבור ל-Database'),
+//                   ),
+//                 ),
+
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+
 import 'package:flutter/material.dart';
-import 'package:collecta/app/routes.dart';
+import '../../services/organization_service.dart';
+import '../theme/entering_theme.dart';
 
 class EnteringScreen extends StatelessWidget {
   const EnteringScreen({super.key});
 
-  void _navigateToDriver(BuildContext context) {
-    // כאן אפשר להוסיף ניווט לדף נהג
-    // Navigator.pushNamed(context, '/driver');
-  }
-
-  void _navigateToDonor(BuildContext context) {
-    // כאן אפשר להוסיף ניווט לדף תורם
-    // Navigator.pushNamed(context, '/donor');
-  }
+  void _navigateToDriver(BuildContext context) {}
+  void _navigateToDonor(BuildContext context) {}
 
   @override
   Widget build(BuildContext context) {
+    final orgService = OrganizationService();
+
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // לוגו עליון
-                Image.asset(
-                  'assets/images/logo/latet_logo.png', // הנתיב הנכון ללוגו שלך
-                  height: 80,
-                ),
-                const SizedBox(height: 40),
+      body: FutureBuilder(
+        future: orgService.fetchOrganization('xFKMWqidL2uZ5wnksdYX'), // ID דינמי או קבוע
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-                // לוגו אמצעי
-                // Image.asset(
-                //   'assets/images/logo/logo_middle.png',
-                //   height: 120,
-                // ),
-                const SizedBox(height: 60),
+          final org = snapshot.data!;
 
-                // כפתור כניסה כנהג
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () => _navigateToDriver(context),
-                    icon: const Icon(Icons.local_shipping),
-                    label: const Text('כניסה כנהג'),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      textStyle: const TextStyle(fontSize: 18),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+          return Stack(
+            children: [
+              // רקע
+              Image.network(
+                org.backgroundImg,
+                fit: BoxFit.cover,
+                height: double.infinity,
+                width: double.infinity,
+              ),
+              Container(color: Colors.white.withOpacity(0.2)), 
+              
+              SafeArea(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 60),
+                    // לוגו מרכזי
+                    Image.network(
+                      org.logo,
+                      height: 120,
+                    ),
+                    const Spacer(),
+                    // כפתור כניסה כנהג
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () => _navigateToDriver(context),
+                          style: EnteringTheme.actionButtonStyle,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Icon(Icons.local_shipping, size: 35),
+                              SizedBox(width: 10),
+                              Text('כניסה כנהג'),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // כפתור כניסה כתרום
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () => _navigateToDonor(context),
-                    icon: const Icon(Icons.favorite),
-                    label: const Text('כניסה כתורם'),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      textStyle: const TextStyle(fontSize: 18),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                    const SizedBox(height: 25),
+                    // כפתור כניסה כתורם
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () => _navigateToDonor(context),
+                          style: EnteringTheme.actionButtonStyle,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Icon(Icons.favorite_rounded, size: 35),
+                              SizedBox(width: 10),
+                              Text('כניסה כתורם'),
+                            ],
+                          ),
+                        ),
                       ),
-                      backgroundColor: Colors.pink, // צבע מותאם לכפתור
                     ),
-                  ),
+                    const SizedBox(height: 40),
+                    // לוגו תחתון
+                    Image.network(
+                      org.departmentLogo,
+                      height: 50,
+                    ),
+                    const SizedBox(height: 20),
+                  ],
                 ),
-                const SizedBox(height: 40),
-
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, Routes.debug);
-                    },
-                    child: const Text('בדיקת חיבור ל-Database'),
-                  ),
-                ),
-
-              ],
-            ),
-          ),
-        ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
