@@ -1,117 +1,5 @@
 
-// import 'package:flutter/material.dart';
-// import '../../services/organization_service.dart';
-// import '../theme/entering_theme.dart';
-
-// class EnteringScreen extends StatelessWidget {
-//   const EnteringScreen({super.key});
-
-//   void _navigateToDriver(BuildContext context) {}
-//   void _navigateToDonor(BuildContext context) {}
-
-
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final orgService = OrganizationService();
-
-//     return Scaffold(
-//       body: FutureBuilder(
-//         future: orgService.fetchOrganization('xFKMWqidL2uZ5wnksdYX'), // ID דינמי או קבוע
-//         builder: (context, snapshot) {
-//           if (!snapshot.hasData) {
-//             return const Center(child: CircularProgressIndicator());
-//           }
-
-//           final org = snapshot.data!;
-
-//           return Stack(
-//             children: [
-//               // רקע
-//               Image.network(
-//                 org.backgroundImg,
-//                 fit: BoxFit.cover,
-//                 height: double.infinity,
-//                 width: double.infinity,
-//               ),
-//               Container(color: Colors.white.withOpacity(0.2)), 
-              
-//               SafeArea(
-//                 child: Column(
-//                   children: [
-//                     const SizedBox(height: 60),
-//                     // לוגו מרכזי
-//                     Image.network(
-//                       org.logo,
-//                       height: 120,
-//                     ),
-//                     const Spacer(),
-//                     // כפתור כניסה כנהג
-//                     Padding(
-//                       padding: const EdgeInsets.symmetric(horizontal: 40.0),
-//                       child: SizedBox(
-//                         width: double.infinity,
-//                         child: ElevatedButton(
-//                           onPressed: () => _navigateToDriver(context),
-//                           style: EnteringTheme.actionButtonStyle,
-//                           child: Row(
-//                             mainAxisAlignment: MainAxisAlignment.center,
-//                             children: const [
-//                               Icon(Icons.local_shipping, size: 35),
-//                               SizedBox(width: 10),
-//                               Text('כניסה כנהג'),
-//                             ],
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                     const SizedBox(height: 25),
-//                     // כפתור כניסה כתורם
-//                     Padding(
-//                       padding: const EdgeInsets.symmetric(horizontal: 40.0),
-//                       child: SizedBox(
-//                         width: double.infinity,
-//                         child: ElevatedButton(
-//                           onPressed: () => _navigateToDonor(context),
-//                           style: EnteringTheme.actionButtonStyle,
-//                           child: Row(
-//                             mainAxisAlignment: MainAxisAlignment.center,
-//                             children: const [
-//                               Icon(Icons.favorite_rounded, size: 35),
-//                               SizedBox(width: 10),
-//                               Text('כניסה כתורם'),
-//                             ],
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                     const SizedBox(height: 40),
-//                     // לוגו תחתון
-//                     Image.network(
-//                       org.departmentLogo,
-//                       height: 50,
-//                     ),
-//                     const SizedBox(height: 20),
-//                   ],
-//                 ),
-//               ),
-//             ],
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }
-
-
-
-
-
-// /////////////////////// NEW VERSION ///////////////////////
-// ///
-// ///
-// ///
-
+// TODO check that user doesnt already exists
 
 // import 'package:flutter/material.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
@@ -122,30 +10,44 @@
 // class EnteringScreen extends StatelessWidget {
 //   const EnteringScreen({super.key});
 
+//   // פונקציות ניווט למסכים אחרים
 //   void _navigateToDriver(BuildContext context) {
-//     // כאן תכניסי את הניווט שלך למסך הנהג
 //     Navigator.pushNamed(context, '/driver');
 //   }
 
 //   void _navigateToDonor(BuildContext context) {
-//     // כאן תכניסי את הניווט שלך למסך התורם
 //     Navigator.pushNamed(context, '/donor');
 //   }
 
-//   // 🔹 פונקציית התחברות Google + Firebase
+//   // 🔹 פונקציית Google Sign-In + Firebase
 //   Future<UserCredential?> _signInWithGoogle() async {
 //     try {
-//       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-//       if (googleUser == null) return null; // המשתמש ביטל
+//       final googleSignIn = GoogleSignIn();
 
-//       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+//       await googleSignIn.signOut();
+//       await FirebaseAuth.instance.signOut();
+
+//       // עכשיו מתחילים התחברות חדשה
+//       final GoogleSignInAccount? googleUser =
+//           await googleSignIn.signIn();
+
+//       if (googleUser == null) return null;
+
+//       final GoogleSignInAuthentication googleAuth =
+//           await googleUser.authentication;
 
 //       final credential = GoogleAuthProvider.credential(
 //         accessToken: googleAuth.accessToken,
 //         idToken: googleAuth.idToken,
 //       );
 
-//       return await FirebaseAuth.instance.signInWithCredential(credential);
+//       final userCredential =
+//           await FirebaseAuth.instance.signInWithCredential(credential);
+
+
+//       print("Firebase user: ${userCredential.user?.email}");
+
+//       return userCredential;
 //     } catch (e) {
 //       print("Error signing in with Google: $e");
 //       return null;
@@ -156,17 +58,9 @@
 //   Widget build(BuildContext context) {
 //     final orgService = OrganizationService();
 
-//     // 🔹 בדיקה אם המשתמש כבר מחובר
-//     final user = FirebaseAuth.instance.currentUser;
-//     if (user != null) {
-//       WidgetsBinding.instance.addPostFrameCallback((_) {
-//         _navigateToDonor(context); // או Driver לפי הצורך
-//       });
-//     }
-
 //     return Scaffold(
 //       body: FutureBuilder(
-//         future: orgService.fetchOrganization('xFKMWqidL2uZ5wnksdYX'), // ID דינמי או קבוע
+//         future: orgService.fetchOrganization('xFKMWqidL2uZ5wnksdYX'), // ID של הארגון
 //         builder: (context, snapshot) {
 //           if (!snapshot.hasData) {
 //             return const Center(child: CircularProgressIndicator());
@@ -183,47 +77,16 @@
 //                 height: double.infinity,
 //                 width: double.infinity,
 //               ),
-//               Container(color: Colors.white.withOpacity(0.2)), 
+//               Container(color: Colors.white.withOpacity(0.2)),
 
 //               SafeArea(
 //                 child: Column(
 //                   children: [
 //                     const SizedBox(height: 60),
 //                     // לוגו מרכזי
-//                     Image.network(
-//                       org.logo,
-//                       height: 120,
-//                     ),
+//                     Image.network(org.logo, height: 120),
 //                     const Spacer(),
-//                     // כפתור כניסה כנהג
-//                     Padding(
-//                       padding: const EdgeInsets.symmetric(horizontal: 40.0),
-//                       child: SizedBox(
-//                         width: double.infinity,
-//                         child: ElevatedButton(
-//                           onPressed: () async {
-//                             final userCredential = await _signInWithGoogle();
-//                             if (userCredential != null) {
-//                               _navigateToDriver(context);
-//                             } else {
-//                               ScaffoldMessenger.of(context).showSnackBar(
-//                                 const SnackBar(content: Text('Google Sign-In failed')),
-//                               );
-//                             }
-//                           },
-//                           style: EnteringTheme.actionButtonStyle,
-//                           child: Row(
-//                             mainAxisAlignment: MainAxisAlignment.center,
-//                             children: const [
-//                               Icon(Icons.local_shipping, size: 35),
-//                               SizedBox(width: 10),
-//                               Text('כניסה כנהג'),
-//                             ],
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                     const SizedBox(height: 25),
+
 //                     // כפתור כניסה כתורם
 //                     Padding(
 //                       padding: const EdgeInsets.symmetric(horizontal: 40.0),
@@ -232,11 +95,15 @@
 //                         child: ElevatedButton(
 //                           onPressed: () async {
 //                             final userCredential = await _signInWithGoogle();
+//                             print("Firebase user: ${FirebaseAuth.instance.currentUser?.email}");
+
 //                             if (userCredential != null) {
 //                               _navigateToDonor(context);
 //                             } else {
 //                               ScaffoldMessenger.of(context).showSnackBar(
-//                                 const SnackBar(content: Text('Google Sign-In failed')),
+//                                 const SnackBar(
+//                                   content: Text('Google Sign-In failed'),
+//                                 ),
 //                               );
 //                             }
 //                           },
@@ -252,12 +119,47 @@
 //                         ),
 //                       ),
 //                     ),
+
 //                     const SizedBox(height: 40),
-//                     // לוגו תחתון
-//                     Image.network(
-//                       org.departmentLogo,
-//                       height: 50,
+
+//                     // כפתור כניסה כנהג
+//                     Padding(
+//                       padding: const EdgeInsets.symmetric(horizontal: 40.0),
+//                       child: SizedBox(
+//                         width: double.infinity,
+//                         child: ElevatedButton(
+//                           onPressed: () async {
+//                             final userCredential = await _signInWithGoogle();
+//                             print("Firebase user: ${FirebaseAuth.instance.currentUser?.email}");
+
+//                             if (userCredential != null) {
+//                               _navigateToDriver(context);
+//                             } else {
+//                               ScaffoldMessenger.of(context).showSnackBar(
+//                                 const SnackBar(
+//                                   content: Text('Google Sign-In failed'),
+//                                 ),
+//                               );
+//                             }
+//                           },
+//                           style: EnteringTheme.actionButtonStyle,
+//                           child: Row(
+//                             mainAxisAlignment: MainAxisAlignment.center,
+//                             children: const [
+//                               Icon(Icons.local_shipping, size: 35),
+//                               SizedBox(width: 10),
+//                               Text('כניסה כנהג'),
+//                             ],
+//                           ),
+//                         ),
+//                       ),
 //                     ),
+
+//                     const SizedBox(height: 25),
+
+
+//                     // לוגו תחתון
+//                     Image.network(org.departmentLogo, height: 50),
 //                     const SizedBox(height: 20),
 //                   ],
 //                 ),
@@ -273,43 +175,75 @@
 
 
 
+
+
+
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../../services/organization_service.dart';
+import '../../services/user_service.dart';
 import '../theme/entering_theme.dart';
 
-class EnteringScreen extends StatelessWidget {
+const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
+
+
+class EnteringScreen extends StatefulWidget {
   const EnteringScreen({super.key});
 
-  // פונקציות ניווט למסכים אחרים
-  void _navigateToDriver(BuildContext context) {
-    Navigator.pushNamed(context, '/driver');
-  }
+  @override
+  State<EnteringScreen> createState() => _EnteringScreenState();
+}
 
-  void _navigateToDonor(BuildContext context) {
-    Navigator.pushNamed(context, '/donor');
-  }
+class _EnteringScreenState extends State<EnteringScreen> {
+  final UserService _userService = UserService();
+  String? _userToken;
 
-  // 🔹 פונקציית Google Sign-In + Firebase
-  Future<UserCredential?> _signInWithGoogle() async {
+  Future<String?> _signInAndSync(String role) async {
     try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) return null; // המשתמש ביטל
+      final googleSignIn = GoogleSignIn();
+      await googleSignIn.signOut();
+      await FirebaseAuth.instance.signOut();
 
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      final googleUser = await googleSignIn.signIn();
+      if (googleUser == null) return null;
+
+      final googleAuth = await googleUser.authentication;
 
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      return await FirebaseAuth.instance.signInWithCredential(credential);
+      final userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+
+      final firebaseUser = userCredential.user;
+      if (firebaseUser == null) return null;
+
+      _userToken = await firebaseUser.getIdToken();
+
+      final result = await _userService.syncUserWithRole(
+        name: firebaseUser.displayName ?? '',
+        mail: firebaseUser.email ?? '',
+        img: firebaseUser.photoURL ?? '',
+        role: role,
+        organizationId: kOrganizationId,
+      );
+
+      return result; // success / error message
     } catch (e) {
-      print("Error signing in with Google: $e");
-      return null;
+      return "Authentication failed";
     }
+  }
+
+  void _navigateToDriver() {
+    Navigator.pushNamed(context, '/driver', arguments: _userToken);
+  }
+
+  void _navigateToDonor() {
+    Navigator.pushNamed(context, '/donor', arguments: _userToken);
   }
 
   @override
@@ -318,7 +252,7 @@ class EnteringScreen extends StatelessWidget {
 
     return Scaffold(
       body: FutureBuilder(
-        future: orgService.fetchOrganization('xFKMWqidL2uZ5wnksdYX'), // ID של הארגון
+        future: orgService.fetchOrganization(kOrganizationId),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
@@ -328,93 +262,70 @@ class EnteringScreen extends StatelessWidget {
 
           return Stack(
             children: [
-              // רקע
               Image.network(
                 org.backgroundImg,
                 fit: BoxFit.cover,
                 height: double.infinity,
                 width: double.infinity,
               ),
-              Container(color: Colors.white.withOpacity(0.2)),
-
+              Container(color: Colors.white.withValues(alpha: 0.2)),
               SafeArea(
                 child: Column(
                   children: [
                     const SizedBox(height: 60),
-                    // לוגו מרכזי
                     Image.network(org.logo, height: 120),
                     const Spacer(),
 
-                    // כפתור כניסה כתורם
+                    /// DONOR
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () async {
-                            final userCredential = await _signInWithGoogle();
-                            if (userCredential != null) {
-                              _navigateToDonor(context);
+                            final result = await _signInAndSync("donor");
+
+                            if (result == "success") {
+                              _navigateToDonor();
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Google Sign-In failed'),
-                                ),
+                                SnackBar(content: Text(result ?? "Error")),
                               );
                             }
                           },
                           style: EnteringTheme.actionButtonStyle,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Icon(Icons.favorite_rounded, size: 35),
-                              SizedBox(width: 10),
-                              Text('כניסה כתורם'),
-                            ],
-                          ),
+                          child: const Text("כניסה כתורם"),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 30),
+
+                    /// DRIVER
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            final result = await _signInAndSync("driver");
+
+                            if (result == "success") {
+                              _navigateToDriver();
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(result ?? "Error")),
+                              );
+                            }
+                          },
+                          style: EnteringTheme.actionButtonStyle,
+                          child: const Text("כניסה כנהג"),
                         ),
                       ),
                     ),
 
                     const SizedBox(height: 40),
-
-                    // כפתור כניסה כנהג
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 40.0),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            final userCredential = await _signInWithGoogle();
-                            if (userCredential != null) {
-                              _navigateToDriver(context);
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Google Sign-In failed'),
-                                ),
-                              );
-                            }
-                          },
-                          style: EnteringTheme.actionButtonStyle,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Icon(Icons.local_shipping, size: 35),
-                              SizedBox(width: 10),
-                              Text('כניסה כנהג'),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 25),
-
-
-                    // לוגו תחתון
                     Image.network(org.departmentLogo, height: 50),
-                    const SizedBox(height: 20),
                   ],
                 ),
               ),

@@ -1,3 +1,4 @@
+import 'package:collecta/ui/screens/edit_profile_donor.dart';
 import 'package:flutter/material.dart';
 import '../../services/organization_service.dart';
 import '../theme/homepage_theme.dart';
@@ -69,7 +70,15 @@ class DonorHomepage extends StatelessWidget {
                     HomepageButton(
                       title: 'עריכת פרטים אישיים',
                       icon: Icons.edit_outlined,
-                      onPressed: () => print('מעבר לעריכה'),
+                      // onPressed: () => print('מעבר לעריכה'),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const DonorEditProfileScreen(),
+                          ),
+                        );
+                      },
                     ),
 
                     const Spacer(),

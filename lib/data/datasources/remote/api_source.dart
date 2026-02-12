@@ -29,4 +29,55 @@ class ApiSource {
       json.decode(response.body),
     );
   }
+
+  Future<void> createUser({
+    required String name,
+    required String mail,
+    required String img,
+  }) async {
+    final response = await http.post(
+      Uri.parse('${ApiConfig.baseUrl}/createUser'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'name': name,
+        'mail': mail,
+        'img': img,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to create user');
+    }
+  }
+
+  Future<String> syncUserWithRole({
+  required String name,
+  required String mail,
+  required String img,
+  required String role,
+  required String organizationId,
+}) async {
+  final response = await http.post(
+    Uri.parse('${ApiConfig.baseUrl}/syncUserWithRole'),
+    headers: {'Content-Type': 'application/json'},
+    body: json.encode({
+      'name': name,
+      'mail': mail,
+      'img': img,
+      'role': role,
+      'organizationId': organizationId,
+    }),
+  );
+
+  final data = json.decode(response.body);
+
+  if (response.statusCode != 200) {
+    throw Exception(data['error']);
+  }
+
+  return data['status'];
+}
+
+  
+  
 }
