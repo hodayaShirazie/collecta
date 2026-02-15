@@ -49,8 +49,6 @@ class DefaultFirebaseOptions {
     // storageBucket: 'collecta-125aa.firebasestorage.app',
     // measurementId: 'G-M4801X6VYK',
 
-
-
     apiKey: "AIzaSyCniLqCqQaWLPVn1qmqz08K92_xtRYb_k0",
     authDomain: "collecta-125aa.firebaseapp.com",
     projectId: "collecta-125aa",
