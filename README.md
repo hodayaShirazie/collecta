@@ -17,43 +17,102 @@ For help getting started with Flutter development, view the
 samples, guidance on mobile development, and a full API reference.
 
 
-# Poject structure
-
+# Project structure (expanded for platform-specific files)
 
 collecta/
 
-│── functions/
-│   └── index.js
+├── android/
+│   ├── build.gradle.kts
+│   ├── gradle.properties
+│   ├── local.properties
+│   ├── settings.gradle.kts
+│   └── app/
+│       ├── build.gradle.kts
+│       ├── google-services.json
+│       └── src/
+│           └── main/
+│               ├── AndroidManifest.xml
+│               └── kotlin/ (or java)/
+│                   └── com/yourcompany/yourapp/
+│                       └── MainActivity.kt
 │
+├── ios/
+│   ├── Flutter/
+│   │   ├── AppFrameworkInfo.plist
+│   │   └── Generated.xcconfig
+│   ├── Runner/
+│   │   ├── AppDelegate.swift
+│   │   ├── Assets.xcassets/
+│   │   ├── Info.plist
+│   │   └── Runner-Bridging-Header.h
+│   ├── Runner.xcodeproj/
+│   └── Runner.xcworkspace/
+│
+├── web/
+│   ├── index.html
+│   ├── manifest.json
+│   └── icons/
+│
+├── macos/
+│   ├── Runner/
+│   │   └── AppDelegate.swift
+│   └── Flutter/
+│
+├── linux/
+│   ├── CMakeLists.txt
+│   └── runner/
+│
+├── windows/
+│   ├── CMakeLists.txt
+│   └── runner/
+
 ├── lib/
-│   │
 │   ├── main.dart
-│   │
 │   ├── app/
 │   │   ├── app.dart
 │   │   ├── routes.dart
 │   │   └── theme.dart
-│   │
 │   ├── config/
 │   │   ├── firebase_options.dart
 │   │   ├── api_config.dart
 │   │   └── permissions.dart
-│   │
 │   ├── data/
 │   │   ├── models/
-│   │   |   ├── organization_model.dart
+│   │   │   ├── organization_model.dart
 │   │   │   └── user_model.dart
-│   │   │
 │   │   ├── datasources/
 │   │   │   ├── remote/
 │   │   │   │   └── api_source.dart
 │   │   │   └── local/
 │   │   │       └── local_storage.dart
-│   │   │
 │   │   └── repositories/
 │   │       ├── organization_repository.dart
 │   │       └── user_repository.dart
-│   │
+│   ├── services/
+│   │   ├── user_service.dart
+│   │   └── organization_service.dart
+│   └── ui/
+│       ├── components/
+│       ├── dialogs/
+│       ├── screens/
+│       │   ├── debug_firestore_screen.dart
+│       │   └── entering.dart
+│       └── widgets/
+│
+├── assets/
+│   ├── images/
+│   └── fonts/
+
+├── functions/
+│   └── index.js
+
+├── tools/
+│   └── seed_firestore.dart
+
+├── pubspec.yaml
+├── firebase.json
+├── cors.json
+└── .env
 │   ├── services/
 │   │   ├── user_service.dart
 │   │   └── organization_service.dart
@@ -63,7 +122,6 @@ collecta/
 │   │   └── screens/
 │   │           ├── debug_firestore_screen.dart
 │   │           └── entering.dart
-
 │   │
 │   └── assets/ //TODO CHECK LOCATION
 │

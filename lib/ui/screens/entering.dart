@@ -181,10 +181,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 import 'package:google_sign_in/google_sign_in.dart';
 import '../../services/organization_service.dart';
 import '../../services/user_service.dart';
 import '../theme/entering_theme.dart';
+
+
 
 const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
 
@@ -200,26 +204,40 @@ class _EnteringScreenState extends State<EnteringScreen> {
   final UserService _userService = UserService();
   String? _userToken;
 
+
   Future<String?> _signInAndSync(String role) async {
     try {
-      final googleSignIn = GoogleSignIn();
-      await googleSignIn.signOut();
       await FirebaseAuth.instance.signOut();
 
-      final googleUser = await googleSignIn.signIn();
-      if (googleUser == null) return null;
+      User? firebaseUser;
 
-      final googleAuth = await googleUser.authentication;
+      if (kIsWeb) {
+        // 👈 זה מה שיגרום להתחברות לעבוד בכרום
+        final provider = GoogleAuthProvider();
+        final userCredential =
+            await FirebaseAuth.instance.signInWithPopup(provider);
 
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
 
-      final userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
+        firebaseUser = userCredential.user;
+      } else {
+        // 👈 זה נשאר כמו שהיה למובייל
+        final googleSignIn = GoogleSignIn();
+        final googleUser = await googleSignIn.signIn();
+        if (googleUser == null) return null;
 
-      final firebaseUser = userCredential.user;
+        final googleAuth = await googleUser.authentication;
+
+        final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        final userCredential =
+            await FirebaseAuth.instance.signInWithCredential(credential);
+
+        firebaseUser = userCredential.user;
+      }
+
       if (firebaseUser == null) return null;
 
       _userToken = await firebaseUser.getIdToken();
@@ -232,11 +250,51 @@ class _EnteringScreenState extends State<EnteringScreen> {
         organizationId: kOrganizationId,
       );
 
-      return result; // success / error message
+      return result; // "success" / הודעת שגיאה מהשרת שלך
     } catch (e) {
+      print("AUTH ERROR: $e");
       return "Authentication failed";
     }
   }
+
+
+  // Future<String?> _signInAndSync(String role) async {
+  //   try {
+  //     final googleSignIn = GoogleSignIn();
+  //     await googleSignIn.signOut();
+  //     await FirebaseAuth.instance.signOut();
+
+  //     final googleUser = await googleSignIn.signIn();
+  //     if (googleUser == null) return null;
+
+  //     final googleAuth = await googleUser.authentication;
+
+  //     final credential = GoogleAuthProvider.credential(
+  //       accessToken: googleAuth.accessToken,
+  //       idToken: googleAuth.idToken,
+  //     );
+
+  //     final userCredential =
+  //         await FirebaseAuth.instance.signInWithCredential(credential);
+
+  //     final firebaseUser = userCredential.user;
+  //     if (firebaseUser == null) return null;
+
+  //     _userToken = await firebaseUser.getIdToken();
+
+  //     final result = await _userService.syncUserWithRole(
+  //       name: firebaseUser.displayName ?? '',
+  //       mail: firebaseUser.email ?? '',
+  //       img: firebaseUser.photoURL ?? '',
+  //       role: role,
+  //       organizationId: kOrganizationId,
+  //     );
+
+  //     return result; // success / error message
+  //   } catch (e) {
+  //     return "Authentication failed";
+  //   }
+  // }
 
   void _navigateToDriver() {
     Navigator.pushNamed(context, '/driver', arguments: _userToken);
