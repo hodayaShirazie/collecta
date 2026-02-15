@@ -109,73 +109,137 @@ exports.getOrganizations = functions.https.onRequest((req, res) => {
 });
 
 
-exports.syncUserWithRole = functions.https.onRequest(async (req, res) => {
-  try {
-    const { name, mail, img, role, organizationId } = req.body;
+// exports.syncUserWithRole = functions.https.onRequest(async (req, res) => {
+//   try {
+//     const { name, mail, img, role, organizationId } = req.body;
 
-    if (!name || !mail || !role) {
-      return res.status(400).send({ error: "Missing fields" });
-    }
+//     if (!name || !mail || !role) {
+//       return res.status(400).send({ error: "Missing fields" });
+//     }
 
-    const userQuery = await db
-      .collection("user")
-      .where("mail", "==", mail)
-      .limit(1)
-      .get();
+//     const userQuery = await db
+//       .collection("user")
+//       .where("mail", "==", mail)
+//       .limit(1)
+//       .get();
 
-    let userId;
+//     let userId;
 
-    if (userQuery.empty) {
-      // יצירת משתמש חדש
-      const userRef = await db.collection("user").add({
-        name,
-        mail,
-        img: img || "",
-        created_at: admin.firestore.FieldValue.serverTimestamp(),
-      });
+//     if (userQuery.empty) {
+//       // יצירת משתמש חדש
+//       const userRef = await db.collection("user").add({
+//         name,
+//         mail,
+//         img: img || "",
+//         created_at: admin.firestore.FieldValue.serverTimestamp(),
+//       });
 
-      userId = userRef.id;
+//       userId = userRef.id;
 
-      // יצירת role
-      if (role === "driver") {
-        await db.collection("driver").doc(userId).set({
-          id: userId,
-          organization_id: organizationId,
+//       // יצירת role
+//       if (role === "driver") {
+//         await db.collection("driver").doc(userId).set({
+//           id: userId,
+//           organization_id: organizationId,
+//           created_at: admin.firestore.FieldValue.serverTimestamp(),
+//         });
+//       } else {
+//         await db.collection("donor").doc(userId).set({
+//           id: userId,
+//           organization_id: organizationId,
+//           created_at: admin.firestore.FieldValue.serverTimestamp(),
+//         });
+//       }
+
+//       return res.status(200).send({ status: "success" });
+//     }
+
+//     // אם קיים
+//     userId = userQuery.docs[0].id;
+
+//     const roleDoc = await db.collection(role).doc(userId).get();
+
+//     if (!roleDoc.exists) {
+//       return res.status(400).send({
+//         error: "User already registered with different role",
+//       });
+//     }
+
+//     return res.status(200).send({ status: "success" });
+
+//   } catch (error) {
+//     return res.status(500).send({ error: error.message });
+//   }
+// });
+
+
+
+
+
+
+
+
+exports.syncUserWithRole = functions.https.onRequest((req, res) => {
+  corsHandler(req, res, async () => {
+    try {
+      const { name, mail, img, role, organizationId } = req.body;
+
+      if (!name || !mail || !role) {
+        return res.status(400).send({ error: "Missing fields" });
+      }
+
+      const userQuery = await db
+        .collection("user")
+        .where("mail", "==", mail)
+        .limit(1)
+        .get();
+
+      let userId;
+
+      if (userQuery.empty) {
+        // יצירת משתמש חדש
+        const userRef = await db.collection("user").add({
+          name,
+          mail,
+          img: img || "",
           created_at: admin.firestore.FieldValue.serverTimestamp(),
         });
-      } else {
-        await db.collection("donor").doc(userId).set({
-          id: userId,
-          organization_id: organizationId,
-          created_at: admin.firestore.FieldValue.serverTimestamp(),
+
+        userId = userRef.id;
+
+        // יצירת role
+        if (role === "driver") {
+          await db.collection("driver").doc(userId).set({
+            id: userId,
+            organization_id: organizationId,
+            created_at: admin.firestore.FieldValue.serverTimestamp(),
+          });
+        } else {
+          await db.collection("donor").doc(userId).set({
+            id: userId,
+            organization_id: organizationId,
+            created_at: admin.firestore.FieldValue.serverTimestamp(),
+          });
+        }
+
+        return res.status(200).send({ status: "success" });
+      }
+
+      // אם קיים
+      userId = userQuery.docs[0].id;
+
+      const roleDoc = await db.collection(role).doc(userId).get();
+
+      if (!roleDoc.exists) {
+        return res.status(400).send({
+          error: "User already registered with different role",
         });
       }
 
       return res.status(200).send({ status: "success" });
+
+    } catch (error) {
+      return res.status(500).send({ error: error.message });
     }
-
-    // אם קיים
-    userId = userQuery.docs[0].id;
-
-    const roleDoc = await db.collection(role).doc(userId).get();
-
-    if (!roleDoc.exists) {
-      return res.status(400).send({
-        error: "User already registered with different role",
-      });
-    }
-
-    return res.status(200).send({ status: "success" });
-
-  } catch (error) {
-    return res.status(500).send({ error: error.message });
-  }
+  });
 });
-
-
-
-
-
-
-
-
