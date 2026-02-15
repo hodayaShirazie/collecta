@@ -41,13 +41,23 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAA8jXYuQM8QlQ3vH67xd4zimYnXRALANw',
-    appId: '1:520182917938:web:3e7614063be33e7c1f452b',
-    messagingSenderId: '520182917938',
-    projectId: 'collecta-125aa',
-    authDomain: 'collecta-125aa.firebaseapp.com',
-    storageBucket: 'collecta-125aa.firebasestorage.app',
-    measurementId: 'G-M4801X6VYK',
+    // apiKey: 'AIzaSyAA8jXYuQM8QlQ3vH67xd4zimYnXRALANw',
+    // appId: '1:520182917938:web:3e7614063be33e7c1f452b',
+    // messagingSenderId: '520182917938',
+    // projectId: 'collecta-125aa',
+    // authDomain: 'collecta-125aa.firebaseapp.com',
+    // storageBucket: 'collecta-125aa.firebasestorage.app',
+    // measurementId: 'G-M4801X6VYK',
+
+
+
+    apiKey: "AIzaSyCniLqCqQaWLPVn1qmqz08K92_xtRYb_k0",
+    authDomain: "collecta-125aa.firebaseapp.com",
+    projectId: "collecta-125aa",
+    storageBucket: "collecta-125aa.firebasestorage.app",
+    messagingSenderId: "520182917938",
+    appId: "1:520182917938:web:f54504e433d782bf1f452b",
+    measurementId: "G-YZ3BCN4MVT",
   );
 
   static const FirebaseOptions android = FirebaseOptions(
