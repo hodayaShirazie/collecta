@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../services/organization_service.dart';
 import '../theme/homepage_theme.dart';
 import '../widgets/homepage_button.dart'; 
+import '../widgets/sign_out.dart';
 
 class DriverHomepage extends StatelessWidget {
   const DriverHomepage({super.key});
@@ -24,6 +25,11 @@ class DriverHomepage extends StatelessWidget {
           return SafeArea(
             child: Stack(
               children: [
+                Positioned(
+                  top: 15,
+                  right: 20,
+                  child: LogoutButton(parentContext: context), // כאן הקומפוננטה שיצרת
+                ),
               
                 Column(
                   children: [
