@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/organization_service.dart';
 import '../theme/homepage_theme.dart';
-import '../components/homepage_button.dart'; 
+import '../widgets/homepage_button.dart'; 
 
 class DriverHomepage extends StatelessWidget {
   const DriverHomepage({super.key});

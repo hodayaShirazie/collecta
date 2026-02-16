@@ -8,7 +8,6 @@ import '../../services/user_service.dart';
 import '../theme/entering_theme.dart';
 
 
-
 const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
 
 
@@ -27,7 +26,6 @@ class _EnteringScreenState extends State<EnteringScreen> {
   Future<String?> _signInAndSync(String role) async {
     try {
       // await FirebaseAuth.instance.signOut();
-
       User? firebaseUser;
 
       if (kIsWeb) {
@@ -67,10 +65,10 @@ class _EnteringScreenState extends State<EnteringScreen> {
         organizationId: kOrganizationId,
       );
 
-      return result; // "success" / הודעת שגיאה מהשרת שלך
+      return result; 
     } catch (e) {
       print("AUTH ERROR: $e");
-      return "Authentication failed";
+      return "Authentication failed: ${e.toString()}";
     }
   }
 
