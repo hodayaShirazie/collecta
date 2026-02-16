@@ -68,7 +68,7 @@ class _EnteringScreenState extends State<EnteringScreen> {
       return result; 
     } catch (e) {
       print("AUTH ERROR: $e");
-      return "Authentication failed";
+      return "Authentication failed: ${e.toString()}";
     }
   }
 

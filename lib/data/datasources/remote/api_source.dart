@@ -48,28 +48,6 @@ class ApiSource {
   //   return List<Map<String, dynamic>>.from(json.decode(response.body));
   // }
 
-  Future<void> createUser({
-    required String name,
-    required String mail,
-    required String img,
-  }) async {
-    final headers = await AuthHeaders.build();
-
-    final response = await http.post(
-      Uri.parse('${ApiConfig.baseUrl}/createUser'),
-      headers: headers,
-      body: json.encode({
-        'name': name,
-        'mail': mail,
-        'img': img,
-      }),
-    );
-
-    if (response.statusCode != 200) {
-      throw Exception('Failed to create user');
-    }
-  }
-
 
   Future<String> syncUserWithRole({
     required String name,

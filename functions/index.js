@@ -229,8 +229,11 @@ async function createAdmin(uid, role) {
 async function createDriver(uid, role) {
   const roleData = {
     id: uid,
+    phone: "",
+    area: "",
+    destination: [], 
+    stops: [],             
     created_at: admin.firestore.FieldValue.serverTimestamp(),
-    // Add any additional role-specific fields here
   };
 
   await db.collection(role).doc(uid).set(roleData);
@@ -239,8 +242,15 @@ async function createDriver(uid, role) {
 async function createDonor(uid, role) {
   const roleData = {
     id: uid,
+    businessAddress_id: "",
+    businessName: "",
+    businessPhone: "",
+    coins: 0,
+    contactName: "",
+    contactPhone: "",
     created_at: admin.firestore.FieldValue.serverTimestamp(),
-    // Add any additional role-specific fields here
+    crn: "",
+    last_login: null,
   };
 
   await db.collection(role).doc(uid).set(roleData);
