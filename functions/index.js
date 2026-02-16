@@ -201,7 +201,42 @@ async function createUser(firebaseUser, name, img, organizationId) {
 }
 
 // Function to create a new role object in the corresponding collection
-async function createRoleObject(uid, role, organizationId) {
+async function createRoleObject(uid, role) {
+
+  if (role === "admin"){
+    await createAdmin(uid, role);
+  }
+
+  else if (role === "driver"){
+    await createDriver(uid, role);
+  }
+
+  else if (role === "donor"){
+    await createDonor(uid, role);
+  }
+}
+
+async function createAdmin(uid, role) {
+  const roleData = {
+    id: uid,
+    created_at: admin.firestore.FieldValue.serverTimestamp(),
+    // Add any additional role-specific fields here
+  };
+
+  await db.collection(role).doc(uid).set(roleData);
+}
+
+async function createDriver(uid, role) {
+  const roleData = {
+    id: uid,
+    created_at: admin.firestore.FieldValue.serverTimestamp(),
+    // Add any additional role-specific fields here
+  };
+
+  await db.collection(role).doc(uid).set(roleData);
+}
+
+async function createDonor(uid, role) {
   const roleData = {
     id: uid,
     created_at: admin.firestore.FieldValue.serverTimestamp(),
@@ -253,7 +288,8 @@ exports.syncUserWithRole = functions.https.onRequest((req, res) => {
       } else {
         // User does not exist → create user and role
         const uid = await createUser(firebaseUser, name, img, organizationId);
-        await createRoleObject(uid, role, organizationId);
+
+        await createRoleObject(uid, role);
 
         return res.status(200).send({ status: "success" });
       }
