@@ -2,7 +2,7 @@ import 'package:collecta/ui/screens/edit_profile_donor.dart';
 import 'package:flutter/material.dart';
 import '../../services/organization_service.dart';
 import '../theme/homepage_theme.dart';
-import '../components/homepage_button.dart'; 
+import '../widgets/homepage_button.dart'; 
 
 class DonorHomepage extends StatelessWidget {
   const DonorHomepage({super.key});
