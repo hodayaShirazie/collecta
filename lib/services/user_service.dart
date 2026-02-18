@@ -8,10 +8,6 @@ class UserService {
     return _repo.getUsers();
   }
 
-  //  Future<void> createUser(String name, String mail, String img) {
-  //   return _repo.createUser(name, mail, img);
-  // }
-
   Future<String> syncUserWithRole({
     required String name,
     required String mail,
@@ -28,5 +24,9 @@ class UserService {
     );
   }
   
+  Future<Map<String, dynamic>> fetchMyProfile(String role) {
+    return _repo.fetchMyProfile(role);
+  }
+
 } 
 

@@ -31,8 +31,6 @@
 // //   response.send("Hello from Firebase!");
 // // });
 
-
-
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const cors = require("cors");
@@ -98,90 +96,6 @@ exports.getOrganizations = functions.https.onRequest((req, res) => {
 
 });
 
-
-// exports.createUser = functions.https.onRequest((req, res) => {
-//   corsHandler(req, res, async () => {
-//     const user = await verifyFirebaseToken(req, res);
-//     if (!user) return;
-
-//     try {
-//       // TODO: Why do we need this check?
-//       if (req.method !== "POST") {
-//         return res.status(405).send({ error: "Only POST allowed" });
-//       }
-
-//       const { name, img } = req.body;
-
-//       if (!name) {
-//         return res.status(400).send({ error: "Missing name" });
-//       }
-
-//       const newUserData = {
-//         uid: user.uid,
-//         name,
-//         mail: user.email || "",
-//         img: img || "",
-//         createdAt: admin.firestore.FieldValue.serverTimestamp(),
-//       };
-
-//       const docRef = await db.collection("user").doc(user.uid).set(newUserData);
-
-//       return res.status(200).send({ status: "created", user: newUserData });
-//     } catch (error) {
-//       return res.status(500).send({ error: error.message });
-//     }
-//   });
-// });
-
-
-// exports.syncUserWithRole = functions.https.onRequest((req, res) => {
-//   corsHandler(req, res, async () => {
-//     const user = await verifyFirebaseToken(req, res);
-//     if (!user) return;
-
-//     try {
-//       const { role, organizationId, img, name } = req.body;
-
-//       if (!role || !organizationId) {
-//         return res.status(400).send({ error: "Missing fields" });
-//       }
-
-//       const uid = user.uid;
-//       const mail = user.email;
-
-//       const userRef = db.collection("user").doc(uid);
-//       const userSnap = await userRef.get();
-
-//       if (!userSnap.exists) {
-//         await userRef.set({
-//           uid,
-//           name: name || "",
-//           mail,
-//           img: img || "",
-//           created_at: admin.firestore.FieldValue.serverTimestamp(),
-//         });
-//       }
-
-//       const roleRef = db.collection(role).doc(uid);
-//       const roleDoc = await roleRef.get();
-
-//       if (!roleDoc.exists) {
-//         await roleRef.set({
-//           id: uid,
-//           organization_id: organizationId,
-//           created_at: admin.firestore.FieldValue.serverTimestamp(),
-//         });
-//       }
-
-//       return res.status(200).send({ status: "success" });
-//     } catch (error) {
-//       return res.status(500).send({ error: error.message });
-//     }
-//   });
-// });
-
-
-
 // Function to create a new user in the "user" collection
 async function createUser(firebaseUser, name, img, organizationId) {
   const uid = firebaseUser.uid;
@@ -194,6 +108,7 @@ async function createUser(firebaseUser, name, img, organizationId) {
     img: img || "",
     organization_id: organizationId,
     created_at: admin.firestore.FieldValue.serverTimestamp(),
+    last_login: admin.firestore.FieldValue.serverTimestamp(),
   };
 
   await db.collection("user").doc(uid).set(newUserData);
@@ -219,7 +134,6 @@ async function createRoleObject(uid, role) {
 async function createAdmin(uid, role) {
   const roleData = {
     id: uid,
-    created_at: admin.firestore.FieldValue.serverTimestamp(),
     // Add any additional role-specific fields here
   };
 
@@ -233,7 +147,6 @@ async function createDriver(uid, role) {
     area: "",
     destination: [], 
     stops: [],             
-    created_at: admin.firestore.FieldValue.serverTimestamp(),
   };
 
   await db.collection(role).doc(uid).set(roleData);
@@ -248,9 +161,7 @@ async function createDonor(uid, role) {
     coins: 0,
     contactName: "",
     contactPhone: "",
-    created_at: admin.firestore.FieldValue.serverTimestamp(),
     crn: "",
-    last_login: null,
   };
 
   await db.collection(role).doc(uid).set(roleData);
@@ -306,6 +217,56 @@ exports.syncUserWithRole = functions.https.onRequest((req, res) => {
 
     } catch (error) {
       return res.status(500).send({ error: error.message });
+    }
+  });
+});
+
+exports.getMyProfile = functions.https.onRequest((req, res) => {
+  corsHandler(req, res, async () => {
+    const firebaseUser = await verifyFirebaseToken(req, res);
+    if (!firebaseUser) return;
+
+    try {
+      const { role } = req.query;
+
+      if (!role) {
+        return res.status(400).send({ error: "Missing role" });
+      }
+
+      const uid = firebaseUser.uid;
+
+      const userSnap = await db.collection("user").doc(uid).get();
+      if (!userSnap.exists) {
+        return res.status(404).send({ error: "User not found" });
+      }
+
+      const roleSnap = await db.collection(role).doc(uid).get();
+      if (!roleSnap.exists) {
+        return res.status(404).send({ error: "Role not found" });
+      }
+
+      const userData = userSnap.data();
+      const roleData = roleSnap.data();
+
+      const normalize = (ts) =>
+        ts?.toDate ? ts.toDate().toISOString() : ts;
+
+      return res.status(200).send({
+        user: {
+          uid: uid,
+          ...userData,
+          created_at: normalize(userData.created_at),
+          last_login: normalize(userData.last_login),
+        },
+        role: {
+          id: roleSnap.id,
+          ...roleData,
+          created_at: normalize(roleData.created_at),
+          last_login: normalize(roleData.last_login),
+        },
+      });
+    } catch (e) {
+      return res.status(500).send({ error: e.message });
     }
   });
 });

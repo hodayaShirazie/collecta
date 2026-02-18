@@ -10,14 +10,6 @@ class UserRepository {
     return data.map((e) => UserModel.fromMap(e)).toList();
   }
 
-  // Future<void> createUser(String name, String mail, String img) async {
-  //   await _source.createUser(
-  //     name: name,
-  //     mail: mail,
-  //     img: img,
-  //   );
-  // }
-
   Future<String> syncUserWithRole({
     required String name,
     required String mail,
@@ -33,7 +25,11 @@ class UserRepository {
       organizationId: organizationId,
     );
   }
-  
+
+  Future<Map<String, dynamic>> fetchMyProfile(String role) {
+    return _source.getMyProfile(role);
+  }
+
 }
 
 
