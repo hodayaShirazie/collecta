@@ -8,7 +8,6 @@ class DriverProfile {
   final String area;
   final List<dynamic> destination;
   final List<dynamic> stops;
-  final DateTime createdAt;
 
   DriverProfile({
     required this.user,
@@ -16,7 +15,6 @@ class DriverProfile {
     required this.area,
     required this.destination,
     required this.stops,
-    required this.createdAt,
   });
 
   factory DriverProfile.fromApi(Map<String, dynamic> json) {
@@ -26,7 +24,6 @@ class DriverProfile {
       area: json['role']['area'] ?? '',
       destination: json['role']['destination'] ?? [],
       stops: json['role']['stops'] ?? [],
-      createdAt: DateTime.parse(json['role']['created_at']),
 
     );
   }

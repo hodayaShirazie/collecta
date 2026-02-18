@@ -108,6 +108,7 @@ async function createUser(firebaseUser, name, img, organizationId) {
     img: img || "",
     organization_id: organizationId,
     created_at: admin.firestore.FieldValue.serverTimestamp(),
+    last_login: admin.firestore.FieldValue.serverTimestamp(),
   };
 
   await db.collection("user").doc(uid).set(newUserData);
@@ -133,7 +134,6 @@ async function createRoleObject(uid, role) {
 async function createAdmin(uid, role) {
   const roleData = {
     id: uid,
-    created_at: admin.firestore.FieldValue.serverTimestamp(),
     // Add any additional role-specific fields here
   };
 
@@ -147,7 +147,6 @@ async function createDriver(uid, role) {
     area: "",
     destination: [], 
     stops: [],             
-    created_at: admin.firestore.FieldValue.serverTimestamp(),
   };
 
   await db.collection(role).doc(uid).set(roleData);
@@ -162,9 +161,7 @@ async function createDonor(uid, role) {
     coins: 0,
     contactName: "",
     contactPhone: "",
-    created_at: admin.firestore.FieldValue.serverTimestamp(),
     crn: "",
-    last_login: null,
   };
 
   await db.collection(role).doc(uid).set(roleData);
@@ -224,42 +221,6 @@ exports.syncUserWithRole = functions.https.onRequest((req, res) => {
   });
 });
 
-
-// exports.getMyProfile = functions.https.onRequest((req, res) => {
-//   corsHandler(req, res, async () => {
-//     const firebaseUser = await verifyFirebaseToken(req, res);
-//     if (!firebaseUser) return;
-
-//     try {
-//       const { role } = req.query; // donor / driver
-
-//       if (!role) {
-//         return res.status(400).send({ error: "Missing role" });
-//       }
-
-//       const uid = firebaseUser.uid;
-
-//       const userSnap = await db.collection("user").doc(uid).get();
-//       if (!userSnap.exists) {
-//         return res.status(404).send({ error: "User not found" });
-//       }
-
-//       const roleSnap = await db.collection(role).doc(uid).get();
-//       if (!roleSnap.exists) {
-//         return res.status(404).send({ error: "Role not found" });
-//       }
-
-//       return res.status(200).send({
-//         user: { id: userSnap.id, ...userSnap.data() },
-//         role: { id: roleSnap.id, ...roleSnap.data() },
-//       });
-//     } catch (e) {
-//       return res.status(500).send({ error: e.message });
-//     }
-//   });
-// });
-
-
 exports.getMyProfile = functions.https.onRequest((req, res) => {
   corsHandler(req, res, async () => {
     const firebaseUser = await verifyFirebaseToken(req, res);
@@ -295,11 +256,13 @@ exports.getMyProfile = functions.https.onRequest((req, res) => {
           uid: uid,
           ...userData,
           created_at: normalize(userData.created_at),
+          last_login: normalize(userData.last_login),
         },
         role: {
           id: roleSnap.id,
           ...roleData,
           created_at: normalize(roleData.created_at),
+          last_login: normalize(roleData.last_login),
         },
       });
     } catch (e) {

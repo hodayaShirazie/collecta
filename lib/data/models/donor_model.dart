@@ -10,8 +10,6 @@ class DonorProfile {
   final String contactName;
   final String contactPhone;
   final String crn;
-  final DateTime? lastLogin;
-  final DateTime createdAt;
 
   DonorProfile({
     required this.user,
@@ -22,8 +20,6 @@ class DonorProfile {
     required this.contactName,
     required this.contactPhone,
     required this.crn,
-    required this.lastLogin,
-    required this.createdAt,
   });
 
   factory DonorProfile.fromApi(Map<String, dynamic> json) {
@@ -36,10 +32,6 @@ class DonorProfile {
       contactName: json['role']['contactName'] ?? '',
       contactPhone: json['role']['contactPhone'] ?? '',
       crn: json['role']['crn'] ?? '',
-      lastLogin: json['role']['last_login'] != null
-        ? DateTime.parse(json['role']['last_login'])
-        : null,
-      createdAt: DateTime.parse(json['role']['created_at']),
 
     );
   }
