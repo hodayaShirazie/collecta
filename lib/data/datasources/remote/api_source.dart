@@ -32,23 +32,6 @@ class ApiSource {
     );
   }
 
-
-  // Future<List<Map<String, dynamic>>> getOrganizations() async {
-  //   final headers = await AuthHeaders.build();
-
-  //   final response = await http.get(
-  //     Uri.parse('${ApiConfig.baseUrl}/getOrganizations'),
-  //     headers: headers,
-  //   );
-
-  //   if (response.statusCode != 200) {
-  //     throw Exception('Failed to fetch organizations');
-  //   }
-
-  //   return List<Map<String, dynamic>>.from(json.decode(response.body));
-  // }
-
-
   Future<String> syncUserWithRole({
     required String name,
     required String mail,
@@ -78,4 +61,20 @@ class ApiSource {
 
     return data['status'];
   }
+
+  Future<Map<String, dynamic>> getMyProfile(String role) async {
+    final headers = await AuthHeaders.build();
+
+    final response = await http.get(
+      Uri.parse('${ApiConfig.baseUrl}/getMyProfile?role=$role'),
+      headers: headers,
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(json.decode(response.body)['error']);
+    }
+
+    return Map<String, dynamic>.from(json.decode(response.body));
+  }
+
 }
