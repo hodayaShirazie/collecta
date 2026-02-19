@@ -26,9 +26,9 @@ class _ReportDonationState extends State<ReportDonation> {
     {"name": "מאפים", "icon": Icons.bakery_dining},
     {"name": "עוגות", "icon": Icons.cake_rounded},
     {"name": "פירות וירקות", "icon": Icons.eco},
-    {"name": "מוצרי יסוד", "icon": Icons.kitchen},
     {"name": "מוצרי חלב", "icon": Icons.local_drink},
     {"name": "היגיינה", "icon": Icons.soap},
+    {"name": "מוצרי יסוד", "icon": Icons.kitchen},
     {"name": "אחר", "icon": Icons.category},
   ];
 
@@ -338,14 +338,99 @@ class _ReportDonationState extends State<ReportDonation> {
     );
   }
 
-  void submit() {
-    if (_formKey.currentState!.validate()) {
-      print("Items: $donatedItems");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("התרומה נשלחה בהצלחה 💙")),
-      );
-    }
+  bool _validateBeforeSubmit() {
+  // 1️⃣ בדיקת שדות טופס רגילים
+  final isFormValid = _formKey.currentState!.validate();
+
+  if (!isFormValid) {
+    return false;
   }
+
+  // 2️⃣ בדיקת חלונות זמן
+  if (selectedTimeSlots.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("יש לבחור לפחות חלון זמן אחד"),
+      ),
+    );
+    return false;
+  }
+
+  // 3️⃣ בדיקת מוצרים
+  if (donatedItems.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("יש להוסיף לפחות מוצר אחד לתרומה"),
+      ),
+    );
+    return false;
+  }
+
+  return true;
+}
+
+String? _validatePhone(String? value) {
+  if (value == null || value.isEmpty) {
+    return "שדה חובה";
+  }
+
+  final phone = value.replaceAll(RegExp(r'\D'), '');
+
+  if (!RegExp(r'^05\d{8}$').hasMatch(phone)) {
+    return "מספר פלאפון לא תקין";
+  }
+
+  return null;
+}
+
+String? _validateBusinessId(String? value) {
+  if (value == null || value.isEmpty) {
+    return "שדה חובה";
+  }
+
+  final id = value.replaceAll(RegExp(r'\D'), '');
+
+  if (id.length != 9) {
+    return "ח\"פ חייב להכיל 9 ספרות";
+  }
+
+  int sum = 0;
+
+  for (int i = 0; i < 8; i++) {
+    int digit = int.parse(id[i]);
+    int step = digit * ((i % 2) + 1);
+
+    if (step > 9) {
+      step = (step ~/ 10) + (step % 10);
+    }
+
+    sum += step;
+  }
+
+  int checkDigit = (10 - (sum % 10)) % 10;
+
+  if (checkDigit != int.parse(id[8])) {
+    return "ח\"פ לא תקין";
+  }
+
+  return null;
+}
+
+
+
+
+  void submit() {
+  if (_validateBeforeSubmit()) {
+    print("Items: $donatedItems");
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("💙התרומה נשלחה בהצלחה")),
+    );
+
+    // כאן בהמשך תוכלי גם לנקות טופס אם תרצי
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -371,8 +456,20 @@ class _ReportDonationState extends State<ReportDonation> {
                             sectionTitle("פרטי העסק"),
                             buildField("שם העסק", businessName),
                             buildField("כתובת העסק", address),
-                            buildField("פלאפון העסק", businessPhone),
-                            buildField("ח\"פ / עוסק מורשה", businessId),
+                            buildField(
+                              "פלאפון העסק",
+                              businessPhone,
+                              validator: _validatePhone,
+                              keyboardType: TextInputType.phone
+                            ),
+
+                            buildField(
+                              "ח\"פ / עוסק מורשה",
+                              businessId,
+                              validator: _validateBusinessId,
+                              keyboardType: TextInputType.number
+                            ),
+
                           ],
                         ),
                       ),
@@ -381,7 +478,13 @@ class _ReportDonationState extends State<ReportDonation> {
                           children: [
                             sectionTitle("איש קשר"),
                             buildField("שם איש קשר", contactName),
-                            buildField("פלאפון איש קשר", contactPhone),
+                            buildField(
+                              "פלאפון איש קשר",
+                              contactPhone,
+                              validator: _validatePhone,
+                              keyboardType: TextInputType.phone
+                            ),
+
                           ],
                         ),
                       ),
@@ -649,20 +752,31 @@ class _ReportDonationState extends State<ReportDonation> {
     );
   }
 
-  Widget buildField(String hint, TextEditingController controller) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 15),
-      child: Directionality(
-        textDirection: TextDirection.rtl,
-        child: TextFormField(
-          controller: controller,
-          validator: (value) => value == null || value.isEmpty ? "שדה חובה" : null,
-          decoration: ReportDonationTheme.inputDecoration(hint),
-          textAlign: TextAlign.right,
-        ),
+
+
+  Widget buildField(
+  String hint,
+  TextEditingController controller, {
+  String? Function(String?)? validator,
+  TextInputType keyboardType = TextInputType.text,
+}) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 15),
+    child: Directionality(
+      textDirection: TextDirection.rtl,
+      child: TextFormField(
+        controller: controller,
+        validator: validator ??
+            (value) =>
+                value == null || value.isEmpty ? "שדה חובה" : null,
+        decoration: ReportDonationTheme.inputDecoration(hint),
+        textAlign: TextAlign.right,
+        keyboardType: keyboardType,
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   Widget sectionTitle(String text) {
     return Align(
