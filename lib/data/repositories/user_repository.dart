@@ -30,6 +30,25 @@ class UserRepository {
     return _source.getMyProfile(role);
   }
 
+  Future<String> updateDonorProfile({
+    required String businessName,
+    required String businessPhone,
+    required String businessAddressId,
+    required String contactName,
+    required String contactPhone,
+    required String crn,
+  }) {
+    return _source.updateDonorProfile(
+      businessName: businessName,
+      businessPhone: businessPhone,
+      businessAddressId: businessAddressId,
+      contactName: contactName,
+      contactPhone: contactPhone,
+      crn: crn,
+    );
+  }
+
+
 }
 
 
