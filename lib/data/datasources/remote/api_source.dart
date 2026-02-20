@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../../config/api_config.dart';
 import 'auth_headers.dart';
+import '../../models/donation_model.dart';
+
 
 class ApiSource {
   Future<List<Map<String, dynamic>>> getUsers() async {
@@ -76,5 +78,28 @@ class ApiSource {
 
     return Map<String, dynamic>.from(json.decode(response.body));
   }
+
+
+
+  // report donation 
+  Future<String> reportDonation(DonationModel donation) async {
+  final headers = await AuthHeaders.build();
+
+  final response = await http.post(
+    Uri.parse('${ApiConfig.baseUrl}/reportDonation'),
+    headers: headers,
+    body: json.encode(donation.toJson()),
+  );
+
+  final data = json.decode(response.body);
+
+  if (response.statusCode != 200) {
+    throw Exception(data['error']);
+  }
+
+  return data['status'];
+}
+
+  
 
 }

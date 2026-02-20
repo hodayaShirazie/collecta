@@ -1,6 +1,58 @@
 import 'package:flutter/material.dart';
 import '../theme/homepage_theme.dart';
 import '../theme/report_donation_theme.dart';
+import '../../services/donation_service.dart';
+import '../../data/models/donation_model.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+final String? kGoogleApiKey = dotenv.env['GOOGLE_API_KEY'];
+const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
+
+
+
+Future<List<Map<String, String>>> fetchPlaceSuggestions(String input) async {
+  final String url =
+      'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${Uri.encodeComponent(input)}&key=$kGoogleApiKey&types=address&language=he';
+  
+  final response = await http.get(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    final List predictions = data['predictions'];
+
+    return predictions.map<Map<String, String>>((p) {
+      return {
+        "description": p['description'],
+        "place_id": p['place_id'],
+      };
+    }).toList();
+  } else {
+    throw Exception('Failed to fetch place suggestions');
+  }
+}
+
+Future<Map<String, double>> getPlaceLatLng(String placeId) async {
+  final String url =
+      'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=geometry&key=$kGoogleApiKey';
+  
+  final response = await http.get(Uri.parse(url));
+  
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    final location = data['result']['geometry']['location'];
+    return {
+      "lat": location['lat'],
+      "lng": location['lng'],
+    };
+  } else {
+    throw Exception('Failed to fetch place details');
+  }
+}
+
+
+
 
 class ReportDonation extends StatefulWidget {
   const ReportDonation({super.key});
@@ -35,6 +87,12 @@ class _ReportDonationState extends State<ReportDonation> {
   final List<String> timeSlots = ["8:00-10:00", "10:00-12:00", "12:00-14:00"];
 
   final List<Map<String, String>> donatedItems = [];
+
+  double? selectedLat;
+  double? selectedLng;
+
+
+
 
   void toggleTime(String slot) {
     setState(() {
@@ -419,17 +477,57 @@ String? _validateBusinessId(String? value) {
 
 
 
-  void submit() {
-  if (_validateBeforeSubmit()) {
-    print("Items: $donatedItems");
+//   void submit() {
+//   if (_validateBeforeSubmit()) {
+//     print("Items: $donatedItems");
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("💙התרומה נשלחה בהצלחה")),
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       const SnackBar(content: Text("💙התרומה נשלחה בהצלחה")),
+//     );
+
+//     // כאן בהמשך תוכלי גם לנקות טופס אם תרצי
+//   }
+// }
+
+
+void submit() async {
+  if (!_validateBeforeSubmit()) return;
+
+  try {
+    final service = DonationService();
+
+    final donation = DonationModel(
+      businessName: businessName.text,
+      businessAddress: address.text,
+      lat: selectedLat!,   
+      lng: selectedLng!,
+      businessPhone: businessPhone.text,
+      businessId: businessId.text,
+      contactName: contactName.text,
+      contactPhone: contactPhone.text,
+      products: donatedItems,
+      pickupTimes: selectedTimeSlots,
+      organizationId: kOrganizationId,
+      driverId: "",
+      cancelingReason: "",
+      recipe: "",
     );
 
-    // כאן בהמשך תוכלי גם לנקות טופס אם תרצי
+    await service.reportDonation(donation);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("💙 התרומה נשלחה בהצלחה")),
+    );
+
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("שגיאה: $e")),
+    );
   }
 }
+
+
+
 
 
   @override
@@ -455,7 +553,10 @@ String? _validateBusinessId(String? value) {
                           children: [
                             sectionTitle("פרטי העסק"),
                             buildField("שם העסק", businessName),
-                            buildField("כתובת העסק", address),
+                            // buildField("כתובת העסק", address),
+                            buildAddressField(),
+
+                            
                             buildField(
                               "פלאפון העסק",
                               businessPhone,
@@ -777,6 +878,49 @@ String? _validateBusinessId(String? value) {
   );
 }
 
+
+  Widget buildAddressField() {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 15),
+    child: Directionality(
+      textDirection: TextDirection.rtl,
+      child: Autocomplete<Map<String, String>>(
+        optionsBuilder: (TextEditingValue textEditingValue) async {
+          if (textEditingValue.text.isEmpty) return const Iterable<Map<String, String>>.empty();
+          return await fetchPlaceSuggestions(textEditingValue.text);
+        },
+        displayStringForOption: (option) => option["description"]!,
+        onSelected: (selection) async {
+          address.text = selection["description"]!;
+          
+          // קבלת lat/lng
+          final coords = await getPlaceLatLng(selection["place_id"]!);
+          print("Selected coordinates: ${coords['lat']}, ${coords['lng']}");
+
+          // כאן אפשר לשמור במשתנה של ה-State כדי לשלוח בפרטי התרומה
+          setState(() {
+            selectedLat = coords['lat'];
+            selectedLng = coords['lng'];
+          });
+        },
+        fieldViewBuilder: (context, controller, focusNode, onEditingComplete) {
+          return TextFormField(
+            controller: controller,
+            focusNode: focusNode,
+            validator: (value) =>
+                value == null || value.isEmpty ? "שדה חובה" : null,
+            decoration: ReportDonationTheme.inputDecoration("כתובת העסק"),
+            textAlign: TextAlign.right,
+            onEditingComplete: onEditingComplete,
+          );
+        },
+      ),
+    ),
+  );
+}
+
+
+  
 
   Widget sectionTitle(String text) {
     return Align(
