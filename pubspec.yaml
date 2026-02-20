@@ -73,7 +73,7 @@ flutter_icons:
 # The following section is specific to Flutter packages.
 flutter:
   assets:
-    - .env
+    - assets/config/
     - assets/images/logo/latet_logo.png
     - assets/images/logo/latetBackgroundImg.png
     - assets/images/logo/latet_food_security_logo.png
