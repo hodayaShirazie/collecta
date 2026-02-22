@@ -54,6 +54,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'homepage_theme.dart';
 
 class DonorEditProfileTheme {
   // צבעים עיקריים
@@ -83,7 +84,7 @@ class DonorEditProfileTheme {
   static InputDecoration inputDecoration = InputDecoration(
     isDense: true,
     filled: true,
-    fillColor: lightBlue,
+    fillColor: HomepageTheme.latetYellow.withOpacity(0.2),
     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(15),

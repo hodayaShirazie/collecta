@@ -6,6 +6,8 @@ import '../../data/models/driver_model.dart';
 import '../theme/homepage_theme.dart';
 import '../widgets/homepage_button.dart';
 import '../widgets/sign_out.dart';
+import 'package:collecta/app/routes.dart';
+
 
 class DriverHomepage extends StatelessWidget {
   const DriverHomepage({super.key});
@@ -102,7 +104,7 @@ class DriverHomepage extends StatelessWidget {
                                 title: 'עריכת פרטים',
                                 icon: Icons.edit_outlined,
                                 onPressed: () {
-
+                                  // Navigator.pushNamed(context, Routes.driverEditProfile);
                                 },
                               ),
                             ],
