@@ -6,8 +6,8 @@ class DriverProfile {
   final UserModel user;
   final String phone;
   final String area;
-  final List<dynamic> destination;
-  final List<dynamic> stops;
+  final List<String> destination;
+  final List<String> stops;
 
   DriverProfile({
     required this.user,
@@ -18,13 +18,19 @@ class DriverProfile {
   });
 
   factory DriverProfile.fromApi(Map<String, dynamic> json) {
+      final role = json['role'] as Map<String, dynamic>;
     return DriverProfile(
       user: UserModel.fromMap(json['user']),
-      phone: json['role']['phone'] ?? '',
-      area: json['role']['area'] ?? '',
-      destination: json['role']['destination'] ?? [],
-      stops: json['role']['stops'] ?? [],
-
+      phone: role['phone'] ?? '',
+      area: role['area'] ?? '',
+      // destination: role['destination'] ?? [],
+      // stops: role['stops'] ?? [],
+      destination: role['destination'] != null
+          ? List<String>.from(role['destination'])
+          : <String>[],
+      stops: role['stops'] != null
+          ? List<String>.from(role['stops'])
+          : <String>[],
     );
   }
 }

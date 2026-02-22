@@ -304,3 +304,31 @@ exports.updateDonorProfile = functions.https.onRequest((req, res) => {
     }
   });
 });
+
+exports.updateDriverProfile = functions.https.onRequest((req, res) => {
+  corsHandler(req, res, async () => {
+    const firebaseUser = await verifyFirebaseToken(req, res);
+    if (!firebaseUser) return;
+
+    try {
+      const uid = firebaseUser.uid;
+
+      const {
+        phone,
+        area,
+        destination,
+      } = req.body;
+
+      await db.collection("driver").doc(uid).update({
+        phone,
+        area,
+        destination,
+
+      });
+
+      return res.status(200).send({ status: "success" });
+    } catch (e) {
+      return res.status(500).send({ error: e.message });
+    }
+  });
+});

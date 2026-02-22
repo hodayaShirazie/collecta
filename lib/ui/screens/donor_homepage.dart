@@ -122,8 +122,8 @@
 // }
 
 
-import 'package:collecta/ui/screens/edit_profile_donor.dart';
-// import 'package:collecta/ui/screens/report_donation.dart';
+// import 'package:collecta/ui/screens/edit_profile_donor.dart';
+import 'package:collecta/ui/screens/report_donation.dart';
 import 'package:flutter/material.dart';
 import '../../services/organization_service.dart';
 import '../../services/user_service.dart';
@@ -132,6 +132,7 @@ import '../../data/models/donor_model.dart';
 import '../theme/homepage_theme.dart';
 import '../widgets/homepage_button.dart';
 import '../widgets/sign_out.dart';
+import 'package:collecta/app/routes.dart';
 
 class DonorHomepage extends StatelessWidget {
   const DonorHomepage({super.key});
@@ -235,19 +236,19 @@ class DonorHomepage extends StatelessWidget {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              // HomepageButton(
-                              //   title: 'דיווח תרומה',
-                              //   icon: Icons.volunteer_activism_outlined,
-                              //   flipIcon: true,
-                              //    onPressed: () {
-                              //     Navigator.push(
-                              //       context,
-                              //       // MaterialPageRoute(
-                              //       //   builder: (context) => const ReportDonation(),
-                              //       // ),
-                              //     );
-                              //   },
-                              // ),
+                              HomepageButton(
+                                title: 'דיווח תרומה',
+                                icon: Icons.volunteer_activism_outlined,
+                                flipIcon: true,
+                                 onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const ReportDonation(),
+                                    ),
+                                  );
+                                },
+                              ),
                               const SizedBox(height: HomepageTheme.betweenButtons),
                               HomepageButton(
                                 title: 'התרומות שלי',
@@ -261,14 +262,8 @@ class DonorHomepage extends StatelessWidget {
                                 title: 'עריכת פרטים אישיים',
                                 icon: Icons.edit_outlined,
                                 onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const DonorEditProfileScreen(),
-                                    ),
-                                  );
+                                  Navigator.pushNamed(context, Routes.donorEditProfile);
                                 },
-
                               ),
                             ],
                           ),

@@ -1,31 +1,30 @@
 import 'package:flutter/material.dart';
 import '../../services/organization_service.dart';
-import '../theme/edit_profile_donor_theme.dart';
-import '../theme/homepage_theme.dart';
 import '../../services/user_service.dart';
-import '../../data/models/donor_model.dart';
+import '../../data/models/driver_model.dart';
+import '../theme/homepage_theme.dart';
+import '../theme/edit_profile_donor_theme.dart';
+
 
 const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
 
-class DonorEditProfileScreen extends StatefulWidget {
-  const DonorEditProfileScreen({super.key});
+class DriverEditProfileScreen extends StatefulWidget {
+  const DriverEditProfileScreen({super.key});
 
   @override
-  State<DonorEditProfileScreen> createState() => _DonorEditProfileScreenState();
+  State<DriverEditProfileScreen> createState() => _DriverEditProfileScreenState();
 }
 
-class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
+class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
   final orgService = OrganizationService();
   final userService = UserService();
 
   late Future _profileFuture;
 
-  final businessNameCtrl = TextEditingController();
-  final businessPhoneCtrl = TextEditingController();
-  final businessAddressCtrl = TextEditingController();
-  final contactNameCtrl = TextEditingController();
-  final contactPhoneCtrl = TextEditingController();
-  final crnCtrl = TextEditingController();
+  final phoneCtrl = TextEditingController();
+  final areaCtrl = TextEditingController();
+  final destinationCtrl = TextEditingController();
+  final stopsCtrl = TextEditingController();
 
   @override
   void initState() {
@@ -34,17 +33,15 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
   }
 
   Future _loadProfile() async {
-    final data = await userService.fetchMyProfile("donor");
-    final donor = DonorProfile.fromApi(data);
+    final data = await userService.fetchMyProfile("driver");
+    final driver = DriverProfile.fromApi(data);
 
-    businessNameCtrl.text = donor.businessName;
-    businessPhoneCtrl.text = donor.businessPhone;
-    businessAddressCtrl.text = donor.businessAddressId;
-    contactNameCtrl.text = donor.contactName;
-    contactPhoneCtrl.text = donor.contactPhone;
-    crnCtrl.text = donor.crn;
+    phoneCtrl.text = driver.phone;
+    areaCtrl.text = driver.area;
+    destinationCtrl.text = driver.destination.join(', ');
+    stopsCtrl.text = driver.stops.join(', ');
 
-    return donor;
+    return driver;
   }
 
   @override
@@ -77,18 +74,15 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
                       decoration: HomepageTheme.decorativeCircle,
                     ),
                   ),
-
                   SingleChildScrollView(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
                       child: Column(
                         children: [
                           const SizedBox(height: HomepageTheme.topPadding),
-
                           Image.network(org.logo, height: HomepageTheme.logoHeight),
                           const SizedBox(height: 10),
-
-                          Text('עריכת פרטים אישיים', style: DonorEditProfileTheme.headerStyle),
+                          Text('עריכת פרטי נהג', style: DonorEditProfileTheme.headerStyle),
                           const SizedBox(height: 8),
                           Container(
                             width: 120,
@@ -99,7 +93,6 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
                             ),
                           ),
                           const SizedBox(height: 14),
-
                           Text(
                             '!שמחים לראות אותך שוב',
                             style: HomepageTheme.subtitleTextStyle.copyWith(
@@ -107,21 +100,30 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
                             ),
                           ),
                           const SizedBox(height: 20),
-
-                          // Centered proportional form
                           LayoutBuilder(builder: (context, constraints) {
                             final screenWidth = constraints.maxWidth;
-                            final widthFactor = screenWidth > 900 ? 0.6 : (screenWidth > 600 ? 0.8 : 0.95);
-
+                            final widthFactor = screenWidth > 900
+                                ? 0.6
+                                : (screenWidth > 600 ? 0.8 : 0.95);
                             return Center(
                               child: FractionallySizedBox(
                                 widthFactor: widthFactor,
                                 child: Container(
-                                  decoration: DonorEditProfileTheme.containerDecoration,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: DonorEditProfileTheme.primaryBlue, width: 2),
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.05),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 5),
+                                      ),
+                                    ],
+                                  ),
                                   child: Row(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      // yellow accent stripe
                                       Container(
                                         width: 8,
                                         decoration: BoxDecoration(
@@ -133,26 +135,33 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
                                         ),
                                         height: 1,
                                       ),
-
                                       Expanded(
                                         child: Padding(
                                           padding: const EdgeInsets.all(18),
                                           child: Column(
                                             children: [
-                                              _buildLabeledField('שם העסק:', businessNameCtrl),
-                                              _buildLabeledField('פלאפון עסק:', businessPhoneCtrl),
-                                              _buildLabeledField('כתובת העסק:', businessAddressCtrl),
-                                              _buildLabeledField('שם איש קשר:', contactNameCtrl),
-                                              _buildLabeledField('פלאפון איש קשר:', contactPhoneCtrl),
-                                              _buildLabeledField('ח"פ/עוסק מורשה:', crnCtrl),
-
+                                              _buildLabeledField('פלאפון:', phoneCtrl),
+                                              _buildLabeledField('אזור:', areaCtrl),
+                                              _buildLabeledField('יעדים (מופרדים בפסיקים):', destinationCtrl),
                                               const SizedBox(height: 18),
-
                                               SizedBox(
                                                 width: double.infinity,
                                                 child: ElevatedButton(
                                                   onPressed: _save,
-                                                  style: DonorEditProfileTheme.saveButtonStyle,
+                                                  style: ElevatedButton.styleFrom(
+                                                    backgroundColor: DonorEditProfileTheme.primaryBlue,
+                                                    foregroundColor: Colors.white,
+                                                    padding: const EdgeInsets.symmetric(
+                                                        horizontal: 50, vertical: 14),
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(25),
+                                                    ),
+                                                    textStyle: const TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                    elevation: 5,
+                                                  ),
                                                   child: const Text('שמור'),
                                                 ),
                                               ),
@@ -166,7 +175,6 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
                               ),
                             );
                           }),
-
                           const SizedBox(height: 30),
                           Image.network(org.departmentLogo, height: HomepageTheme.deptLogoHeight),
                           const SizedBox(height: 20),
@@ -185,13 +193,12 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
 
   Future<void> _save() async {
     try {
-      await userService.updateDonorProfile(
-        businessName: businessNameCtrl.text,
-        businessPhone: businessPhoneCtrl.text,
-        businessAddressId: businessAddressCtrl.text,
-        contactName: contactNameCtrl.text,
-        contactPhone: contactPhoneCtrl.text,
-        crn: crnCtrl.text,
+      await userService.updateDriverProfile(
+        phone: phoneCtrl.text,
+        area: areaCtrl.text,
+        destination:
+            destinationCtrl.text.split(',').map((e) => e.trim()).toList(),
+        stops: stopsCtrl.text.split(',').map((e) => e.trim()).toList(),
       );
 
       ScaffoldMessenger.of(context).showSnackBar(

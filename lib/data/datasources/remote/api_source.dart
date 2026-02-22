@@ -109,5 +109,32 @@ class ApiSource {
     return data['status'];
   }
 
+  Future<String> updateDriverProfile({
+    required String phone,
+    required String area,
+    required List<dynamic> destination,
+    required List<dynamic> stops,
+  }) async {
+    final headers = await AuthHeaders.build();
+
+    final response = await http.put(
+      Uri.parse('${ApiConfig.baseUrl}/updateDriverProfile'),
+      headers: headers,
+      body: json.encode({
+        'phone': phone,
+        'area': area,
+        'destination': destination,
+      }),
+    );
+
+    final data = json.decode(response.body);
+
+    if (response.statusCode != 200) {
+      throw Exception(data['error']);
+    }
+
+    return data['status'];
+  }
+
 
 }

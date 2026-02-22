@@ -46,6 +46,18 @@ class UserService {
     );
   }
 
+    Future<String> updateDriverProfile({
+    required String phone,
+    required String area,
+    required List<dynamic> destination,
+  }) {
+    return _repo.updateDriverProfile(
+      phone: phone,
+      area: area,
+      destination: destination,
+    );
+  }
+
 
 } 
 
