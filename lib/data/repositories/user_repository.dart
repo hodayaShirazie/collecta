@@ -48,18 +48,18 @@ class UserRepository {
     );
   }
 
-  Future<String> updateDriverProfile({
-    required String phone,
-    required String area,
-    required List<dynamic> destination,
+  // Future<String> updateDriverProfile({
+  //   required String phone,
+  //   required String area,
+  //   required List<dynamic> destination,
 
-  }) {
-    return _source.updateDriverProfile(
-      phone: phone,
-      area: area,
-      destination: destination,
-    );
-  }
+  // }) {
+  //   return _source.updateDriverProfile(
+  //     phone: phone,
+  //     area: area,
+  //     destination: destination,
+  //   );
+  // }
 
 }
 

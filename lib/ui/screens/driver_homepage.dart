@@ -104,7 +104,7 @@ class DriverHomepage extends StatelessWidget {
                                 title: 'עריכת פרטים',
                                 icon: Icons.edit_outlined,
                                 onPressed: () {
-                                  Navigator.pushNamed(context, Routes.driverEditProfile);
+                                  // Navigator.pushNamed(context, Routes.driverEditProfile);
                                 },
                               ),
                             ],

@@ -1,27 +1,13 @@
+
 // import 'package:flutter/material.dart';
 // import 'package:firebase_core/firebase_core.dart';
 // import 'config/firebase_options.dart';
-// import 'package:collecta/ui/screens/entering.dart';
-
-
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'Collecta Firebase App',
-//       theme: ThemeData(
-//         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-//         useMaterial3: true,
-//       ),
-//       home: const EnteringScreen(), 
-//     );
-//   }
-// }
+// import 'app/app.dart';  
+// import 'package:flutter_dotenv/flutter_dotenv.dart';  
 
 // void main() async {
 //   WidgetsFlutterBinding.ensureInitialized();
+//   await dotenv.load(fileName: ".env");
 //   await Firebase.initializeApp(
 //     options: DefaultFirebaseOptions.currentPlatform,
 //   );
@@ -29,13 +15,20 @@
 // }
 
 
+
+
+
+
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'config/firebase_options.dart';
 import 'app/app.dart';  
+import 'package:flutter_dotenv/flutter_dotenv.dart';  
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: "assets/config/.env");
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

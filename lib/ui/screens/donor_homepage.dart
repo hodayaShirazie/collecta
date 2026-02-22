@@ -124,6 +124,7 @@
 
 // import 'package:collecta/ui/screens/edit_profile_donor.dart';
 import 'package:collecta/ui/screens/report_donation.dart';
+import 'package:collecta/ui/screens/my_donations.dart';
 import 'package:flutter/material.dart';
 import '../../services/organization_service.dart';
 import '../../services/user_service.dart';
@@ -253,7 +254,15 @@ class DonorHomepage extends StatelessWidget {
                               HomepageButton(
                                 title: 'התרומות שלי',
                                 icon: Icons.assignment_outlined,
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const MyDonations(),
+                                    ),
+                                  );
+
+                                },
                               ),
 
 
