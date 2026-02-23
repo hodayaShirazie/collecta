@@ -65,7 +65,9 @@ exports.reportDonation = functions.https.onRequest(
   require("./donations/reportDonation")
 );
 
-
+exports.updateUserProfile = functions.https.onRequest(
+  require("./users/updateUserProfile")
+);
 
 // async function verifyFirebaseToken(req, res) {
 //   const authHeader = req.headers.authorization || "";

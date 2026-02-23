@@ -6,7 +6,7 @@ class DriverProfile {
   final UserModel user;
   final String phone;
   final String area;
-  final List<String> destination;
+  final List<DestinationModel> destinations;
   final List<String> stops;
 
   DriverProfile({
@@ -25,9 +25,9 @@ class DriverProfile {
       area: role['area'] ?? '',
       // destination: role['destination'] ?? [],
       // stops: role['stops'] ?? [],
-      destination: role['destination'] != null
-          ? List<String>.from(role['destination'])
-          : <String>[],
+      destinations: (json['destinations'] as List<dynamic>? ?? [])
+          .map((e) => DestinationModel.fromApi(e))
+          .toList(),
       stops: role['stops'] != null
           ? List<String>.from(role['stops'])
           : <String>[],

@@ -48,6 +48,16 @@ class UserRepository {
     );
   }
 
+  Future<String> updateUserProfile({
+    required String name,
+    // required String img,
+  }) {
+    return _source.updateUserProfile(
+      name: name,
+      // img: img,
+    );
+  }
+
   // Future<String> updateDriverProfile({
   //   required String phone,
   //   required String area,
