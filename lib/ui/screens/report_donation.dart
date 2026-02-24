@@ -51,9 +51,6 @@ Future<Map<String, double>> getPlaceLatLng(String placeId) async {
   }
 }
 
-
-
-
 class ReportDonation extends StatefulWidget {
   const ReportDonation({super.key});
 

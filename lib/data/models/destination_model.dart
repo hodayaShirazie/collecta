@@ -12,7 +12,7 @@ class DestinationModel {
     required this.name,
     required this.organizationId,
     required this.day,
-    required this.addressId,
+    required this.address,
   });
 
   factory DestinationModel.fromApi(Map<String, dynamic> json) {

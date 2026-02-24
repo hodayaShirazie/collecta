@@ -56,6 +56,7 @@ class UserService {
     );
   }
 
+
   //   Future<String> updateDriverProfile({
   //   required String phone,
   //   required String area,
