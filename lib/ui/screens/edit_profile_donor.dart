@@ -20,6 +20,7 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
 
   late Future _profileFuture;
 
+  final nameCtrl = TextEditingController();
   final businessNameCtrl = TextEditingController();
   final businessPhoneCtrl = TextEditingController();
   final businessAddressCtrl = TextEditingController();
@@ -36,7 +37,8 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
   Future _loadProfile() async {
     final data = await userService.fetchMyProfile("donor");
     final donor = DonorProfile.fromApi(data);
-
+    
+    nameCtrl.text = donor.user.name;
     businessNameCtrl.text = donor.businessName;
     businessPhoneCtrl.text = donor.businessPhone;
     businessAddressCtrl.text = donor.businessAddressId;
@@ -139,6 +141,7 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
                                           padding: const EdgeInsets.all(18),
                                           child: Column(
                                             children: [
+                                              _buildLabeledField('שם משתמש:', nameCtrl),
                                               _buildLabeledField('שם העסק:', businessNameCtrl),
                                               _buildLabeledField('פלאפון עסק:', businessPhoneCtrl),
                                               _buildLabeledField('כתובת העסק:', businessAddressCtrl),
@@ -185,6 +188,10 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
 
   Future<void> _save() async {
     try {
+      await userService.updateUserProfile(
+      name: nameCtrl.text,
+      // img: "", // או להשאיר את הישן אם תרצי
+      );
       await userService.updateDonorProfile(
         businessName: businessNameCtrl.text,
         businessPhone: businessPhoneCtrl.text,
