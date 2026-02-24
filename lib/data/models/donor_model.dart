@@ -1,9 +1,9 @@
 import 'user_model.dart';
+import 'address_model.dart';
 
 class DonorProfile {
   final UserModel user;
-
-  final String businessAddressId;
+  final AddressModel businessAddress;
   final String businessName;
   final String businessPhone;
   final int coins;
@@ -13,7 +13,7 @@ class DonorProfile {
 
   DonorProfile({
     required this.user,
-    required this.businessAddressId,
+    required this.businessAddress,
     required this.businessName,
     required this.businessPhone,
     required this.coins,
@@ -25,7 +25,7 @@ class DonorProfile {
   factory DonorProfile.fromApi(Map<String, dynamic> json) {
     return DonorProfile(
       user: UserModel.fromMap(json['user']),
-      businessAddressId: json['role']['businessAddress_id'] ?? '',
+      businessAddress: AddressModel.fromApi(json['address']),
       businessName: json['role']['businessName'] ?? '',
       businessPhone: json['role']['businessPhone'] ?? '',
       coins: json['role']['coins'] ?? 0,

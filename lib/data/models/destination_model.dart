@@ -1,16 +1,18 @@
+import 'address_model.dart';
+
 class DestinationModel {
   final String id;
   final String name;
   final String organizationId;
   final String day;
-  final String addressId;
+  final AddressModel address;
 
   DestinationModel({
     required this.id,
     required this.name,
     required this.organizationId,
     required this.day,
-    required this.addressId,
+    required this.address,
   });
 
   factory DestinationModel.fromApi(Map<String, dynamic> json) {
@@ -19,7 +21,8 @@ class DestinationModel {
       name: json['name'] as String,
       organizationId: json['organization_id'] as String,
       day: json['day'] as String,
-      addressId: json['address_id'] as String,
+      address: AddressModel.fromApi(json['address']),
     );
   }
 }
+
