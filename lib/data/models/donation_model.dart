@@ -123,6 +123,12 @@ class PickupTime {
       to: json['to'] as String,
     );
   }
+    Map<String, dynamic> toJson() {
+    return {
+      'from': from,
+      'to': to,
+    };
+  }
 }
 
 class DonationModel {
@@ -179,5 +185,22 @@ class DonationModel {
           .map((e) => ProductModel.fromApi(e))
           .toList(),
     );
+  }
+   Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'status': status,
+      'receipt': receipt,
+      'canceling_reason': cancelingReason,
+      'organization_id': organizationId,
+      'donor_id': donorId,
+      'driver_id': driverId,
+      'contactName': contactName,
+      'contactPhone': contactPhone,
+      'created_at': createdAt.toIso8601String(), // תאריך בפורמט ISO
+      'businessAddress': businessAddress.toJson(), // ממיר ל־Map
+      'pickupTimes': pickupTimes.map((e) => e.toJson()).toList(),
+      'products': products.map((e) => e.toJson()).toList(),
+    };
   }
 }

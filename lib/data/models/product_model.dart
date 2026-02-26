@@ -18,4 +18,11 @@ class ProductModel {
       type: ProductTypeModel.fromApi(json['type']),
     );
   }
+    Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'quantity': quantity,
+      'type': type.toJson(),  // גם סוג המוצר מומר ל־JSON
+    };
+  }
 }

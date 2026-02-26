@@ -61,9 +61,9 @@ exports.updateDonorProfile = functions.https.onRequest(
   require("./donors/updateDonorProfile")
 );
 
-exports.reportDonation = functions.https.onRequest(
-  require("./donations/reportDonation")
-);
+// exports.reportDonation = functions.https.onRequest(
+//   require("./donations/reportDonation")
+// );
 
 exports.updateUserProfile = functions.https.onRequest(
   require("./users/updateUserProfile")
