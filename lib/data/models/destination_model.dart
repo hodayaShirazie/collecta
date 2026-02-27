@@ -24,5 +24,14 @@ class DestinationModel {
       address: AddressModel.fromApi(json['address']),
     );
   }
+    Map<String, dynamic> toJson() {
+    return {
+      'id': id,                     // ID של היעד
+      'name': name,
+      'organization_id': organizationId,
+      'day': day,
+      'address': address.toJson(),  // ממיר את הכתובת גם ל־JSON
+    };
+  }
 }
 

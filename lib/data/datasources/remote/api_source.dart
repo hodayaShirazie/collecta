@@ -112,46 +112,46 @@ class ApiSource {
     return data['status'];
   }
 
-  Future<String> reportDonation(DonationModel donation) async {
-    final headers = await AuthHeaders.build();
+  // Future<String> reportDonation(DonationModel donation) async {
+  //   final headers = await AuthHeaders.build();
 
-    final response = await http.post(
-      Uri.parse('${ApiConfig.baseUrl}/reportDonation'),
-      headers: headers,
-      body: json.encode({
-        'addressId': donation.businessAddress.id,
-        'cancelingReason': donation.cancelingReason,
-        'contactName': donation.contactName,
-        'contactPhone': donation.contactPhone,
-        'donorId': donation.donorId,
-        'driverId': donation.driverId,
-        'organizationId': donation.organizationId,  
-        'pickupTimes': donation.pickupTimes
-            .map((pt) => {
-                  'from': pt.from,
-                  'to': pt.to,
-                })
-            .toList(),
-        'products': donation.products
-            .map((p) => {
-                  'productTypeId': p.type.id,
-                  'quantity': p.quantity,
-                })
-            .toList(),
-        'receipt': donation.receipt,
-        'status': donation.status,
-        // 'createdAt': donation.createdAt.toIso8601String() //TODO: check if created at is here to do or elsewhere
-      }),
-    );
+  //   final response = await http.post(
+  //     Uri.parse('${ApiConfig.baseUrl}/reportDonation'),
+  //     headers: headers,
+  //     body: json.encode({
+  //       'addressId': donation.businessAddress.id,
+  //       'cancelingReason': donation.cancelingReason,
+  //       'contactName': donation.contactName,
+  //       'contactPhone': donation.contactPhone,
+  //       'donorId': donation.donorId,
+  //       'driverId': donation.driverId,
+  //       'organizationId': donation.organizationId,  
+  //       'pickupTimes': donation.pickupTimes
+  //           .map((pt) => {
+  //                 'from': pt.from,
+  //                 'to': pt.to,
+  //               })
+  //           .toList(),
+  //       'products': donation.products
+  //           .map((p) => {
+  //                 'productTypeId': p.type.id,
+  //                 'quantity': p.quantity,
+  //               })
+  //           .toList(),
+  //       'receipt': donation.receipt,
+  //       'status': donation.status,
+  //       // 'createdAt': donation.createdAt.toIso8601String() //TODO: check if created at is here to do or elsewhere
+  //     }),
+  //   );
 
-    final data = json.decode(response.body);
+  //   final data = json.decode(response.body);
 
-    if (response.statusCode != 200) {
-      throw Exception(data['error']);
-    }
+  //   if (response.statusCode != 200) {
+  //     throw Exception(data['error']);
+  //   }
 
-    return data['status'];
-  }
+  //   return data['status'];
+  // }
 
   Future<String> updateUserProfile({
     required String name,

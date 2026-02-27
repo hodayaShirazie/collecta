@@ -20,4 +20,12 @@ class AddressModel {
       name: json['name'] as String,
     );
   }
+    Map<String, dynamic> toJson() {
+    return {
+      'id': id,       // חשוב אם ה־API דורש את ה־ID
+      'lat': lat,
+      'lng': lng,
+      'name': name,
+    };
+  }
 }

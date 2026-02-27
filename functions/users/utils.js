@@ -28,5 +28,5 @@ async function createAdmin(uid, role) {
   await db.collection(role).doc(uid).set(roleData);
 }
 
-module.exports = { createUser };
-module.exports = { createAdmin };
+module.exports = { createUser, createAdmin };
+// module.exports = { createAdmin };
