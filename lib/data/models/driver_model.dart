@@ -18,7 +18,7 @@ class DriverProfile {
   });
 
   factory DriverProfile.fromApi(Map<String, dynamic> json) {
-      final role = json['role'] as Map<String, dynamic>;
+    final role = json['role'] as Map<String, dynamic>;
     return DriverProfile(
       user: UserModel.fromMap(json['user']),
       phone: role['phone'] ?? '',

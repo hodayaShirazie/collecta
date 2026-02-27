@@ -112,23 +112,23 @@ class ApiSource {
   }
 
   // report donation 
-  Future<String> reportDonation(DonationModel donation) async {
-    final headers = await AuthHeaders.build();
+  // Future<String> reportDonation(DonationModel donation) async {
+  //   final headers = await AuthHeaders.build();
 
-    final response = await http.post(
-      Uri.parse('${ApiConfig.baseUrl}/reportDonation'),
-      headers: headers,
-      body: json.encode(donation.toJson()),
-    );
+  //   final response = await http.post(
+  //     Uri.parse('${ApiConfig.baseUrl}/reportDonation'),
+  //     headers: headers,
+  //     body: json.encode(donation.toJson()),
+  //   );
 
-    final data = json.decode(response.body);
+  //   final data = json.decode(response.body);
 
-    if (response.statusCode != 200) {
-      throw Exception(data['error']);
-    }
+  //   if (response.statusCode != 200) {
+  //     throw Exception(data['error']);
+  //   }
 
-    return data['status'];
-  }
+  //   return data['status'];
+  // }
 
   Future<String> updateUserProfile({
     required String name,

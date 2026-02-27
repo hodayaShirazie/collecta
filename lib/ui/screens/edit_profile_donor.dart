@@ -41,7 +41,8 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
     nameCtrl.text = donor.user.name;
     businessNameCtrl.text = donor.businessName;
     businessPhoneCtrl.text = donor.businessPhone;
-    businessAddressCtrl.text = donor.businessAddressId;
+    // businessAddressCtrl.text = donor.businessAddressId;
+    businessAddressCtrl.text = donor.businessAddress.name;
     contactNameCtrl.text = donor.contactName;
     contactPhoneCtrl.text = donor.contactPhone;
     crnCtrl.text = donor.crn;
