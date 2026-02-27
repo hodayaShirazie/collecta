@@ -3,9 +3,14 @@ import '../theme/homepage_theme.dart';
 import '../theme/report_donation_theme.dart';
 import '../../services/donation_service.dart';
 import '../../data/models/donation_model.dart';
+import '../../data/models/product_model.dart';
+import '../../data/models/address_model.dart';
+import '../../data/models/productType_model.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+import '../../services/address_service.dart';
 
 final String? kGoogleApiKey = dotenv.env['GOOGLE_API_KEY'];
 const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
@@ -71,14 +76,15 @@ class _ReportDonationState extends State<ReportDonation> {
   final List<String> selectedTimeSlots = [];
   final List<String> selectedProducts = [];
 
+// TODO FIX THE ID 
   final List<Map<String, dynamic>> products = [
-    {"name": "מאפים", "icon": Icons.bakery_dining},
-    {"name": "עוגות", "icon": Icons.cake_rounded},
-    {"name": "פירות וירקות", "icon": Icons.eco},
-    {"name": "מוצרי חלב", "icon": Icons.local_drink},
-    {"name": "היגיינה", "icon": Icons.soap},
-    {"name": "מוצרי יסוד", "icon": Icons.kitchen},
-    {"name": "אחר", "icon": Icons.category},
+    {"name": "מאפים", "id": "RyUL5nZRCeAK4Vi7WVai", "icon": Icons.bakery_dining},
+    {"name": "עוגות", "id": "91", "icon": Icons.cake_rounded},
+    {"name": "פירות וירקות", "id": "92", "icon": Icons.eco},
+    {"name": "מוצרי חלב", "id": "93", "icon": Icons.local_drink},
+    {"name": "היגיינה", "id": "94", "icon": Icons.soap},
+    {"name": "מוצרי יסוד", "id": "95", "icon": Icons.kitchen},
+    {"name": "אחר", "id": "96", "icon": Icons.category},
   ];
 
   final List<String> timeSlots = ["8:00-10:00", "10:00-12:00", "12:00-14:00"];
@@ -474,55 +480,129 @@ String? _validateBusinessId(String? value) {
 
 
 
-//   void submit() {
-//   if (_validateBeforeSubmit()) {
-//     print("Items: $donatedItems");
+// void submit() async {
+//   if (!_validateBeforeSubmit()) return;
 
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(content: Text("💙התרומה נשלחה בהצלחה")),
+//   try {
+
+//     final addressService = AddressService();
+
+//     final addressId = await addressService.createAddress(
+//       name: businessName.text,
+//       lat: selectedLat!,
+//       lng: selectedLng!,
 //     );
 
-//     // כאן בהמשך תוכלי גם לנקות טופס אם תרצי
+//     print(addressId); // TODO delete this line
+
+//     // final service = DonationService();
+
+    
+
+//     // final donation = DonationModel(
+//     //   businessAddress: address.id,
+//     //   businessName: businessName.text,
+//     //   cancelingReason: "",
+//     //   contactName: contactName.text,
+//     //   contactPhone: contactPhone.text,
+//     //   driverId: "", 
+//     //   organizationId: kOrganizationId,
+
+//     //   // pickupTimes: ,
+//     //   // products: donatedItems,
+//     //   receipt: "",
+//     //   status: "pending"
+      
+//     // );
+//   }
+
+  // try {
+  //   final service = DonationService();
+
+  //   final donation = DonationModel(
+  //     businessName: businessName.text,
+  //     businessAddress: address.text,
+  //     lat: selectedLat!,   
+  //     lng: selectedLng!,
+  //     businessPhone: businessPhone.text,
+  //     businessId: businessId.text,
+  //     contactName: contactName.text,
+  //     contactPhone: contactPhone.text,
+  //     products: donatedItems,
+  //     pickupTimes: selectedTimeSlots,
+  //     organizationId: kOrganizationId,
+  //     driverId: "",
+  //     cancelingReason: "",
+  //     recipe: "",
+  //   );
+
+  //   await service.reportDonation(donation);
+
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     const SnackBar(content: Text("💙 התרומה נשלחה בהצלחה")),
+  //   );
+
+//    catch (e) {
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(content: Text("שגיאה: $e")),
+//     );
 //   }
 // }
+
+
+  
 
 
 void submit() async {
   if (!_validateBeforeSubmit()) return;
 
   try {
-    final service = DonationService();
-
-    final donation = DonationModel(
-      businessName: businessName.text,
-      businessAddress: address.text,
-      lat: selectedLat!,   
+    final addressService = AddressService();
+    final addressId = await addressService.createAddress(
+      name: businessName.text,
+      lat: selectedLat!,
       lng: selectedLng!,
-      businessPhone: businessPhone.text,
-      businessId: businessId.text,
-      contactName: contactName.text,
-      contactPhone: contactPhone.text,
-      products: donatedItems,
-      pickupTimes: selectedTimeSlots,
-      organizationId: kOrganizationId,
-      driverId: "",
-      cancelingReason: "",
-      recipe: "",
     );
 
-    await service.reportDonation(donation);
+    final productsToSend = donatedItems.map((item) {
+      return {
+        "productTypeId": item["productTypeId"],
+        "quantity": int.parse(item["quantity"].toString()),
+      };
+    }).toList();
+
+    final pickupTimes = selectedTimeSlots.map((slot) {
+      final parts = slot.split('-');
+      return {"from": parts[0], "to": parts[1]};
+    }).toList();
+
+    final body = {
+      "addressId": addressId,
+      "organization_id": kOrganizationId,
+      "products": productsToSend,
+      "pickupTimes": pickupTimes,
+      "driver_id": "",
+      "canceling_reason": "",
+      "recipe": "",
+    };
+
+    final donationService = DonationService();
+    await donationService.reportDonationRaw(body);
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("💙 התרומה נשלחה בהצלחה")),
     );
 
+    setState(() {
+      donatedItems.clear();
+      selectedTimeSlots.clear();
+    });
   } catch (e) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("שגיאה: $e")),
     );
   }
 }
-
 
 
 

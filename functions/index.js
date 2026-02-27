@@ -69,6 +69,18 @@ exports.updateUserProfile = functions.https.onRequest(
   require("./users/updateUserProfile")
 );
 
+exports.createAddress = functions.https.onRequest(
+  require("./address/createAddress")
+);
+
+exports.createProductType = functions.https.onRequest(
+  require("./product/productType/createProductType")
+);
+
+exports.createProduct = functions.https.onRequest(
+  require("./product/createProduct")
+);
+
 // async function verifyFirebaseToken(req, res) {
 //   const authHeader = req.headers.authorization || "";
 //   if (!authHeader.startsWith("Bearer ")) {

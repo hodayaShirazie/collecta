@@ -25,7 +25,7 @@ class DonorProfile {
   factory DonorProfile.fromApi(Map<String, dynamic> json) {
     return DonorProfile(
       user: UserModel.fromMap(json['user']),
-      businessAddress: AddressModel.fromApi(json['address']),
+      businessAddress: AddressModel.fromApi(json['businessAddress_id']),
       businessName: json['role']['businessName'] ?? '',
       businessPhone: json['role']['businessPhone'] ?? '',
       coins: json['role']['coins'] ?? 0,

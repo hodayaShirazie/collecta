@@ -7,4 +7,9 @@ class DonationService {
   Future<String> reportDonation(DonationModel donation) {
     return _repo.reportDonation(donation);
   }
+
+  Future<String> reportDonationRaw(Map<String, dynamic> body) {
+  return _repo.reportDonationRaw(body);
+}
+
 }
