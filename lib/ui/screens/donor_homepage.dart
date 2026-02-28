@@ -242,12 +242,12 @@ class DonorHomepage extends StatelessWidget {
                                 icon: Icons.volunteer_activism_outlined,
                                 flipIcon: true,
                                  onPressed: () {
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //     builder: (context) => const ReportDonation(),
-                                  //   ),
-                                  // );
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const ReportDonation(),
+                                    ),
+                                  );
                                 },
                               ),
                               const SizedBox(height: HomepageTheme.betweenButtons),

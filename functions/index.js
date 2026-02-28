@@ -33,6 +33,11 @@
 
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
+const { onRequest } = require("firebase-functions/v2/https");
+const { defineJsonSecret } = require("firebase-functions/params");
+
+const config = defineJsonSecret("FUNCTIONS_CONFIG_EXPORT");
+
 // const cors = require("cors");
 // const corsHandler = cors({ origin: true });
 // const corsHandler = require("./utils/cors");
@@ -61,13 +66,55 @@ exports.updateDonorProfile = functions.https.onRequest(
   require("./donors/updateDonorProfile")
 );
 
-// exports.reportDonation = functions.https.onRequest(
-//   require("./donations/reportDonation")
-// );
+exports.reportDonation = functions.https.onRequest(
+  require("./donations/reportDonation")
+);
 
 exports.updateUserProfile = functions.https.onRequest(
   require("./users/updateUserProfile")
 );
+
+exports.createAddress = functions.https.onRequest(
+  require("./address/createAddress")
+);
+
+exports.createProductType = functions.https.onRequest(
+  require("./product/productType/createProductType")
+);
+
+exports.createProduct = functions.https.onRequest(
+  require("./product/createProduct")
+);
+
+
+// exports.placesAutocomplete = onRequest(
+//   { secrets: [config] },
+//   require("./routes/placesAutocomplete")
+// );
+
+const placesAutocomplete = require("./routes/placesAutocomplete").placesAutocomplete;
+
+exports.placesAutocomplete = onRequest(
+  { secrets: [config] },
+  (req, res) => placesAutocomplete(req, res)
+);
+
+
+
+// exports.placeDetails = onRequest(
+//   { secrets: [config] },
+//   require("./routes/placeDetails")
+// );
+
+const placeDetails = require("./routes/placeDetails");
+
+exports.placeDetails = onRequest(
+  { secrets: [config] },
+  (req, res) => placeDetails(req, res)
+);
+
+
+
 
 // async function verifyFirebaseToken(req, res) {
 //   const authHeader = req.headers.authorization || "";

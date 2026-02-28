@@ -5,6 +5,7 @@ import 'package:collecta/ui/screens/donor_homepage.dart';
 import 'package:collecta/ui/screens/driver_homepage.dart';
 import 'package:collecta/ui/guards/auth_guard.dart';
 import 'package:collecta/ui/screens/edit_profile_donor.dart';
+import 'package:collecta/ui/screens/admin_homepage.dart';
 // import 'package:collecta/ui/screens/edit_profile_driver.dart';
 
 
@@ -15,6 +16,7 @@ class Routes {
   static const donor = '/donor';
   static const driver = '/driver';
   static const donorEditProfile = '/donor/edit-profile';
+  static const admin = '/admin';  
   // static const driverEditProfile = '/driver/edit-profile';
 
 
@@ -26,7 +28,8 @@ class Routes {
     debug: (context) => const DebugFirestoreScreen(),
     donor: (context) => const AuthGuard(child: DonorHomepage()),
     driver: (context) => const AuthGuard(child: DriverHomepage()),
-    donorEditProfile: (context) => const AuthGuard(child: DonorEditProfileScreen()),
+    // donorEditProfile: (context) => const AuthGuard(child: DonorEditProfileScreen()),
+    admin: (context) => const AuthGuard(child: AdminHomepage()),
     // driverEditProfile: (context) => const AuthGuard(child: DriverEditProfileScreen()),
 
   };
