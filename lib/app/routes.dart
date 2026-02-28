@@ -28,7 +28,7 @@ class Routes {
     debug: (context) => const DebugFirestoreScreen(),
     donor: (context) => const AuthGuard(child: DonorHomepage()),
     driver: (context) => const AuthGuard(child: DriverHomepage()),
-    donorEditProfile: (context) => const AuthGuard(child: DonorEditProfileScreen()),
+    // donorEditProfile: (context) => const AuthGuard(child: DonorEditProfileScreen()),
     admin: (context) => const AuthGuard(child: AdminHomepage()),
     // driverEditProfile: (context) => const AuthGuard(child: DriverEditProfileScreen()),
 

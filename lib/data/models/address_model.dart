@@ -1,3 +1,4 @@
+
 class AddressModel {
   final String id;
   final double lat;
@@ -18,5 +19,13 @@ class AddressModel {
       lng: (json['lng'] as num).toDouble(),
       name: json['name'] as String,
     );
+  }
+    Map<String, dynamic> toJson() {
+    return {
+      'id': id,       // חשוב אם ה־API דורש את ה־ID
+      'lat': lat,
+      'lng': lng,
+      'name': name,
+    };
   }
 }

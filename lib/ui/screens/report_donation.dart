@@ -1,55 +1,26 @@
+
 import 'package:flutter/material.dart';
 import '../theme/homepage_theme.dart';
 import '../theme/report_donation_theme.dart';
 import '../../services/donation_service.dart';
+import '../../services/product_service.dart';
+import '../../services/product_type_service.dart';
 import '../../data/models/donation_model.dart';
+import '../../data/models/product_model.dart';
+import '../../data/models/address_model.dart';
+import '../../data/models/productType_model.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import '../../services/address_service.dart';
+import '../../data/models/place_prediction.dart';
+import '../../services/places_service.dart';
+
+
 final String? kGoogleApiKey = dotenv.env['GOOGLE_API_KEY'];
 const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
 
-
-
-Future<List<Map<String, String>>> fetchPlaceSuggestions(String input) async {
-  final String url =
-      'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${Uri.encodeComponent(input)}&key=$kGoogleApiKey&types=address&language=he';
-  
-  final response = await http.get(Uri.parse(url));
-
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body);
-    final List predictions = data['predictions'];
-
-    return predictions.map<Map<String, String>>((p) {
-      return {
-        "description": p['description'],
-        "place_id": p['place_id'],
-      };
-    }).toList();
-  } else {
-    throw Exception('Failed to fetch place suggestions');
-  }
-}
-
-Future<Map<String, double>> getPlaceLatLng(String placeId) async {
-  final String url =
-      'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=geometry&key=$kGoogleApiKey';
-  
-  final response = await http.get(Uri.parse(url));
-  
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body);
-    final location = data['result']['geometry']['location'];
-    return {
-      "lat": location['lat'],
-      "lng": location['lng'],
-    };
-  } else {
-    throw Exception('Failed to fetch place details');
-  }
-}
 
 class ReportDonation extends StatefulWidget {
   const ReportDonation({super.key});
@@ -72,18 +43,18 @@ class _ReportDonationState extends State<ReportDonation> {
   final List<String> selectedProducts = [];
 
   final List<Map<String, dynamic>> products = [
-    {"name": "מאפים", "icon": Icons.bakery_dining},
-    {"name": "עוגות", "icon": Icons.cake_rounded},
-    {"name": "פירות וירקות", "icon": Icons.eco},
-    {"name": "מוצרי חלב", "icon": Icons.local_drink},
-    {"name": "היגיינה", "icon": Icons.soap},
-    {"name": "מוצרי יסוד", "icon": Icons.kitchen},
-    {"name": "אחר", "icon": Icons.category},
+    {"name": "מאפים", "id": dotenv.env['PRODUCT_BAKERY_ID'], "icon": Icons.bakery_dining},
+    {"name": "עוגות", "id": dotenv.env['PRODUCT_CAKE_ID'], "icon": Icons.cake_rounded},
+    {"name": "פירות וירקות", "id": dotenv.env['PRODUCT_FRUITS_ID'], "icon": Icons.eco},
+    {"name": "מוצרי חלב", "id": dotenv.env['PRODUCT_DAIRY_ID'], "icon": Icons.local_drink},
+    {"name": "היגיינה", "id": dotenv.env['PRODUCT_HYGIENE_ID'], "icon": Icons.soap},
+    {"name": "מוצרי יסוד", "id": dotenv.env['PRODUCT_BASIC_ID'], "icon": Icons.kitchen},
+    {"name": "אחר", "id": dotenv.env['PRODUCT_OTHER_ID'], "icon": Icons.category},
   ];
 
   final List<String> timeSlots = ["8:00-10:00", "10:00-12:00", "12:00-14:00"];
 
-  final List<Map<String, String>> donatedItems = [];
+  final List<Map<String, dynamic>> donatedItems = [];
 
   double? selectedLat;
   double? selectedLng;
@@ -99,12 +70,11 @@ class _ReportDonationState extends State<ReportDonation> {
     });
   }
   void _editDonatedItem(int index) {
-  Map<String, String> item = donatedItems[index];
+  Map<String, dynamic> item = donatedItems[index];
   String name = item["name"] ?? "";
   String quantity = item["quantity"] ?? "";
   String unit = item["unit"] ?? "";
 
-  // אם הפריט הוא "אחר" – פותחים את הדיאלוג של "פרט פריט"
   if (name.startsWith("אחר")) {
     final TextEditingController otherController =
         TextEditingController(text: name.replaceFirst("אחר: ", ""));
@@ -143,6 +113,7 @@ class _ReportDonationState extends State<ReportDonation> {
                   if (otherController.text.isNotEmpty) {
                     donatedItems[index] = {
                       "name": "אחר: ${otherController.text}",
+                      "productTypeId": null,
                       "quantity": "",
                       "unit": ""
                     };
@@ -167,7 +138,7 @@ class _ReportDonationState extends State<ReportDonation> {
       },
     );
   } else {
-    // אם זה פריט רגיל – פותחים דיאלוג של כמות
+
     int currentQuantity = int.tryParse(quantity) ?? 1;
     showDialog(
       context: context,
@@ -236,21 +207,27 @@ class _ReportDonationState extends State<ReportDonation> {
 }
 
 
-  void toggleProduct(String name) {
-    if (selectedProducts.contains(name)) {
-      selectedProducts.remove(name);
-    } else {
-      selectedProducts.add(name);
-      if (name == "אחר") {
-        _showOtherDialog();
-      } else {
-        _showQuantityDialog(name);
-      }
-    }
-    setState(() {});
-  }
+  void toggleProduct(Map<String, dynamic> product) {
+  final name = product["name"];
+  final id = product["id"];
 
-  void _showQuantityDialog(String productName) {
+  if (selectedProducts.contains(name)) {
+    selectedProducts.remove(name);
+  } else {
+    selectedProducts.add(name);
+
+    if (name == "אחר") {
+      _showOtherDialog();
+    } else {
+      _showQuantityDialog(name, id); 
+    }
+  }
+  setState(() {});
+}
+
+
+  void _showQuantityDialog(String productName, String productId) {
+
     int quantity = 1;
 
     showDialog(
@@ -295,6 +272,7 @@ class _ReportDonationState extends State<ReportDonation> {
                 onPressed: () {
                   donatedItems.add({
                     "name": productName,
+                    "productTypeId": productId,
                     "quantity": quantity.toString(),
                     "unit": "קג/יחידות"
                   });
@@ -323,78 +301,124 @@ class _ReportDonationState extends State<ReportDonation> {
   }
 
   void _showOtherDialog() {
-    final TextEditingController otherController = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
-          title: Text(
-            "פרט פריט לתרומה",
-            style: TextStyle(
-                color: HomepageTheme.latetBlue, fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center,
-          ),
-          content: TextFormField(
-            controller: otherController,
-            maxLines: 3,
-            decoration: InputDecoration(
-              hintText: "תיאור הפריט",
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                    color: HomepageTheme.latetBlue.withAlpha((255 * 1.0).toInt()),
+  final TextEditingController otherController = TextEditingController();
+  int quantity = 1;
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(22)),
+        title: Text(
+          "פרט פריט לתרומה",
+          style: TextStyle(
+              color: HomepageTheme.latetBlue,
+              fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+        ),
+        content: StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+
+                // 🔢 כמות
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        if (quantity > 1) {
+                          setStateDialog(() => quantity--);
+                        }
+                      },
+                      icon: const Icon(Icons.remove),
+                    ),
+                    Text(
+                      quantity.toString(),
+                      style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        setStateDialog(() => quantity++);
+                      },
+                      icon: const Icon(Icons.add),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+
+                // 📝 תיאור
+                TextFormField(
+                  controller: otherController,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    hintText: "תיאור הפריט",
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                          color: HomepageTheme.latetBlue,
+                          width: 1.5),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                          color: HomepageTheme.latetBlue,
+                          width: 2),
+                    ),
+                  ),
+                  textAlign: TextAlign.right,
+                ),
+              ],
+            );
+          },
+        ),
+        actions: [
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                if (otherController.text.isNotEmpty) {
+                  donatedItems.add({
+                    "name": "אחר: ${otherController.text}",
+                    "productTypeId": null,
+                    "quantity": quantity.toString(),
+                    "unit": "קג/יחידות"
+                  });
+                }
+                Navigator.pop(context);
+                setState(() {});
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                side: BorderSide(
+                    color: HomepageTheme.latetBlue,
                     width: 1.5),
+                elevation: 3,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
               ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                    color: HomepageTheme.latetBlue.withAlpha((255 * 1.0).toInt()),
-                    width: 2),
+              child: Text(
+                "אשר",
+                style: TextStyle(
+                    color: HomepageTheme.latetBlue,
+                    fontWeight: FontWeight.bold),
               ),
             ),
-            textAlign: TextAlign.right,
           ),
-          actions: [
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  if (otherController.text.isNotEmpty) {
-                    donatedItems.add({
-                      "name": "אחר: ${otherController.text}",
-                      "quantity": "",
-                      "unit": ""
-                    });
-                  }
-                  Navigator.pop(context);
-                  setState(() {});
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  side: BorderSide(color: HomepageTheme.latetBlue, width: 1.5),
-                  elevation: 3,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
-                child: Text(
-                  "אשר",
-                  style: TextStyle(
-                      color: HomepageTheme.latetBlue,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
+        ],
+      );
+    },
+  );
+}
+
 
   bool _validateBeforeSubmit() {
-  // 1️⃣ בדיקת שדות טופס רגילים
   final isFormValid = _formKey.currentState!.validate();
 
   if (!isFormValid) {
@@ -472,57 +496,108 @@ String? _validateBusinessId(String? value) {
 }
 
 
-
-
-//   void submit() {
-//   if (_validateBeforeSubmit()) {
-//     print("Items: $donatedItems");
-
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(content: Text("💙התרומה נשלחה בהצלחה")),
-//     );
-
-//     // כאן בהמשך תוכלי גם לנקות טופס אם תרצי
-//   }
-// }
+  
 
 
 void submit() async {
   if (!_validateBeforeSubmit()) return;
 
   try {
-    final service = DonationService();
+    print("🟢 starting address creation...");
 
-    final donation = DonationModel(
-      businessName: businessName.text,
-      businessAddress: address.text,
-      lat: selectedLat!,   
-      lng: selectedLng!,
-      businessPhone: businessPhone.text,
-      businessId: businessId.text,
-      contactName: contactName.text,
-      contactPhone: contactPhone.text,
-      products: donatedItems,
-      pickupTimes: selectedTimeSlots,
-      organizationId: kOrganizationId,
-      driverId: "",
-      cancelingReason: "",
-      recipe: "",
+    final addressService = AddressService();
+    final addressId = await addressService.createAddress(
+      name: businessName.text,
+      lat: selectedLat ?? 30,  
+      lng: selectedLng ?? 30,
     );
 
-    await service.reportDonation(donation);
+    print("✅ addressId: $addressId");
+
+
+    final productService = ProductService();
+    List<String> productIds = [];
+
+
+    for (var item in donatedItems) {
+    String productTypeId;
+
+    if (item["productTypeId"] == null) {
+  final productTypeService = ProductTypeService();
+
+  final fullName = item["name"]?.toString() ?? "";
+  final description = fullName.replaceFirst("אחר: ", "");
+
+  productTypeId = await productTypeService.createProductType(
+    name: "אחר",
+    description: description,
+  );
+  } else {
+    productTypeId = item["productTypeId"]!;
+  }
+
+  final qty = int.tryParse(item["quantity"].toString()) ?? 1;
+
+  final id = await productService.createProduct(
+    productTypeId: productTypeId,
+    quantity: qty,
+  );
+
+  productIds.add(id);
+}
+
+
+    final pickupTimes = selectedTimeSlots.map((slot) {
+      final parts = slot.split('-');
+      return {"from": parts[0], "to": parts[1]};
+    }).toList();
+
+    print("⏰ pickupTimes: $pickupTimes");
+
+    final body = {
+      "businessName": businessName.text,
+      "businessPhone": businessPhone.text,
+      "contactName": contactName.text,
+      "contactPhone": contactPhone.text,
+      "businessId": businessId.text,
+
+
+      "businessAddress": addressId,
+      "organization_id": kOrganizationId,
+      "products": productIds,
+      "pickupTimes": pickupTimes,
+      "driver_id": "",
+      "canceling_reason": "",
+      "recipe": "",
+    };
+
+    print("📤 body to send: $body");
+
+    final donationService = DonationService();
+    final response = await donationService.reportDonationRaw(body);
+
+    print("✅ response from server: $response");
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("💙 התרומה נשלחה בהצלחה")),
     );
 
-  } catch (e) {
+    setState(() {
+      donatedItems.clear();
+      selectedTimeSlots.clear();
+
+      
+    });
+
+    print("🧹 state cleared");
+  } catch (e, stack) {
+    print("❌ error: $e");
+    print("📌 stack trace: $stack");
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("שגיאה: $e")),
+      SnackBar(content: Text("Error: $e")),
     );
   }
 }
-
 
 
 
@@ -628,7 +703,7 @@ void submit() async {
                                     return Flexible(
                                       fit: FlexFit.tight,
                                       child: GestureDetector(
-                                        onTap: () => toggleProduct(product["name"]),
+                                        onTap: () => toggleProduct(product),
                                         child: Column(
                                           children: [
                                             AnimatedContainer(
@@ -671,7 +746,7 @@ void submit() async {
                                     return Flexible(
                                       fit: FlexFit.tight,
                                       child: GestureDetector(
-                                        onTap: () => toggleProduct(product["name"]),
+                                        onTap: () => toggleProduct(product),
                                         child: Column(
                                           children: [
                                             AnimatedContainer(
@@ -713,13 +788,13 @@ void submit() async {
                         ),
                       ),
                       const SizedBox(height: 30),
-                      // רשימת הפריטים שהוספו – ריבוע נפרד
+
                       if (donatedItems.isNotEmpty)
   Container(
     margin: const EdgeInsets.only(bottom: 25),
     padding: const EdgeInsets.all(16),
     decoration: BoxDecoration(
-      color: Colors.white, // רקע לבן
+      color: Colors.white, 
       borderRadius: BorderRadius.circular(22),
       boxShadow: [
         BoxShadow(
@@ -730,11 +805,11 @@ void submit() async {
       ],
     ),
     child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch, // מרחיב לשטח הקונטיינר
+      crossAxisAlignment: CrossAxisAlignment.stretch, 
       children: [
         Text(
           "פריטים שנוספו",
-          textAlign: TextAlign.right, // יישור לימין
+          textAlign: TextAlign.right, 
           style: ReportDonationTheme.labelStyle.copyWith(
             fontWeight: FontWeight.bold,
             color: HomepageTheme.latetBlue,
@@ -745,7 +820,7 @@ void submit() async {
         Column(
           children: donatedItems.asMap().entries.map((entry) {
             int index = entry.key;
-            Map<String, String> item = entry.value;
+            Map<String, dynamic> item = entry.value;
             return Container(
               margin: const EdgeInsets.symmetric(vertical: 6),
               padding: const EdgeInsets.all(12),
@@ -760,7 +835,7 @@ void submit() async {
                 ],
               ),
               child: Row(
-                textDirection: TextDirection.rtl, // יישור מימין לשמאל
+                textDirection: TextDirection.rtl, 
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // שם פריט, כמות ויחידות
@@ -881,25 +956,28 @@ void submit() async {
     padding: const EdgeInsets.only(bottom: 15),
     child: Directionality(
       textDirection: TextDirection.rtl,
-      child: Autocomplete<Map<String, String>>(
-        optionsBuilder: (TextEditingValue textEditingValue) async {
-          if (textEditingValue.text.isEmpty) return const Iterable<Map<String, String>>.empty();
-          return await fetchPlaceSuggestions(textEditingValue.text);
-        },
-        displayStringForOption: (option) => option["description"]!,
-        onSelected: (selection) async {
-          address.text = selection["description"]!;
-          
-          // קבלת lat/lng
-          final coords = await getPlaceLatLng(selection["place_id"]!);
-          print("Selected coordinates: ${coords['lat']}, ${coords['lng']}");
+      child: Autocomplete<PlacePrediction>(
+        optionsBuilder: (TextEditingValue value) async {
+          if (value.text.isEmpty) return const [];
 
-          // כאן אפשר לשמור במשתנה של ה-State כדי לשלוח בפרטי התרומה
+          final service = PlacesService();
+          return await service.autocomplete(value.text);
+        },
+
+        displayStringForOption: (option) => option.description,
+
+        onSelected: (selection) async {
+          address.text = selection.description;
+
+          final service = PlacesService();
+          final coords = await service.getPlaceDetails(selection.placeId);
+          print("coords: ${coords.lat}, ${coords.lng}");
           setState(() {
-            selectedLat = coords['lat'];
-            selectedLng = coords['lng'];
+            selectedLat = coords.lat;
+            selectedLng = coords.lng;
           });
         },
+
         fieldViewBuilder: (context, controller, focusNode, onEditingComplete) {
           return TextFormField(
             controller: controller,
@@ -915,6 +993,7 @@ void submit() async {
     ),
   );
 }
+
 
 
   

@@ -13,8 +13,6 @@ module.exports = async (req, res) => {
       const {
         businessName,
         businessAddress,
-        lat,
-        lng,
         businessPhone,
         businessId,
         contactName,
@@ -30,8 +28,6 @@ module.exports = async (req, res) => {
       if (
         !businessName ||
         !businessAddress ||
-        !lat ||
-        !lng ||
         !businessPhone ||
         !contactName ||
         !contactPhone ||
@@ -46,8 +42,6 @@ module.exports = async (req, res) => {
         donor_id: firebaseUser.uid,
         businessName,
         businessAddress,
-        lat,
-        lng,
         businessPhone,
         businessId,
         contactName,
@@ -58,7 +52,7 @@ module.exports = async (req, res) => {
         canceling_reason,
         recipe,
         organization_id,
-        status: "PENDING",
+        status: "pending",
         created_at: admin.firestore.FieldValue.serverTimestamp(),
       };
 

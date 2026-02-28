@@ -36,12 +36,13 @@
 
 //   Future _loadProfile() async {
 //     final data = await userService.fetchMyProfile("donor");
-//     final donor = DonorProfile.fromApi(data);
+// //     final donor = DonorProfile.fromApi(data);
     
 //     nameCtrl.text = donor.user.name;
 //     businessNameCtrl.text = donor.businessName;
 //     businessPhoneCtrl.text = donor.businessPhone;
-//     businessAddressCtrl.text = donor.businessAddressId;
+//     // businessAddressCtrl.text = donor.businessAddressId;
+//     businessAddressCtrl.text = donor.businessAddress.name;
 //     contactNameCtrl.text = donor.contactName;
 //     contactPhoneCtrl.text = donor.contactPhone;
 //     crnCtrl.text = donor.crn;

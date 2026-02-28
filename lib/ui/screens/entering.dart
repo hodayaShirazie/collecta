@@ -258,14 +258,12 @@ class _EnteringScreenState extends State<EnteringScreen> {
   final UserService _userService = UserService();
   String? _userToken;
 
-  // ✅ חדש – Future שנשמר פעם אחת
   late Future _orgFuture;
 
   @override
   void initState() {
     super.initState();
 
-    // ✅ נוצר פעם אחת בלבד
     _orgFuture =
         OrganizationService().fetchOrganization(kOrganizationId);
   }
