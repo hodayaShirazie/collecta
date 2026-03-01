@@ -170,7 +170,6 @@ class DonorHomepage extends StatelessWidget {
             snapshot.data![1] as Map<String, dynamic>,
           );
 
-          // return Container(
           return LayoutWrapper(
             child: Container(
             decoration: BoxDecoration(gradient: HomepageTheme.pageGradient),
