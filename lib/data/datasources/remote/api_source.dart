@@ -312,6 +312,29 @@ Future<List<dynamic>> getMyDonations() async {
 }
 
 
+Future<List<Map<String, dynamic>>> getDonationsByOrganization(
+    String organizationId) async {
+
+  final headers = await AuthHeaders.build();
+
+  final response = await http.get(
+    Uri.parse(
+        '${ApiConfig.baseUrl}/getAllDonationsByOrganization?organizationId=$organizationId'),
+    headers: headers,
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception(response.body);
+  }
+
+  return List<Map<String, dynamic>>.from(
+    json.decode(response.body),
+  );
+}
+
+
+
+
 
 
 }

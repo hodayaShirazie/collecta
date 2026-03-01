@@ -16,5 +16,12 @@ class DonationService {
     return _repo.getMyDonations();
   }
 
+  Future<List<DonationModel>> getDonationsByOrganization(
+    String organizationId) {
+
+    return _repo.getDonationsByOrganization(organizationId);
+  }
+
+
 
 }

@@ -13,12 +13,23 @@ class DonationRepository {
   }
 
   Future<List<DonationModel>> getMyDonations() async {
-  final data = await _source.getMyDonations();
+    final data = await _source.getMyDonations();
 
-  return data
-      .map<DonationModel>((json) => DonationModel.fromApi(json))
-      .toList();
-}
+    return data
+        .map<DonationModel>((json) => DonationModel.fromApi(json))
+        .toList();
+  }
+
+  Future<List<DonationModel>> getDonationsByOrganization(
+    String organizationId) async {
+
+    final data = await _source.getDonationsByOrganization(organizationId);
+
+    return data
+        .map<DonationModel>((json) => DonationModel.fromApi(json))
+        .toList();
+  }
+
 
 
 }
