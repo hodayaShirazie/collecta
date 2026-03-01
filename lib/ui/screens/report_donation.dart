@@ -16,6 +16,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../services/address_service.dart';
 import '../../data/models/place_prediction.dart';
 import '../../services/places_service.dart';
+import '../widgets/layout_wrapper.dart';
+
 
 
 final String? kGoogleApiKey = dotenv.env['GOOGLE_API_KEY'];
@@ -604,8 +606,12 @@ void submit() async {
 
   @override
   Widget build(BuildContext context) {
+    // return Scaffold(
+    //   body: Container(
     return Scaffold(
-      body: Container(
+    body: LayoutWrapper(
+      child: Container(
+
         decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
         child: SafeArea(
           child: SingleChildScrollView(
@@ -903,9 +909,9 @@ void submit() async {
           ),
         ),
       ),
-    );
-  }
-
+    ),
+  );
+}
   Widget buildCard({required Widget child}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 25),
