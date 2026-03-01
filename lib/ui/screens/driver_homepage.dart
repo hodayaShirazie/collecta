@@ -7,6 +7,7 @@ import '../theme/homepage_theme.dart';
 import '../widgets/homepage_button.dart';
 import '../widgets/sign_out.dart';
 import 'package:collecta/app/routes.dart';
+import '../widgets/layout_wrapper.dart';
 
 
 class DriverHomepage extends StatelessWidget {
@@ -41,7 +42,9 @@ class DriverHomepage extends StatelessWidget {
             snapshot.data![1] as Map<String, dynamic>,
           );
 
-          return Container(
+          // return Container(
+          return LayoutWrapper(
+            child: Container(
             decoration: BoxDecoration(gradient: HomepageTheme.pageGradient),
             child: SafeArea(
               child: Stack(
@@ -117,10 +120,11 @@ class DriverHomepage extends StatelessWidget {
                           height: HomepageTheme.deptLogoHeight,
                         ),
                         const SizedBox(height: 20),
-                      ],
+                     ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );

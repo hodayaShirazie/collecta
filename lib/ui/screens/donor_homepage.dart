@@ -123,6 +123,8 @@
 
 
 // import 'package:collecta/ui/screens/edit_profile_donor.dart';
+
+
 import 'package:collecta/ui/screens/report_donation.dart';
 import 'package:collecta/ui/screens/my_donations.dart';
 import 'package:flutter/material.dart';
@@ -133,6 +135,7 @@ import '../../data/models/donor_model.dart';
 import '../theme/homepage_theme.dart';
 import '../widgets/homepage_button.dart';
 import '../widgets/sign_out.dart';
+import '../widgets/layout_wrapper.dart';
 import 'package:collecta/app/routes.dart';
 
 class DonorHomepage extends StatelessWidget {
@@ -167,7 +170,8 @@ class DonorHomepage extends StatelessWidget {
             snapshot.data![1] as Map<String, dynamic>,
           );
 
-          return Container(
+          return LayoutWrapper(
+            child: Container(
             decoration: BoxDecoration(gradient: HomepageTheme.pageGradient),
             child: SafeArea(
               child: Stack(
@@ -289,6 +293,7 @@ class DonorHomepage extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
             ),
           );
         },
