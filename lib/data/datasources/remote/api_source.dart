@@ -296,4 +296,22 @@ Future<Map<String, dynamic>> placeDetails(String placeId) async {
 
 
 
+Future<List<dynamic>> getMyDonations() async {
+  final headers = await AuthHeaders.build();
+
+  final response = await http.get(
+    Uri.parse('${ApiConfig.baseUrl}/getMyDonations'),
+    headers: headers,
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception(response.body);
+  }
+
+  return json.decode(response.body);
+}
+
+
+
+
 }

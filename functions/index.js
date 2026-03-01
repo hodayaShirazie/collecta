@@ -87,11 +87,6 @@ exports.createProduct = functions.https.onRequest(
 );
 
 
-// exports.placesAutocomplete = onRequest(
-//   { secrets: [config] },
-//   require("./routes/placesAutocomplete")
-// );
-
 const placesAutocomplete = require("./routes/placesAutocomplete").placesAutocomplete;
 
 exports.placesAutocomplete = onRequest(
@@ -100,18 +95,17 @@ exports.placesAutocomplete = onRequest(
 );
 
 
-
-// exports.placeDetails = onRequest(
-//   { secrets: [config] },
-//   require("./routes/placeDetails")
-// );
-
 const placeDetails = require("./routes/placeDetails");
+const e = require("cors");
 
 exports.placeDetails = onRequest(
   { secrets: [config] },
   (req, res) => placeDetails(req, res)
 );
+
+exports.getMyDonations = onRequest(
+  require("./donations/getMyDonations")
+);  
 
 
 
