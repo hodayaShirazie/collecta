@@ -9,7 +9,16 @@ class DonationRepository {
   // }
 
   Future<String> reportDonationRaw(Map<String, dynamic> body) {
-  return _source.reportDonationRaw(body);
+    return _source.reportDonationRaw(body);
+  }
+
+  Future<List<DonationModel>> getMyDonations() async {
+  final data = await _source.getMyDonations();
+
+  return data
+      .map<DonationModel>((json) => DonationModel.fromApi(json))
+      .toList();
 }
+
 
 }

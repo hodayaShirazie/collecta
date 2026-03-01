@@ -9,7 +9,12 @@ class DonationService {
   // }
 
   Future<String> reportDonationRaw(Map<String, dynamic> body) {
-  return _repo.reportDonationRaw(body);
-}
+    return _repo.reportDonationRaw(body);
+  }
+
+  Future<List<DonationModel>> getMyDonations() {
+    return _repo.getMyDonations();
+  }
+
 
 }
