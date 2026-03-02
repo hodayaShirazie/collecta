@@ -31,7 +31,6 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
 
   Future<void> _loadDonations() async {
     try {
-      // final result = await _service.getAllDonations();
         final result = await _service.getDonationsByOrganization(organizationId); // 🔍 For testing, we can use the same endpoint since it returns all donations for admins
       setState(() {
         donations = result;

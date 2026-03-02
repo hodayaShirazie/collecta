@@ -111,6 +111,12 @@ exports.getAllDonationsByOrganization = functions.https.onRequest(
   require("./donations/getAllDonationByOrganization")
 );
 
+exports.getDriversByOrganization = functions.https.onRequest(
+  require("./drivers/getDriversByOrganization")
+);
+
+
+
 
 
 
