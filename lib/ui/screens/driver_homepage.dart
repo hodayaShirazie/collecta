@@ -146,6 +146,9 @@ import '../widgets/sign_out.dart';
 import '../widgets/layout_wrapper.dart';
 import '../../services/user_service.dart';
 
+const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
+
+
 class DriverHomepage extends StatelessWidget {
   final DriverProfile? driver;
 
@@ -227,7 +230,7 @@ Widget build(BuildContext context) {
   return Scaffold(
     body: FutureBuilder<List<dynamic>>(
       future: Future.wait([
-        orgService.fetchOrganization('xFKMWqidL2uZ5wnksdYX'),
+        orgService.fetchOrganization(kOrganizationId),
         userService.fetchMyProfile("driver"),
       ]),
       builder: (context, snapshot) {
