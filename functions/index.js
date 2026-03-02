@@ -116,6 +116,29 @@ exports.getDriversByOrganization = functions.https.onRequest(
 );
 
 
+exports.getDonationsCount = functions.https.onRequest(
+  require("./donations/stats/getDonationsCount")
+);
+
+exports.getDonationsPendingCount = functions.https.onRequest(
+  require("./donations/stats/getDonationsPendingCount")
+);
+
+exports.getDonationsCountByMonth = functions.https.onRequest(
+  require("./donations/stats/getDonationsCountByMonth")
+);
+
+exports.getDonationsCanceledCount = functions.https.onRequest(
+  require("./donations/stats/getDonationsCanceledCount")
+);  
+
+
+exports.getDonationsConfirmedCount = functions.https.onRequest(
+  require("./donations/stats/getDonationsConfirmedCount")
+);
+
+
+
 
 
 

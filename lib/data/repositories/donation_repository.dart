@@ -31,5 +31,40 @@ class DonationRepository {
   }
 
 
+  Future<int> getDonationsCountByMonth({
+    required String organizationId,
+    required int monthOffset,
+  }) {
+    return _source.getDonationsCountByMonth(
+      organizationId: organizationId,
+      monthOffset: monthOffset,
+    );
+  }
+
+  Future<int> getDonationsPendingCount(String organizationId) {
+    return _source.getDonationsPendingCount(organizationId);
+  }
+
+
+  Future<int> getDonationsCount(String organizationId) {
+    return _source.getDonationsCount(organizationId);
+  }
+
+
+  Future<int> getDonationsCanceledCount(String organizationId) {
+    return _source.getDonationsCanceledCount(organizationId);
+  }
+
+
+  Future<int> getDonationsConfirmedCount(String organizationId) {
+    return _source.getDonationsConfirmedCount(organizationId);
+  }
+
+  
+
+
+
+
+
 
 }

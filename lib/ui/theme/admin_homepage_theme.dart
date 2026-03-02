@@ -52,7 +52,7 @@ class AdminHomepageTheme {
     fontFamily: 'Assistant',
   );
 
-  // Button decoration (כמו הנהג)
+
   static BoxDecoration buttonDecoration = BoxDecoration(
     color: Colors.white,
     borderRadius: BorderRadius.circular(40),

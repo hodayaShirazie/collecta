@@ -5,21 +5,86 @@ import '../widgets/homepage_button.dart';
 import '../widgets/layout_wrapper.dart';
 import 'all_donation_admin.dart';
 import 'all_driver_admin.dart';
-
+import '../../services/donation_service.dart';
 
 const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
 
-class AdminHomepage extends StatelessWidget {
+class AdminHomepage extends StatefulWidget {
   const AdminHomepage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // ===== FAKE DATA =====
-    const String adminName = "רוני";
-    const int totalDonations = 3050;
-    const int waitingApproval = 14;
-    const int growth = 52;
+  State<AdminHomepage> createState() => _AdminHomepageState();
+}
 
+class _AdminHomepageState extends State<AdminHomepage> {
+  final DonationService _donationService = DonationService();
+
+  int confirmed = 0;
+  int pending = 0;
+  int canceled = 0;
+  int growth = 0;
+  bool loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStats();
+  }
+
+
+  Future<void> _loadStats() async {
+    try {
+      // 1) total donations
+      final confirmedCount =
+          await _donationService.getDonationsConfirmedCount(kOrganizationId);
+
+      // 2) pending
+      final pendingCount =
+          await _donationService.getDonationsPendingCount(kOrganizationId);
+
+      // 3) canceled
+      final canceledCount =
+          await _donationService.getDonationsCanceledCount(kOrganizationId);
+
+      // 4) growth calculation 
+      final currentMonthTotal =
+          await _donationService.getDonationsCountByMonth(
+            organizationId: kOrganizationId,
+            monthOffset: 0,
+          );
+
+      final lastMonthTotal =
+          await _donationService.getDonationsCountByMonth(
+            organizationId: kOrganizationId,
+            monthOffset: 1,
+          );
+
+      double growthCalc;
+      if (lastMonthTotal == 0 && currentMonthTotal == 0) {
+        growthCalc = 0;
+      } else if (lastMonthTotal == 0) {
+        growthCalc = 100;
+      } else {
+        growthCalc = ((currentMonthTotal - lastMonthTotal) / lastMonthTotal) * 100;
+      }
+
+      setState(() {
+        confirmed = confirmedCount;
+        pending = pendingCount;
+        canceled = canceledCount;
+        growth = growthCalc.round();
+        loading = false;
+      });
+    } catch (e) {
+      setState(() {
+        loading = false;
+      });
+    }
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: LayoutWrapper(
         child: Container(
@@ -28,7 +93,6 @@ class AdminHomepage extends StatelessWidget {
           ),
           child: Stack(
             children: [
-              // decorative circle
               Positioned(
                 top: -120,
                 right: -80,
@@ -39,117 +103,98 @@ class AdminHomepage extends StatelessWidget {
                 ),
               ),
 
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25),
-                child: Column(
-                  children: [
-                    const SizedBox(height: HomepageTheme.topPadding),
+              if (loading)
+                const Center(child: CircularProgressIndicator())
+              else
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: HomepageTheme.topPadding),
+                      const SizedBox(height: 30),
 
-                    const SizedBox(height: 40),
-
-                    // ===== WELCOME =====
-                    Text(
-                      'היי, $adminName',
-                      style: HomepageTheme.welcomeTextStyle,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '!שמחים לראות אותך שוב',
-                      style: HomepageTheme.subtitleTextStyle.copyWith(
-                        color: HomepageTheme.latetBlue.withOpacity(0.7),
+                      Text(
+                        'מרכז ניהול',
+                        style: HomepageTheme.welcomeTextStyle,
                       ),
-                    ),
-
-                    const SizedBox(height: 40),
-
-                    // ===== BUTTONS =====
-                    HomepageButton(
-                      title: 'הנהגים שלי',
-                      flipIcon: true,
-                      icon: Icons.local_shipping_outlined,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AllDriverAdmin(organizationId: kOrganizationId),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: HomepageTheme.betweenButtons),
-                    HomepageButton(
-                      title: 'צפייה בתרומות',
-                      flipIcon: true,
-                      icon: Icons.list_alt_outlined,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const AllDonationsAdmin(),
-                          ),
-                        );
-                      },
-                    ),
-
-                    const SizedBox(height: 35),
-
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _StatItem(
-                          title: "אחוז גדילה",
-                          value: "+$growth%",
-                        ),
-                        _StatItem(
-                          title: "ממתינות לאישור",
-                          value: waitingApproval.toString(),
-                        ),
-                        _StatItem(
-                          title: "תרומות שהתקבלו",
-                          value: totalDonations.toString(),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 25),
-
-                    // ===== PIE CHART =====
-                    SizedBox(
-                      height: 170,
-                      child: PieChart(
-                        PieChartData(
-                          sections: [
-                            PieChartSectionData(
-                              value: 40,
-                              color: Colors.red,
-                              title: "40%",
-                            ),
-                            PieChartSectionData(
-                              value: 25,
-                              color: Colors.orange,
-                              title: "25%",
-                            ),
-                            PieChartSectionData(
-                              value: 20,
-                              color: Colors.green,
-                              title: "20%",
-                            ),
-                            PieChartSectionData(
-                              value: 15,
-                              color: Colors.blue,
-                              title: "15%",
-                            ),
-                          ],
+                      const SizedBox(height: 8),
+                      Text(
+                        'ברוכים הבאים למערכת הניהול',
+                        style: HomepageTheme.subtitleTextStyle.copyWith(
+                          color: Colors.black54,
                         ),
                       ),
-                    ),
 
-                    const Spacer(),
+                      const SizedBox(height: 45),
 
-                  ],
+                      HomepageButton(
+                        title: 'הנהגים שלי',
+                        flipIcon: true,
+                        icon: Icons.local_shipping_outlined,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  AllDriverAdmin(organizationId: kOrganizationId),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: HomepageTheme.betweenButtons + 20),
+
+                      HomepageButton(
+                        title: 'צפייה בתרומות',
+                        flipIcon: true,
+                        icon: Icons.list_alt_outlined,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const AllDonationsAdmin(),
+                            ),
+                          );
+                        },
+                      ),
+
+                      const SizedBox(height: 60),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _StatItem(
+                            title: "התקבלו",
+                            // סך הכל = מאושרות + ממתינות + בוטלו
+                            value: (confirmed + pending + canceled).toString(),
+                          ),
+                          _StatItem(
+                            title: "ממתינות",
+                            value: pending.toString(),
+                          ),
+                          _StatItem(
+                            title: "בוטלו",
+                            value: canceled.toString(),
+                          ),
+                          _StatItem(
+                            title: "אחוז גדילה",
+                            value: "$growth%",
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 60),
+
+                      _DonutChart(
+                        confirmed: confirmed.toDouble(),
+                        pending: pending.toDouble(),
+                        canceled: canceled.toDouble(),
+                      ),
+
+                      const SizedBox(height: 20),
+                      // לא צריך Spacer – LayoutWrapper מאפשר גלילה
+                    ],
+                  ),
                 ),
-              ),
             ],
           ),
         ),
@@ -158,6 +203,7 @@ class AdminHomepage extends StatelessWidget {
   }
 }
 
+// ===== STAT ITEM =====
 class _StatItem extends StatelessWidget {
   final String title;
   final String value;
@@ -175,12 +221,159 @@ class _StatItem extends StatelessWidget {
           value,
           style: HomepageTheme.coinsTextStyle,
         ),
-        const SizedBox(height: 5),
+        const SizedBox(height: 6),
         Text(
           title,
           style: HomepageTheme.subtitleTextStyle.copyWith(
             fontSize: 14,
-            color: Colors.orange,
+            color: Colors.black54,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+
+class _DonutChart extends StatefulWidget {
+  final double confirmed;
+  final double pending;
+  final double canceled;
+
+  const _DonutChart({
+    required this.confirmed,
+    required this.pending,
+    required this.canceled,
+  });
+
+  @override
+  State<_DonutChart> createState() => _DonutChartState();
+}
+
+class _DonutChartState extends State<_DonutChart> {
+  int? touchedIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    final total = widget.confirmed + widget.pending + widget.canceled;
+
+    final confirmedPercent = total == 0 ? 0 : (widget.confirmed / total) * 100;
+    final pendingPercent = total == 0 ? 0 : (widget.pending / total) * 100;
+    final canceledPercent = total == 0 ? 0 : (widget.canceled / total) * 100;
+
+    final values = [
+      widget.confirmed,
+      widget.pending,
+      widget.canceled,
+    ];
+
+    final labels = [
+      "אושרו",
+      "ממתינות",
+      "בוטלו",
+    ];
+
+    final colors = [
+      HomepageTheme.latetBlue.withOpacity(0.85),
+      HomepageTheme.latetYellow.withOpacity(0.9),
+      const Color.fromARGB(255, 160, 183, 233),
+    ];
+
+    return SizedBox(
+      height: 210,
+      child: Column(
+        children: [
+          Expanded(
+            child: PieChart(
+              PieChartData(
+                sectionsSpace: 2,
+                centerSpaceRadius: 45,
+                pieTouchData: PieTouchData(
+                  touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                    setState(() {
+                      if (!event.isInterestedForInteractions ||
+                          pieTouchResponse == null ||
+                          pieTouchResponse.touchedSection == null) {
+                        touchedIndex = null;
+                        return;
+                      }
+                      touchedIndex =
+                          pieTouchResponse.touchedSection!.touchedSectionIndex;
+                    });
+                  },
+                ),
+                sections: List.generate(3, (i) {
+                  final isTouched = i == touchedIndex;
+                  final double value = values[i];
+                  final double percent =
+                      total == 0 ? 0 : (value / total) * 100;
+
+                  return PieChartSectionData(
+                    value: value,
+                    color: colors[i],
+                    title: isTouched
+                        ? value.toStringAsFixed(0)
+                        : "${percent.round()}%",
+                    radius: isTouched ? 45 : 40,
+                    titleStyle: TextStyle(
+                      fontSize: isTouched ? 15 : 13,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 16,
+            children: List.generate(3, (i) {
+              return _LegendItem(
+                color: colors[i],
+                label: labels[i],
+              );
+            }),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+// ===== LEGEND ITEM =====
+class _LegendItem extends StatelessWidget {
+  final Color color;
+  final String label;
+
+  const _LegendItem({
+    required this.color,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 13,
+            color: Colors.black87,
           ),
         ),
       ],

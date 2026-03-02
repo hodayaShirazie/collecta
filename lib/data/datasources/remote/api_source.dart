@@ -363,6 +363,97 @@ Future<List<Map<String, dynamic>>> getDonationsByOrganization(
 
 
 
+Future<int> getDonationsCount(String organizationId) async {
+  final headers = await AuthHeaders.build();
+
+  final response = await http.get(
+    Uri.parse(
+        '${ApiConfig.baseUrl}/getDonationsCount?organizationId=$organizationId'),
+    headers: headers,
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception(json.decode(response.body)['error'] ?? 'error');
+  }
+
+  final data = json.decode(response.body);
+  return data['count'];
+}
+
+Future<int> getDonationsPendingCount(String organizationId) async {
+  final headers = await AuthHeaders.build();
+
+  final response = await http.get(
+    Uri.parse(
+        '${ApiConfig.baseUrl}/getDonationsPendingCount?organizationId=$organizationId'),
+    headers: headers,
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception(json.decode(response.body)['error'] ?? 'error');
+  }
+
+  final data = json.decode(response.body);
+  return data['count'];
+}
+
+Future<int> getDonationsCountByMonth({
+  required String organizationId,
+  required int monthOffset,
+}) async {
+  final headers = await AuthHeaders.build();
+
+  final response = await http.get(
+    Uri.parse(
+        '${ApiConfig.baseUrl}/getDonationsCountByMonth?organizationId=$organizationId&monthOffset=$monthOffset'),
+    headers: headers,
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception(json.decode(response.body)['error'] ?? 'error');
+  }
+
+  final data = json.decode(response.body);
+  return data['count'];
+}
+
+
+
+
+Future<int> getDonationsCanceledCount(String organizationId) async {
+  final headers = await AuthHeaders.build();
+
+  final response = await http.get(
+    Uri.parse(
+      '${ApiConfig.baseUrl}/getDonationsCanceledCount?organizationId=$organizationId',
+    ),
+    headers: headers,
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception(json.decode(response.body)['error'] ?? 'error');
+  }
+
+  final data = json.decode(response.body);
+  return data['count'];
+}
+
+
+Future<int> getDonationsConfirmedCount(String organizationId) async {
+  final headers = await AuthHeaders.build();
+
+  final res = await http.get(
+    Uri.parse("${ApiConfig.baseUrl}/getDonationsConfirmedCount?organizationId=$organizationId"),
+    headers: headers,
+  );
+
+  if (res.statusCode != 200) {
+    throw Exception(res.body);
+  }
+
+  return jsonDecode(res.body)["count"];
+}
+
 
 
 
