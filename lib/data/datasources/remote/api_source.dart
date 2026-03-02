@@ -334,6 +334,35 @@ Future<List<Map<String, dynamic>>> getDonationsByOrganization(
 
 
 
+  Future<List<Map<String, dynamic>>> getDriversByOrganization(
+    String organizationId) async {
+
+
+  final headers = await AuthHeaders.build();
+
+
+  final url =
+      '${ApiConfig.baseUrl}/getDriversByOrganization?organizationId=$organizationId';
+
+
+
+  final response = await http.get(
+    Uri.parse(url),
+    headers: headers,
+  );
+
+
+  if (response.statusCode != 200) {
+    throw Exception(json.decode(response.body)['error'] ?? 'error');
+  }
+
+  return List<Map<String, dynamic>>.from(
+    json.decode(response.body),
+  );
+}
+
+
+
 
 
 

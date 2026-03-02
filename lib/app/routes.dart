@@ -8,6 +8,7 @@ import 'package:collecta/ui/screens/edit_profile_donor.dart';
 import 'package:collecta/ui/screens/admin_homepage.dart';
 // import 'package:collecta/ui/screens/edit_profile_driver.dart';
 
+const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
 
 
 class Routes {
