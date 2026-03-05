@@ -37,4 +37,38 @@ class DonorProfile {
       crn: json['role']?['crn'] ?? '',
     );
   }
+
+   Map<String, dynamic> toJson() {
+    return {
+      "businessName": businessName,
+      "businessPhone": businessPhone,
+      "contactName": contactName,
+      "contactPhone": contactPhone,
+      "crn": crn,
+      "businessAddressId": businessAddress.id,
+    };
+  }
+
+  /// 🔹 תוספת – לעדכון שדות בקלות
+  DonorProfile copyWith({
+    UserModel? user,
+    AddressModel? businessAddress,
+    String? businessName,
+    String? businessPhone,
+    int? coins,
+    String? contactName,
+    String? contactPhone,
+    String? crn,
+  }) {
+    return DonorProfile(
+      user: user ?? this.user,
+      businessAddress: businessAddress ?? this.businessAddress,
+      businessName: businessName ?? this.businessName,
+      businessPhone: businessPhone ?? this.businessPhone,
+      coins: coins ?? this.coins,
+      contactName: contactName ?? this.contactName,
+      contactPhone: contactPhone ?? this.contactPhone,
+      crn: crn ?? this.crn,
+    );
+  }
 }

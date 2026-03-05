@@ -64,6 +64,10 @@ exports.updateDonorProfile = functions.https.onRequest(
   require("./donors/updateDonorProfile")
 );
 
+exports.updateAddress  = functions.https.onRequest(
+  require("./address/updateAddress")
+);
+
 exports.reportDonation = functions.https.onRequest(
   require("./donations/reportDonation")
 );

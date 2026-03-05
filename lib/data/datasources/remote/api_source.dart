@@ -93,6 +93,36 @@ class ApiSource {
     return Map<String, dynamic>.from(json.decode(response.body));
   } 
 
+
+  Future<String> updateAddress({
+    required String id,
+    required String name,
+    required double lat,
+    required double lng,
+  }) async {
+    final headers = await AuthHeaders.build();
+
+    final response = await http.put(
+      Uri.parse('${ApiConfig.baseUrl}/updateAddress'),
+      headers: headers,
+      body: json.encode({
+        'id': id,
+        'name': name,
+        'lat': lat,
+        'lng': lng,
+      }),
+    );
+
+    final data = json.decode(response.body);
+
+    if (response.statusCode != 200) {
+      throw Exception(data['error']);
+    }
+
+    return data['status'];
+  }
+
+  
   Future<String> updateDonorProfile({
     required String businessName,
     required String businessPhone,

@@ -1,4 +1,5 @@
 import 'package:collecta/data/repositories/address_repository.dart';
+import '../data/models/address_model.dart';
 
 class AddressService {
   final AddressRepository _repo = AddressRepository();
@@ -15,5 +16,8 @@ class AddressService {
     );
   }
   
+  Future<String> updateAddress(AddressModel address) {
+    return _repo.updateAddress(address);
+  }
 } 
 

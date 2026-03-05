@@ -8,4 +8,8 @@ class DonorService {
   Future<DonorProfile> getMyDonorProfile() {
     return _repo.getDonorProfile();
   }
+
+    Future<String> updateDonorProfile(DonorProfile donor) {
+    return _repo.updateDonorProfile(donor);
+  }
 }
