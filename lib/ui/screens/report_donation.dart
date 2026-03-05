@@ -20,7 +20,7 @@ import '../widgets/layout_wrapper.dart';
 
 
 
-final String? kGoogleApiKey = dotenv.env['GOOGLE_API_KEY'];
+// final String? kGoogleApiKey = dotenv.env['GOOGLE_API_KEY'];
 const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
 
 

@@ -28,46 +28,13 @@ class UserService {
     return _repo.fetchMyProfile(role);
   }
 
-  Future<String> updateDonorProfile({
-    required String businessName,
-    required String businessPhone,
-    required String businessAddressId,
-    required String contactName,
-    required String contactPhone,
-    required String crn,
-  }) {
-    return _repo.updateDonorProfile(
-      businessName: businessName,
-      businessPhone: businessPhone,
-      businessAddressId: businessAddressId,
-      contactName: contactName,
-      contactPhone: contactPhone,
-      crn: crn,
-    );
-  }
-
   Future<String> updateUserProfile({
     required String name,
-    // required String img,
   }) {
     return _repo.updateUserProfile(
       name: name,
-      // img: img,
     );
   }
-
-
-  //   Future<String> updateDriverProfile({
-  //   required String phone,
-  //   required String area,
-  //   required List<dynamic> destination,
-  // }) {
-  //   return _repo.updateDriverProfile(
-  //     phone: phone,
-  //     area: area,
-  //     destination: destination,
-  //   );
-  // }
 
 
 } 

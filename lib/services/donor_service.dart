@@ -1,0 +1,11 @@
+// lib/data/services/donor_service.dart
+import '../data/repositories/donor_repository.dart';
+import '../data/models/donor_model.dart';
+
+class DonorService {
+  final DonorRepository _repo = DonorRepository();
+
+  Future<DonorProfile> getMyDonorProfile() {
+    return _repo.getDonorProfile();
+  }
+}

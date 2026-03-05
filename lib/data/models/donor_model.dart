@@ -22,20 +22,6 @@ class DonorProfile {
     required this.crn,
   });
 
-  // factory DonorProfile.fromApi(Map<String, dynamic> json) {
-  //   return DonorProfile(
-  //     user: UserModel.fromMap(json['user']),
-  //     businessAddress: AddressModel.fromApi(json['address']),
-  //     businessName: json['role']['businessName'] ?? '',
-  //     businessPhone: json['role']['businessPhone'] ?? '',
-  //     coins: json['role']['coins'] ?? 0,
-  //     contactName: json['role']['contactName'] ?? '',
-  //     contactPhone: json['role']['contactPhone'] ?? '',
-  //     crn: json['role']['crn'] ?? '',
-
-  //   );
-  // }
-
   factory DonorProfile.fromApi(Map<String, dynamic> json) {
     final addressJson = json['address'];
     return DonorProfile(
