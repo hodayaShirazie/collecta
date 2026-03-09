@@ -28,4 +28,19 @@ class AddressModel {
       'name': name,
     };
   }
+
+  AddressModel copyWith({
+    String? id,
+    double? lat,
+    double? lng,
+    String? name,
+  }) {
+    return AddressModel(
+      id: id ?? this.id,
+      lat: lat ?? this.lat,
+      lng: lng ?? this.lng,
+      name: name ?? this.name,
+    );
+  }
+  
 }

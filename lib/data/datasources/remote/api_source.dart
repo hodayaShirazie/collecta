@@ -78,6 +78,51 @@ class ApiSource {
     return Map<String, dynamic>.from(json.decode(response.body));
   }
 
+  Future<Map<String, dynamic>> getDonorProfile() async {
+    final headers = await AuthHeaders.build();
+
+    final response = await http.get(
+      Uri.parse('${ApiConfig.baseUrl}/getDonorProfile'),
+      headers: headers,
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(json.decode(response.body)['error']);
+    }
+
+    return Map<String, dynamic>.from(json.decode(response.body));
+  } 
+
+
+  Future<String> updateAddress({
+    required String id,
+    required String name,
+    required double lat,
+    required double lng,
+  }) async {
+    final headers = await AuthHeaders.build();
+
+    final response = await http.put(
+      Uri.parse('${ApiConfig.baseUrl}/updateAddress'),
+      headers: headers,
+      body: json.encode({
+        'id': id,
+        'name': name,
+        'lat': lat,
+        'lng': lng,
+      }),
+    );
+
+    final data = json.decode(response.body);
+
+    if (response.statusCode != 200) {
+      throw Exception(data['error']);
+    }
+
+    return data['status'];
+  }
+
+  
   Future<String> updateDonorProfile({
     required String businessName,
     required String businessPhone,
@@ -135,6 +180,49 @@ class ApiSource {
     return data['status'];
   }
 
+  Future<Map<String, dynamic>> getDriverProfile() async {
+    final headers = await AuthHeaders.build();
+
+    final response = await http.get(
+      Uri.parse('${ApiConfig.baseUrl}/getDriverProfile'),
+      headers: headers,
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(json.decode(response.body)['error']);
+    }
+
+    return Map<String, dynamic>.from(json.decode(response.body));
+  }
+
+  Future<String> updateDriverProfile({
+    required String phone,
+    required String area,
+    required List<Map<String, dynamic>> destinations,
+  }) async {
+
+    final headers = await AuthHeaders.build();
+
+    final res = await http.put(
+      Uri.parse('${ApiConfig.baseUrl}/updateDriverProfile'),
+      headers: headers,
+      body: json.encode({
+        "phone": phone,
+        "area": area,
+        "destinations": destinations
+      }),
+    );
+
+    final data = json.decode(res.body);
+
+    if (res.statusCode != 200) {
+      throw Exception(data['error']);
+    }
+
+    return data['status'];
+  }
+
+  
   Future<String> createAddress({
     required String name,
     required double lat,
@@ -212,249 +300,204 @@ class ApiSource {
 
 
   Future<String> reportDonationRaw(Map<String, dynamic> body) async {
-  final headers = await AuthHeaders.build();
+    final headers = await AuthHeaders.build();
 
-  final response = await http.post(
-    Uri.parse('${ApiConfig.baseUrl}/reportDonation'),
-    headers: headers,
-    body: json.encode(body),
-  );
+    final response = await http.post(
+      Uri.parse('${ApiConfig.baseUrl}/reportDonation'),
+      headers: headers,
+      body: json.encode(body),
+    );
 
-  final data = json.decode(response.body);
+    final data = json.decode(response.body);
 
-  if (response.statusCode != 200) {
-    throw Exception(data['error']);
+    if (response.statusCode != 200) {
+      throw Exception(data['error']);
+    }
+
+    return data['status'];
   }
-
-  return data['status'];
-}
-
-  // Future<String> updateDriverProfile({
-  //   required String phone,
-  //   required String area,
-  //   required List<dynamic> destination,
-  //   required List<dynamic> stops,
-  // }) async {
-  //   final headers = await AuthHeaders.build();
-  //   Future<String> updateDriverProfile({
-  //   required String phone,
-  //   required String area,
-  //   required List<dynamic> destination,
-  //   required List<dynamic> stops,
-  // }) async {
-  //   final headers = await AuthHeaders.build();
-
-  //   final response = await http.put(
-  //     Uri.parse('${ApiConfig.baseUrl}/updateDriverProfile'),
-  //     headers: headers,
-  //     body: json.encode({
-  //       'phone': phone,
-  //       'area': area,
-  //       'destination': destination,
-  //     }),
-  //   );
-
-  //   final data = json.decode(response.body);
-
-  //   if (response.statusCode != 200) {
-  //     throw Exception(data['error']);
-  //   }
-
-  //   return data['status'];
-  // }
-
 
   Future<List<Map<String, dynamic>>> placesAutocomplete(String input) async {
-  final headers = await AuthHeaders.build();
+    final headers = await AuthHeaders.build();
 
-  final response = await http.get(
-    Uri.parse('${ApiConfig.baseUrl}/placesAutocomplete?input=$input'),
-    headers: headers,
-  );
+    final response = await http.get(
+      Uri.parse('${ApiConfig.baseUrl}/placesAutocomplete?input=$input'),
+      headers: headers,
+    );
 
-  if (response.statusCode != 200) {
-    throw Exception('Failed to fetch places');
+    if (response.statusCode != 200) {
+      throw Exception('Failed to fetch places');
+    }
+
+    return List<Map<String, dynamic>>.from(json.decode(response.body));
   }
 
-  return List<Map<String, dynamic>>.from(json.decode(response.body));
-}
+  Future<Map<String, dynamic>> placeDetails(String placeId) async {
+    final headers = await AuthHeaders.build();
 
-Future<Map<String, dynamic>> placeDetails(String placeId) async {
-  final headers = await AuthHeaders.build();
+    final response = await http.get(
+      Uri.parse('${ApiConfig.baseUrl}/placeDetails?placeId=$placeId'),
+      headers: headers,
+    );
 
-  final response = await http.get(
-    Uri.parse('${ApiConfig.baseUrl}/placeDetails?placeId=$placeId'),
-    headers: headers,
-  );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to fetch details');
+    }
 
-  if (response.statusCode != 200) {
-    throw Exception('Failed to fetch details');
+    return json.decode(response.body);
   }
 
-  return json.decode(response.body);
-}
+  Future<List<dynamic>> getMyDonations() async {
+    final headers = await AuthHeaders.build();
 
+    final response = await http.get(
+      Uri.parse('${ApiConfig.baseUrl}/getMyDonations'),
+      headers: headers,
+    );
 
+    if (response.statusCode != 200) {
+      throw Exception(response.body);
+    }
 
-Future<List<dynamic>> getMyDonations() async {
-  final headers = await AuthHeaders.build();
-
-  final response = await http.get(
-    Uri.parse('${ApiConfig.baseUrl}/getMyDonations'),
-    headers: headers,
-  );
-
-  if (response.statusCode != 200) {
-    throw Exception(response.body);
+    return json.decode(response.body);
   }
 
-  return json.decode(response.body);
-}
 
+  Future<List<Map<String, dynamic>>> getDonationsByOrganization(
+      String organizationId) async {
 
-Future<List<Map<String, dynamic>>> getDonationsByOrganization(
-    String organizationId) async {
+    final headers = await AuthHeaders.build();
 
-  final headers = await AuthHeaders.build();
+    final response = await http.get(
+      Uri.parse(
+          '${ApiConfig.baseUrl}/getAllDonationsByOrganization?organizationId=$organizationId'),
+      headers: headers,
+    );
 
-  final response = await http.get(
-    Uri.parse(
-        '${ApiConfig.baseUrl}/getAllDonationsByOrganization?organizationId=$organizationId'),
-    headers: headers,
-  );
+    if (response.statusCode != 200) {
+      throw Exception(response.body);
+    }
 
-  if (response.statusCode != 200) {
-    throw Exception(response.body);
+    return List<Map<String, dynamic>>.from(
+      json.decode(response.body),
+    );
   }
 
-  return List<Map<String, dynamic>>.from(
-    json.decode(response.body),
-  );
-}
+
+
+    Future<List<Map<String, dynamic>>> getDriversByOrganization(
+      String organizationId) async {
+
+
+    final headers = await AuthHeaders.build();
+
+
+    final url =
+        '${ApiConfig.baseUrl}/getDriversByOrganization?organizationId=$organizationId';
 
 
 
-  Future<List<Map<String, dynamic>>> getDriversByOrganization(
-    String organizationId) async {
+    final response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    );
 
 
-  final headers = await AuthHeaders.build();
+    if (response.statusCode != 200) {
+      throw Exception(json.decode(response.body)['error'] ?? 'error');
+    }
 
-
-  final url =
-      '${ApiConfig.baseUrl}/getDriversByOrganization?organizationId=$organizationId';
-
-
-
-  final response = await http.get(
-    Uri.parse(url),
-    headers: headers,
-  );
-
-
-  if (response.statusCode != 200) {
-    throw Exception(json.decode(response.body)['error'] ?? 'error');
+    return List<Map<String, dynamic>>.from(
+      json.decode(response.body),
+    );
   }
 
-  return List<Map<String, dynamic>>.from(
-    json.decode(response.body),
-  );
-}
+  Future<int> getDonationsCount(String organizationId) async {
+    final headers = await AuthHeaders.build();
 
+    final response = await http.get(
+      Uri.parse(
+          '${ApiConfig.baseUrl}/getDonationsCount?organizationId=$organizationId'),
+      headers: headers,
+    );
 
+    if (response.statusCode != 200) {
+      throw Exception(json.decode(response.body)['error'] ?? 'error');
+    }
 
-Future<int> getDonationsCount(String organizationId) async {
-  final headers = await AuthHeaders.build();
-
-  final response = await http.get(
-    Uri.parse(
-        '${ApiConfig.baseUrl}/getDonationsCount?organizationId=$organizationId'),
-    headers: headers,
-  );
-
-  if (response.statusCode != 200) {
-    throw Exception(json.decode(response.body)['error'] ?? 'error');
+    final data = json.decode(response.body);
+    return data['count'];
   }
 
-  final data = json.decode(response.body);
-  return data['count'];
-}
+  Future<int> getDonationsPendingCount(String organizationId) async {
+    final headers = await AuthHeaders.build();
 
-Future<int> getDonationsPendingCount(String organizationId) async {
-  final headers = await AuthHeaders.build();
+    final response = await http.get(
+      Uri.parse(
+          '${ApiConfig.baseUrl}/getDonationsPendingCount?organizationId=$organizationId'),
+      headers: headers,
+    );
 
-  final response = await http.get(
-    Uri.parse(
-        '${ApiConfig.baseUrl}/getDonationsPendingCount?organizationId=$organizationId'),
-    headers: headers,
-  );
+    if (response.statusCode != 200) {
+      throw Exception(json.decode(response.body)['error'] ?? 'error');
+    }
 
-  if (response.statusCode != 200) {
-    throw Exception(json.decode(response.body)['error'] ?? 'error');
+    final data = json.decode(response.body);
+    return data['count'];
   }
 
-  final data = json.decode(response.body);
-  return data['count'];
-}
+  Future<int> getDonationsCountByMonth({
+    required String organizationId,
+    required int monthOffset,
+  }) async {
+    final headers = await AuthHeaders.build();
 
-Future<int> getDonationsCountByMonth({
-  required String organizationId,
-  required int monthOffset,
-}) async {
-  final headers = await AuthHeaders.build();
+    final response = await http.get(
+      Uri.parse(
+          '${ApiConfig.baseUrl}/getDonationsCountByMonth?organizationId=$organizationId&monthOffset=$monthOffset'),
+      headers: headers,
+    );
 
-  final response = await http.get(
-    Uri.parse(
-        '${ApiConfig.baseUrl}/getDonationsCountByMonth?organizationId=$organizationId&monthOffset=$monthOffset'),
-    headers: headers,
-  );
+    if (response.statusCode != 200) {
+      throw Exception(json.decode(response.body)['error'] ?? 'error');
+    }
 
-  if (response.statusCode != 200) {
-    throw Exception(json.decode(response.body)['error'] ?? 'error');
+    final data = json.decode(response.body);
+    return data['count'];
   }
 
-  final data = json.decode(response.body);
-  return data['count'];
-}
+  Future<int> getDonationsCanceledCount(String organizationId) async {
+    final headers = await AuthHeaders.build();
 
+    final response = await http.get(
+      Uri.parse(
+        '${ApiConfig.baseUrl}/getDonationsCanceledCount?organizationId=$organizationId',
+      ),
+      headers: headers,
+    );
 
+    if (response.statusCode != 200) {
+      throw Exception(json.decode(response.body)['error'] ?? 'error');
+    }
 
-
-Future<int> getDonationsCanceledCount(String organizationId) async {
-  final headers = await AuthHeaders.build();
-
-  final response = await http.get(
-    Uri.parse(
-      '${ApiConfig.baseUrl}/getDonationsCanceledCount?organizationId=$organizationId',
-    ),
-    headers: headers,
-  );
-
-  if (response.statusCode != 200) {
-    throw Exception(json.decode(response.body)['error'] ?? 'error');
+    final data = json.decode(response.body);
+    return data['count'];
   }
 
-  final data = json.decode(response.body);
-  return data['count'];
-}
 
+  Future<int> getDonationsConfirmedCount(String organizationId) async {
+    final headers = await AuthHeaders.build();
 
-Future<int> getDonationsConfirmedCount(String organizationId) async {
-  final headers = await AuthHeaders.build();
+    final res = await http.get(
+      Uri.parse("${ApiConfig.baseUrl}/getDonationsConfirmedCount?organizationId=$organizationId"),
+      headers: headers,
+    );
 
-  final res = await http.get(
-    Uri.parse("${ApiConfig.baseUrl}/getDonationsConfirmedCount?organizationId=$organizationId"),
-    headers: headers,
-  );
+    if (res.statusCode != 200) {
+      throw Exception(res.body);
+    }
 
-  if (res.statusCode != 200) {
-    throw Exception(res.body);
+    return jsonDecode(res.body)["count"];
   }
-
-  return jsonDecode(res.body)["count"];
-}
-
-
-
 
 }

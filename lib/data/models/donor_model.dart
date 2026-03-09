@@ -22,20 +22,6 @@ class DonorProfile {
     required this.crn,
   });
 
-  // factory DonorProfile.fromApi(Map<String, dynamic> json) {
-  //   return DonorProfile(
-  //     user: UserModel.fromMap(json['user']),
-  //     businessAddress: AddressModel.fromApi(json['address']),
-  //     businessName: json['role']['businessName'] ?? '',
-  //     businessPhone: json['role']['businessPhone'] ?? '',
-  //     coins: json['role']['coins'] ?? 0,
-  //     contactName: json['role']['contactName'] ?? '',
-  //     contactPhone: json['role']['contactPhone'] ?? '',
-  //     crn: json['role']['crn'] ?? '',
-
-  //   );
-  // }
-
   factory DonorProfile.fromApi(Map<String, dynamic> json) {
     final addressJson = json['address'];
     return DonorProfile(
@@ -49,6 +35,40 @@ class DonorProfile {
       contactName: json['role']?['contactName'] ?? '',
       contactPhone: json['role']?['contactPhone'] ?? '',
       crn: json['role']?['crn'] ?? '',
+    );
+  }
+
+   Map<String, dynamic> toJson() {
+    return {
+      "businessName": businessName,
+      "businessPhone": businessPhone,
+      "contactName": contactName,
+      "contactPhone": contactPhone,
+      "crn": crn,
+      "businessAddressId": businessAddress.id,
+    };
+  }
+
+  /// 🔹 תוספת – לעדכון שדות בקלות
+  DonorProfile copyWith({
+    UserModel? user,
+    AddressModel? businessAddress,
+    String? businessName,
+    String? businessPhone,
+    int? coins,
+    String? contactName,
+    String? contactPhone,
+    String? crn,
+  }) {
+    return DonorProfile(
+      user: user ?? this.user,
+      businessAddress: businessAddress ?? this.businessAddress,
+      businessName: businessName ?? this.businessName,
+      businessPhone: businessPhone ?? this.businessPhone,
+      coins: coins ?? this.coins,
+      contactName: contactName ?? this.contactName,
+      contactPhone: contactPhone ?? this.contactPhone,
+      crn: crn ?? this.crn,
     );
   }
 }

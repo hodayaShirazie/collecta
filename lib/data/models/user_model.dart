@@ -28,4 +28,36 @@ class UserModel {
       lastLogin: DateTime.parse(map['last_login'])
     );
   }
+
+
+  Map<String, dynamic> toJson() {
+    return {
+      'uid': id,
+      'name': name,
+      'mail': mail,
+      'img': img,
+      'organization_id': organizationId,
+      'created_at': createdAt.toIso8601String(),
+      'last_login': lastLogin.toIso8601String(),
+    };
+  }
+
+  /// 🔹 תוספת – מאפשר לעדכן שדות בקלות
+  UserModel copyWith({
+    String? name,
+    String? mail,
+    String? img,
+    String? organizationId,
+    DateTime? lastLogin,
+  }) {
+    return UserModel(
+      id: id,
+      name: name ?? this.name,
+      mail: mail ?? this.mail,
+      img: img ?? this.img,
+      organizationId: organizationId ?? this.organizationId,
+      createdAt: createdAt,
+      lastLogin: lastLogin ?? this.lastLogin,
+    );
+  }
 }

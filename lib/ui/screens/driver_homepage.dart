@@ -145,6 +145,8 @@ import '../widgets/homepage_button.dart';
 import '../widgets/sign_out.dart';
 import '../widgets/layout_wrapper.dart';
 import '../../services/user_service.dart';
+import 'package:collecta/app/routes.dart';
+
 
 const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
 
@@ -316,8 +318,9 @@ Widget build(BuildContext context) {
                         HomepageButton(
                           title: 'עריכת פרטים',
                           icon: Icons.edit_outlined,
-                          onPressed: () {},
-                        ),
+                          onPressed: () {
+                            Navigator.pushNamed(context, Routes.driverEditProfile);
+                          },                        ),
                       ],
                     ),
                   ),

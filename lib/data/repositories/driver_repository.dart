@@ -6,7 +6,11 @@ class DriverRepository {
 
   Future<List<DriverProfile>> getDriversByOrganization(String organizationId) async {
     final data = await _source.getDriversByOrganization(organizationId);
-
     return data.map((e) => DriverProfile.fromApi(e)).toList();
+  }
+
+  Future<DriverProfile> getDriverProfile() async {
+    final data = await _source.getDriverProfile();
+    return DriverProfile.fromApi(data);
   }
 }

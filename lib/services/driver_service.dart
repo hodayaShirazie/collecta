@@ -7,4 +7,8 @@ class DriverService {
   Future<List<DriverProfile>> fetchDriversByOrganization(String organizationId) {
     return _repo.getDriversByOrganization(organizationId);
   }
+
+  Future<DriverProfile> getMyDriverProfile() {
+    return _repo.getDriverProfile();
+  }
 }
