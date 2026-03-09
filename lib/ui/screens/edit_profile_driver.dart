@@ -1,257 +1,346 @@
 import 'package:flutter/material.dart';
 import '../../services/driver_service.dart';
 import '../../services/user_service.dart';
+import '../../services/destination_service.dart';
+import '../../services/address_service.dart';
+import '../../services/places_service.dart';
+
 import '../../data/models/driver_model.dart';
+import '../../data/models/destination_model.dart';
+import '../../data/models/lat_lng_model.dart';
+import '../../data/models/place_prediction.dart';
 
 class DriverEditProfileScreen extends StatefulWidget {
-const DriverEditProfileScreen({super.key});
+  const DriverEditProfileScreen({super.key});
 
-@override
-State<DriverEditProfileScreen> createState() => _DriverEditProfileScreenState();
+  @override
+  State<DriverEditProfileScreen> createState() => _DriverEditProfileScreenState();
 }
 
 class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
 
-final DriverService _driverService = DriverService();
-final UserService _userService = UserService();
+  final DriverService _driverService = DriverService();
+  final UserService _userService = UserService();
+  final DestinationService _destinationService = DestinationService();
+  final AddressService _addressService = AddressService();
+  final PlacesService _placesService = PlacesService();
 
-DriverProfile? driver;
+  DriverProfile? driver;
 
-final nameCtrl = TextEditingController();
-final phoneCtrl = TextEditingController();
-final areaCtrl = TextEditingController();
+  final nameCtrl = TextEditingController();
+  final phoneCtrl = TextEditingController();
+  final areaCtrl = TextEditingController();
 
-bool isSaving = false;
+  final Map<String, TextEditingController> nameCtrls = {};
+  final Map<String, TextEditingController> dayCtrls = {};
+  final Map<String, TextEditingController> addressCtrls = {};
 
-@override
-void initState() {
-super.initState();
-_loadDriverProfile();
-}
+  final Map<String, LatLngModel?> selectedLatLng = {};
+  final Map<String, List<PlacePrediction>> predictions = {};
 
-Future<void> _loadDriverProfile() async {
+  bool isSaving = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadDriverProfile();
+  }
 
-try {
+  Future<void> _loadDriverProfile() async {
 
-  driver = await _driverService.getMyDriverProfile();
+    try {
 
-  /// מילוי השדות
-  nameCtrl.text = driver!.user.name;
-  phoneCtrl.text = driver!.phone;
-  areaCtrl.text = driver!.area;
+      driver = await _driverService.getMyDriverProfile();
 
-  setState(() {});
+      nameCtrl.text = driver!.user.name;
+      phoneCtrl.text = driver!.phone;
+      areaCtrl.text = driver!.area;
 
-} catch (e) {
+      for (var d in driver!.destinations) {
 
-  print("Error loading driver profile: $e");
+        nameCtrls[d.id] = TextEditingController(text: d.name);
+        dayCtrls[d.id] = TextEditingController(text: d.day);
+        addressCtrls[d.id] = TextEditingController(text: d.address.name);
 
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text("שגיאה בטעינת הפרופיל")),
-  );
-}
+        predictions[d.id] = [];
+        selectedLatLng[d.id] = null;
 
+      }
 
-}
+      setState(() {});
 
-Future<void> _saveProfile() async {
+    } catch (e) {
 
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("שגיאה בטעינת הפרופיל")),
+      );
 
-if (driver == null) return;
+    }
 
-setState(() {
-  isSaving = true;
-});
+  }
 
-try {
+  Future<void> _searchAddress(String destId, String input) async {
 
-  final updatedDriver = driver!.copyWith(
-    user: driver!.user.copyWith(
-      name: nameCtrl.text,
-    ),
-    phone: phoneCtrl.text,
-    area: areaCtrl.text,
-  );
+    if (input.isEmpty) {
+      setState(() => predictions[destId] = []);
+      return;
+    }
 
-  /// עדכון driver
-  await _driverService.updateDriverProfile(updatedDriver);
+    final results = await _placesService.autocomplete(input);
 
-  /// עדכון user
-  await _userService.updateUserProfile(
-    name: nameCtrl.text,
-  );
+    setState(() {
+      predictions[destId] = results;
+    });
 
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text("הפרטים עודכנו בהצלחה")),
-  );
+  }
 
-  driver = updatedDriver;
+  Future<void> _selectPlace(String destId, PlacePrediction place) async {
 
-} catch (e) {
+    final details = await _placesService.getPlaceDetails(place.placeId);
 
-  print("Update error: $e");
+    setState(() {
 
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text("שגיאה בעדכון הפרטים")),
-  );
+      addressCtrls[destId]!.text = place.description;
 
-} finally {
+      selectedLatLng[destId] = details;
 
-  setState(() {
-    isSaving = false;
-  });
+      predictions[destId] = [];
 
-}
+    });
 
+  }
 
-}
+  Future<void> _saveProfile() async {
 
-@override
-Widget build(BuildContext context) {
+    if (driver == null) return;
 
+    setState(() => isSaving = true);
 
-return Scaffold(
-  backgroundColor: Colors.white,
+    try {
 
-  body: driver == null
-      ? const Center(child: CircularProgressIndicator())
+      /// update user
+      await _userService.updateUserProfile(
+        name: nameCtrl.text,
+      );
 
-      : SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      /// update driver
+      final updatedDriver = driver!.copyWith(
+        phone: phoneCtrl.text,
+        area: areaCtrl.text,
+      );
 
-            child: Column(
-              children: [
+      await _driverService.updateDriverProfile(updatedDriver);
 
-                const SizedBox(height: 50),
+      /// update destinations
+      for (var destination in driver!.destinations) {
 
-                const Text(
-                  "עריכת פרטי נהג",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+        final id = destination.id;
 
-                const SizedBox(height: 30),
+        final updatedAddress = destination.address.copyWith(
+          name: addressCtrls[id]!.text,
+          lat: selectedLatLng[id]?.lat ?? destination.address.lat,
+          lng: selectedLatLng[id]?.lng ?? destination.address.lng,
+        );
 
-                _buildLabeledField("שם משתמש:", nameCtrl),
+        await _addressService.updateAddress(updatedAddress);
 
-                _buildLabeledField("פלאפון:", phoneCtrl),
+        final updatedDestination = destination.copyWith(
+          name: nameCtrls[id]!.text,
+          day: dayCtrls[id]!.text,
+          address: updatedAddress,
+        );
 
-                _buildLabeledField("אזור:", areaCtrl),
+        await _destinationService.updateDestination(updatedDestination);
 
-                const SizedBox(height: 30),
+      }
 
-                const Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    "יעדים",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("הפרטים עודכנו")),
+      );
+      Navigator.pushReplacementNamed(context, Routes.donor);
+
+    } catch (e) {
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("שגיאה: $e")),
+      );
+
+    }
+
+    setState(() => isSaving = false);
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Scaffold(
+
+      backgroundColor: Colors.white,
+
+      body: driver == null
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+
+              child: Padding(
+
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+
+                child: Column(
+
+                  children: [
+
+                    const SizedBox(height: 50),
+
+                    const Text(
+                      "עריכת פרטי נהג",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ),
 
-                const SizedBox(height: 10),
+                    const SizedBox(height: 30),
 
-                Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: driver!.destinations.isEmpty
-                      ? const Text("אין יעדים")
-                      : Column(
-                          children: driver!.destinations.map((destination) {
+                    _buildField("שם משתמש", nameCtrl),
 
-                            return Card(
-                              margin: const EdgeInsets.only(bottom: 10),
-                              child: ListTile(
-                                title: Text(
-                                  destination.address.name,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                subtitle: Text(
-                                  "${destination.day} • ${destination.name}",
-                                ),
-                              ),
-                            );
+                    _buildField("פלאפון", phoneCtrl),
 
-                          }).toList(),
+                    _buildField("אזור", areaCtrl),
+
+                    const SizedBox(height: 30),
+
+                    const Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        "יעדים",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
-                ),
-
-                const SizedBox(height: 40),
-
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: isSaving ? null : _saveProfile,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
                     ),
-                    child: isSaving
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text(
-                            "שמור שינויים",
-                            style: TextStyle(fontSize: 16),
+
+                    const SizedBox(height: 10),
+
+                    Column(
+                      children: driver!.destinations.map((destination) {
+
+                        final id = destination.id;
+
+                        return Card(
+
+                          margin: const EdgeInsets.only(bottom: 16),
+
+                          child: Padding(
+
+                            padding: const EdgeInsets.all(12),
+
+                            child: Column(
+
+                              children: [
+
+                                _buildField("שם יעד", nameCtrls[id]!),
+
+                                _buildField("יום", dayCtrls[id]!),
+
+                                _buildField(
+                                  "כתובת",
+                                  addressCtrls[id]!,
+                                  onChanged: (v) => _searchAddress(id, v),
+                                ),
+
+                                if (predictions[id]!.isNotEmpty)
+                                  ...predictions[id]!.map(
+                                    (p) => ListTile(
+                                      title: Text(p.description),
+                                      onTap: () => _selectPlace(id, p),
+                                    ),
+                                  )
+
+                              ],
+
+                            ),
+
                           ),
-                  ),
+
+                        );
+
+                      }).toList(),
+                    ),
+
+                    const SizedBox(height: 40),
+
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: isSaving ? null : _saveProfile,
+                        child: isSaving
+                            ? const CircularProgressIndicator(color: Colors.white)
+                            : const Text("שמור שינויים"),
+                      ),
+                    ),
+
+                    const SizedBox(height: 40),
+
+                  ],
+
                 ),
 
-                const SizedBox(height: 40),
+              ),
 
-              ],
             ),
+
+    );
+
+  }
+
+  Widget _buildField(
+    String label,
+    TextEditingController ctrl, {
+    Function(String)? onChanged,
+  }) {
+
+    return Padding(
+
+      padding: const EdgeInsets.only(bottom: 12),
+
+      child: Column(
+
+        crossAxisAlignment: CrossAxisAlignment.end,
+
+        children: [
+
+          Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+
+          const SizedBox(height: 4),
+
+          Directionality(
+
+            textDirection: TextDirection.rtl,
+
+            child: TextField(
+
+              controller: ctrl,
+
+              onChanged: onChanged,
+
+              textAlign: TextAlign.center,
+
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+              ),
+
+            ),
+
           ),
-        ),
-);
 
-}
+        ],
 
-Widget _buildLabeledField(
-String label,
-TextEditingController ctrl,
-) {
-
-return Padding(
-  padding: const EdgeInsets.only(bottom: 12),
-
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.end,
-
-    children: [
-
-      Text(
-        label,
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-        ),
       ),
 
-      const SizedBox(height: 4),
+    );
 
-      Directionality(
-        textDirection: TextDirection.rtl,
+  }
 
-        child: TextFormField(
-          controller: ctrl,
-          textAlign: TextAlign.center,
-
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            contentPadding: EdgeInsets.symmetric(
-              vertical: 10,
-              horizontal: 12,
-            ),
-          ),
-        ),
-      ),
-    ],
-  ),
-);
-
-}
 }

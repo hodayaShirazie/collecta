@@ -76,6 +76,10 @@ exports.updateAddress  = functions.https.onRequest(
   require("./address/updateAddress")
 );
 
+exports.updateDestination = functions.https.onRequest(
+  require("./destinations/updateDestination")
+);
+
 exports.reportDonation = functions.https.onRequest(
   require("./donations/reportDonation")
 );
