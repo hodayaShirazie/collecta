@@ -11,4 +11,8 @@ class DriverService {
   Future<DriverProfile> getMyDriverProfile() {
     return _repo.getDriverProfile();
   }
+
+  Future<String> updateDriverProfile(DriverProfile driver) {
+    return _repo.updateDriverProfile(driver);
+  }
 }

@@ -13,4 +13,13 @@ class DriverRepository {
     final data = await _source.getDriverProfile();
     return DriverProfile.fromApi(data);
   }
+
+  Future<String> updateDriverProfile(DriverProfile driver) {
+
+    return _source.updateDriverProfile(
+      phone: driver.phone,
+      area: driver.area,
+    );
+
+  }
 }
