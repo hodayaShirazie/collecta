@@ -6,7 +6,7 @@ import 'package:collecta/ui/screens/driver_homepage.dart';
 import 'package:collecta/ui/guards/auth_guard.dart';
 import 'package:collecta/ui/screens/edit_profile_donor.dart';
 import 'package:collecta/ui/screens/admin_homepage.dart';
-// import 'package:collecta/ui/screens/edit_profile_driver.dart';
+import 'package:collecta/ui/screens/edit_profile_driver.dart';
 
 const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
 
@@ -18,7 +18,7 @@ class Routes {
   static const driver = '/driver';
   static const donorEditProfile = '/donor/edit-profile';
   static const admin = '/admin';  
-  // static const driverEditProfile = '/driver/edit-profile';
+  static const driverEditProfile = '/driver/edit-profile';
 
 
 
@@ -31,7 +31,7 @@ class Routes {
     driver: (context) => const AuthGuard(child: DriverHomepage()),
     donorEditProfile: (context) => const AuthGuard(child: DonorEditProfileScreen()),
     admin: (context) => const AuthGuard(child: AdminHomepage()),
-    // driverEditProfile: (context) => const AuthGuard(child: DriverEditProfileScreen()),
+    driverEditProfile: (context) => const AuthGuard(child: DriverEditProfileScreen()),
 
   };
 

@@ -60,8 +60,16 @@ exports.getDonorProfile = functions.https.onRequest(
   require("./donors/getDonorProfile")
 );
 
+exports.getDriverProfile = functions.https.onRequest(
+  require("./drivers/getDriverProfile")
+);
+
 exports.updateDonorProfile = functions.https.onRequest(
   require("./donors/updateDonorProfile")
+);
+
+exports.updateDriverProfile = functions.https.onRequest(
+  require("./drivers/updateDriverProfile")
 );
 
 exports.updateAddress  = functions.https.onRequest(

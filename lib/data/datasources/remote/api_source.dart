@@ -180,6 +180,49 @@ class ApiSource {
     return data['status'];
   }
 
+  Future<Map<String, dynamic>> getDriverProfile() async {
+    final headers = await AuthHeaders.build();
+
+    final response = await http.get(
+      Uri.parse('${ApiConfig.baseUrl}/getDriverProfile'),
+      headers: headers,
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(json.decode(response.body)['error']);
+    }
+
+    return Map<String, dynamic>.from(json.decode(response.body));
+  }
+
+  Future<String> updateDriverProfile({
+    required String phone,
+    required String area,
+    required List<Map<String, dynamic>> destinations,
+  }) async {
+
+    final headers = await AuthHeaders.build();
+
+    final res = await http.put(
+      Uri.parse('${ApiConfig.baseUrl}/updateDriverProfile'),
+      headers: headers,
+      body: json.encode({
+        "phone": phone,
+        "area": area,
+        "destinations": destinations
+      }),
+    );
+
+    final data = json.decode(res.body);
+
+    if (res.statusCode != 200) {
+      throw Exception(data['error']);
+    }
+
+    return data['status'];
+  }
+
+  
   Future<String> createAddress({
     required String name,
     required double lat,
