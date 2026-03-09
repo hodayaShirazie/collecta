@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../../config/api_config.dart';
 import 'auth_headers.dart';
+import '../../models/destination_model.dart';
 
 
 class ApiSource {
@@ -195,33 +196,6 @@ class ApiSource {
     return Map<String, dynamic>.from(json.decode(response.body));
   }
 
-  // Future<String> updateDriverProfile({
-  //   required String phone,
-  //   required String area,
-  //   required List<Map<String, dynamic>> destinations,
-  // }) async {
-
-  //   final headers = await AuthHeaders.build();
-
-  //   final res = await http.put(
-  //     Uri.parse('${ApiConfig.baseUrl}/updateDriverProfile'),
-  //     headers: headers,
-  //     body: json.encode({
-  //       "phone": phone,
-  //       "area": area,
-  //       "destinations": destinations
-  //     }),
-  //   );
-
-  //   final data = json.decode(res.body);
-
-  //   if (res.statusCode != 200) {
-  //     throw Exception(data['error']);
-  //   }
-
-  //   return data['status'];
-  // }
-
   Future<String> updateDriverProfile({
     required String phone,
     required String area,
@@ -245,6 +219,22 @@ class ApiSource {
     }
 
     return data['status'];
+  }
+
+  Future<void> updateDestination(DestinationModel destination) async {
+
+    final headers = await AuthHeaders.build();
+
+    final response = await http.put(
+      Uri.parse('${ApiConfig.baseUrl}/updateDestination/${destination.id}'),
+      headers: headers,
+      body: jsonEncode(destination.toJson()),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception("Failed to update destination");
+    }
+
   }
 
   
