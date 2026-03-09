@@ -138,53 +138,6 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
             ),
     );
   }
-//   Future<void> _saveProfile() async {
-//     if (donor == null) return;
-
-//     bool anyError = false;
-
-//     try {
-//         await UserService().updateUserProfile(name: nameCtrl.text);
-//     } catch (e) {
-//         anyError = true;
-//         print("User update failed: $e");
-//     }
-
-//     try {
-//         final updatedAddress = donor!.businessAddress.copyWith(
-//         name: businessAddressCtrl.text,
-//         lat: selectedLatLng?.lat ?? donor!.businessAddress.lat,
-//         lng: selectedLatLng?.lng ?? donor!.businessAddress.lng,
-//         );
-//         await _addressService.updateAddress(updatedAddress);
-//     } catch (e) {
-//         anyError = true;
-//         print("Address update failed: $e");
-//     }
-
-//     try {
-//         final updatedDonor = donor!.copyWith(
-//         businessName: businessNameCtrl.text,
-//         businessPhone: businessPhoneCtrl.text,
-//         contactName: contactNameCtrl.text,
-//         contactPhone: contactPhoneCtrl.text,
-//         crn: crnCtrl.text,
-//         businessAddress: donor!.businessAddress,
-//         );
-//         await _donorService.updateDonorProfile(updatedDonor);
-//     } catch (e) {
-//         anyError = true;
-//         print("Donor update failed: $e");
-//     }
-
-//     ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(
-//         content: Text(anyError
-//             ? "חלק מהפרטים לא נשמרו, בדוק שגיאות בקונסול"
-//             : "הפרטים נשמרו בהצלחה"),
-//         ),
-//     );
-//   }
   Future<void> _saveProfile() async {
 
     if (donor == null) return;

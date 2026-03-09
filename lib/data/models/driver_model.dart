@@ -31,4 +31,27 @@ class DriverProfile {
           .toList(),
     );
   }
+   Map<String, dynamic> toJson() {
+    return {
+      "phone": phone,
+      "area": area,
+    };
+  }
+
+  /// 🔹 עדכון שדות
+  DriverProfile copyWith({
+    UserModel? user,
+    String? phone,
+    String? area,
+    List<DestinationModel>? destinations,
+    List<DonationModel>? stops,
+  }) {
+    return DriverProfile(
+      user: user ?? this.user,
+      phone: phone ?? this.phone,
+      area: area ?? this.area,
+      destinations: destinations ?? this.destinations,
+      stops: stops ?? this.stops,
+    );
+  }
 }
