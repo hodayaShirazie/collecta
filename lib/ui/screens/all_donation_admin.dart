@@ -83,11 +83,11 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
         }
       }
 
-      /// 🎛 Status Filter
+      ///  Status Filter
       if (selectedStatus != "הכל") {
         final statusMap = {
           "ממתין": "pending",
-          "נאסף": "collected",
+          "נאסף": "confirmed",
           "בוטל": "cancelled",
         };
 
@@ -114,7 +114,7 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
     switch (status) {
       case "pending":
         return "ממתין";
-      case "collected":
+      case "confirmed":
         return "נאסף";
       case "cancelled":
         return "בוטל";

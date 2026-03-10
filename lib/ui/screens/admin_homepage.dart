@@ -37,14 +37,17 @@ class _AdminHomepageState extends State<AdminHomepage> {
       // 1) total donations
       final confirmedCount =
           await _donationService.getDonationsConfirmedCount(kOrganizationId);
+      print("CONFIRMED donations: $confirmedCount");
 
       // 2) pending
       final pendingCount =
           await _donationService.getDonationsPendingCount(kOrganizationId);
+      print("PENDING donations: $pendingCount");
 
       // 3) canceled
       final canceledCount =
           await _donationService.getDonationsCanceledCount(kOrganizationId);
+      print("CANCELED donations: $canceledCount");
 
       // 4) growth calculation 
       final currentMonthTotal =
