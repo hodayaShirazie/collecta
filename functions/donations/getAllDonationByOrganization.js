@@ -19,6 +19,7 @@ module.exports = async (req, res) => {
       const snapshot = await db
         .collection("donation")
         .where("organization_id", "==", organizationId)
+        .orderBy("created_at", "desc")
         .get();
 
       const donations = [];

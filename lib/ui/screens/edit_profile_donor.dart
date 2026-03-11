@@ -86,7 +86,7 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
         selectedLatLng = details;
         predictions = [];
     });
- }
+  }
 
   @override
   Widget build(BuildContext context) {
