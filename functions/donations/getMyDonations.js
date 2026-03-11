@@ -16,7 +16,7 @@ module.exports = async (req, res) => {
       const snapshot = await db
         .collection("donation")
         .where("donor_id", "==", firebaseUser.uid)
-        // .orderBy("created_at", "desc")
+        .orderBy("created_at", "desc")
         .get();
 
       const donations = [];

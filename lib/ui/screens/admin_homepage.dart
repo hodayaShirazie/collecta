@@ -6,6 +6,7 @@ import '../widgets/layout_wrapper.dart';
 import 'all_donation_admin.dart';
 import 'all_driver_admin.dart';
 import '../../services/donation_service.dart';
+import 'package:collecta/app/routes.dart';
 
 const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
 
@@ -151,12 +152,7 @@ class _AdminHomepageState extends State<AdminHomepage> {
                         flipIcon: true,
                         icon: Icons.list_alt_outlined,
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const AllDonationsAdmin(),
-                            ),
-                          );
+                          Navigator.pushNamed(context, Routes.allDonationAdmin);
                         },
                       ),
 
