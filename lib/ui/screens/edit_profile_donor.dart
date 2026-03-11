@@ -9,6 +9,9 @@ import '../../services/user_service.dart';
 import '../../services/address_service.dart';
 import '../../data/models/lat_lng_model.dart';
 import '../../data/models/place_prediction.dart';
+import '../widgets/labeled_text_field.dart';
+import '../widgets/address_autocomplete_field.dart';
+import '../widgets/loading_indicator.dart';
 
 class DonorEditProfileScreen extends StatefulWidget {
   const DonorEditProfileScreen({super.key});
@@ -47,7 +50,6 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
     try {
       donor = await _donorService.getMyDonorProfile();
 
-      // מלא את ה־TextEditingControllers
       nameCtrl.text = donor!.user.name;
       businessNameCtrl.text = donor!.businessName;
       businessPhoneCtrl.text = donor!.businessPhone;
@@ -58,7 +60,6 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
 
       setState(() {});
     } catch (e) {
-      // אפשר להוסיף טיפול בשגיאה
       print("Error loading donor: $e");
     }
   }
@@ -92,7 +93,7 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: donor == null
-          ? const Center(child: CircularProgressIndicator())
+          ? const LoadingIndicator()
           : SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
@@ -102,40 +103,67 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
                     Text('עריכת פרטי תורם', style: DonorEditProfileTheme.headerStyle),
                     const SizedBox(height: 20),
 
-                    _buildLabeledField('שם משתמש:', nameCtrl),
-                    _buildLabeledField('שם העסק:', businessNameCtrl),
-                    _buildLabeledField('פלאפון עסק:', businessPhoneCtrl),
-                    _buildLabeledField(
-                    'כתובת העסק:',
-                    businessAddressCtrl,
+                    LabeledTextField(
+                      label: 'שם משתמש:',
+                      controller: nameCtrl,
+                      labelStyle: DonorEditProfileTheme.labelStyle,
+                      decoration: DonorEditProfileTheme.inputDecoration,
+                    ),
+
+                    LabeledTextField(
+                      label: 'שם העסק:',
+                      controller: businessNameCtrl,
+                      labelStyle: DonorEditProfileTheme.labelStyle,
+                      decoration: DonorEditProfileTheme.inputDecoration,
+                    ),
+
+                    LabeledTextField(
+                      label: 'פלאפון עסק:',
+                      controller: businessPhoneCtrl,
+                      labelStyle: DonorEditProfileTheme.labelStyle,
+                      decoration: DonorEditProfileTheme.inputDecoration,
+                    ),
+
+                    AddressAutocompleteField(
+                    label: 'כתובת העסק:',
+                    controller: businessAddressCtrl,
+                    predictions: predictions,
                     onChanged: _searchAddress,
-                    ),
+                    onSelect: _selectPlace,
+                  ),
 
-                    if (predictions.isNotEmpty)
-                    ...predictions.map(
-                        (p) => ListTile(
-                        title: Text(p.description),
-                        onTap: () => _selectPlace(p),
-                        ),
-                    ),
-                    // _buildLabeledField('כתובת העסק:', businessAddressCtrl),
-                    _buildLabeledField('שם איש קשר:', contactNameCtrl),
-                    _buildLabeledField('פלאפון איש קשר:', contactPhoneCtrl),
-                    _buildLabeledField('ח״פ/עוסק מורשה:', crnCtrl),
-                    const SizedBox(height: 20),
+                  LabeledTextField(
+                    label: 'שם איש קשר:',
+                    controller: contactNameCtrl,
+                    labelStyle: DonorEditProfileTheme.labelStyle,
+                    decoration: DonorEditProfileTheme.inputDecoration,
+                  ),
+                  LabeledTextField(
+                    label: 'פלאפון איש קשר:',
+                    controller: contactPhoneCtrl,
+                    labelStyle: DonorEditProfileTheme.labelStyle,
+                    decoration: DonorEditProfileTheme.inputDecoration,
+                  ),
+                  LabeledTextField(
+                    label: 'ח״פ/עוסק מורשה:',
+                    controller: crnCtrl,
+                    labelStyle: DonorEditProfileTheme.labelStyle,
+                    decoration: DonorEditProfileTheme.inputDecoration,
+                  ),
+                  const SizedBox(height: 20),
 
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _saveProfile,
-                        style: DonorEditProfileTheme.saveButtonStyle,
-                        child: const Text('שמור'),
-                      ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _saveProfile,
+                      style: DonorEditProfileTheme.saveButtonStyle,
+                      child: const Text('שמור'),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
+          ),
     );
   }
   Future<void> _saveProfile() async {
@@ -144,12 +172,10 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
 
     try {
 
-        /// update user
         await UserService().updateUserProfile(
         name: nameCtrl.text,
         );
 
-        /// update address
         final updatedAddress = donor!.businessAddress.copyWith(
         name: businessAddressCtrl.text,
         lat: selectedLatLng?.lat ?? donor!.businessAddress.lat,
@@ -158,7 +184,6 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
 
         await _addressService.updateAddress(updatedAddress);
 
-        /// update donor
         final updatedDonor = donor!.copyWith(
         businessName: businessNameCtrl.text,
         businessPhone: businessPhoneCtrl.text,
@@ -185,29 +210,4 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
     }
   }
 
-  Widget _buildLabeledField(
-    String label,
-    TextEditingController ctrl, {
-    Function(String)? onChanged,
-    }) {
-    return Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-            Text(label, style: DonorEditProfileTheme.labelStyle),
-            const SizedBox(height: 4),
-            Directionality(
-            textDirection: TextDirection.rtl,
-            child: TextFormField(
-                controller: ctrl,
-                textAlign: TextAlign.center,
-                onChanged: onChanged,
-                decoration: DonorEditProfileTheme.inputDecoration,
-            ),
-            ),
-        ],
-        ),
-    );
-  }
 }
