@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
       const snap = await db
         .collection("donation")
         .where("organization_id", "==", organizationId)
-        .where("status", "==", "canceled")
+        .where("status", "==", "cancelled")
         .get();
 
       return res.status(200).send({ count: snap.size });

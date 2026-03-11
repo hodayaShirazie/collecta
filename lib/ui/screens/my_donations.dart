@@ -1,6 +1,9 @@
+
 // import 'package:flutter/material.dart';
 // import '../theme/homepage_theme.dart';
 // import '../theme/my_donations_theme.dart';
+// import '../../data/models/donation_model.dart';
+// import '../../services/donation_service.dart';
 
 // class MyDonations extends StatefulWidget {
 //   const MyDonations({super.key});
@@ -10,26 +13,43 @@
 // }
 
 // class _MyDonationsState extends State<MyDonations> {
+//   final DonationService _service = DonationService();
+
 //   String selectedStatus = "הכל";
 //   DateTimeRange? selectedDateRange;
 
-//   final List<Map<String, dynamic>> dummyDonations = [
-//     {
-//       "businessName": "מאפיית כהן",
-//       "date": DateTime(2025, 2, 10),
-//       "status": "ממתין",
-//     },
-//     {
-//       "businessName": "סופר השכונה",
-//       "date": DateTime(2025, 2, 5),
-//       "status": "נאסף",
-//     },
-//     {
-//       "businessName": "ירקן העיר",
-//       "date": DateTime(2025, 1, 28),
-//       "status": "בוטל",
-//     },
-//   ];
+//   List<DonationModel> donations = [];
+//   bool isLoading = true;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _loadDonations();
+//   }
+
+//   Future<void> _loadDonations() async {
+//     try {
+//       final result = await _service.getMyDonations();
+
+//       print("🟢 total donations from service: ${result.length}");
+//       for (var d in result) {
+//         print("➡ donation id: ${d.id}");
+//         print("   status: ${d.status}");
+//         print("   address: ${d.businessAddress.name}");
+//         print("   products count: ${d.products.length}");
+//       }
+
+//       setState(() {
+//         donations = result;
+//         isLoading = false;
+//       });
+//     } catch (e) {
+//       print("🔴 error loading donations: $e");
+//       setState(() {
+//         isLoading = false;
+//       });
+//     }
+//   }
 
 //   Future<void> _pickDateRange() async {
 //     final picked = await showDateRangePicker(
@@ -53,13 +73,21 @@
 //     }
 //   }
 
-//   List<Map<String, dynamic>> get filteredDonations {
-//     return dummyDonations.where((donation) {
-//       final donationDate = donation["date"] as DateTime;
 
-//       if (selectedStatus != "הכל" &&
-//           donation["status"] != selectedStatus) {
-//         return false;
+//   List<DonationModel> get filteredDonations {
+//     return donations.where((donation) {
+//       final donationDate = donation.createdAt;
+
+//       if (selectedStatus != "הכל") {
+//         final statusMap = {
+//           "ממתין": "pending",
+//           "נאסף": "confirmed",
+//           "בוטל": "cancelled",
+//         };
+
+//         if (donation.status != statusMap[selectedStatus]) {
+//           return false;
+//         }
 //       }
 
 //       if (selectedDateRange != null) {
@@ -75,14 +103,26 @@
 //     }).toList();
 //   }
 
+//   String _statusText(String status) {
+//     switch (status) {
+//       case "pending":
+//         return "ממתין";
+//       case "confirmed":
+//         return "נאסף";
+//       case "cancelled":
+//         return "בוטל";
+//       default:
+//         return status;
+//     }
+//   }
+
 //   @override
 //   Widget build(BuildContext context) {
 //     return Directionality(
 //       textDirection: TextDirection.rtl,
 //       child: Scaffold(
 //         body: Container(
-//           decoration:
-//               const BoxDecoration(gradient: HomepageTheme.pageGradient),
+//           decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
 //           child: SafeArea(
 //             child: Column(
 //               children: [
@@ -93,7 +133,7 @@
 //                 ),
 //                 const SizedBox(height: 20),
 
-//                 /// 📅 Date Range Filter
+//                 /// 📅 Date Filter
 //                 Padding(
 //                   padding: const EdgeInsets.symmetric(horizontal: 20),
 //                   child: GestureDetector(
@@ -102,8 +142,7 @@
 //                       width: double.infinity,
 //                       padding: const EdgeInsets.symmetric(
 //                           vertical: 14, horizontal: 18),
-//                       decoration:
-//                           MyDonationsTheme.dateFilterDecoration,
+//                       decoration: MyDonationsTheme.dateFilterDecoration,
 //                       child: Row(
 //                         children: [
 //                           const Icon(Icons.date_range),
@@ -113,9 +152,8 @@
 //                               selectedDateRange == null
 //                                   ? "סינון מתאריך עד תאריך"
 //                                   : "${selectedDateRange!.start.day}/${selectedDateRange!.start.month}/${selectedDateRange!.start.year} - "
-//                                     "${selectedDateRange!.end.day}/${selectedDateRange!.end.month}/${selectedDateRange!.end.year}",
-//                               style:
-//                                   MyDonationsTheme.dateFilterText,
+//                                       "${selectedDateRange!.end.day}/${selectedDateRange!.end.month}/${selectedDateRange!.end.year}",
+//                               style: MyDonationsTheme.dateFilterText,
 //                             ),
 //                           ),
 //                           if (selectedDateRange != null)
@@ -139,14 +177,12 @@
 //                 Padding(
 //                   padding: const EdgeInsets.symmetric(horizontal: 20),
 //                   child: Row(
-//                     children: ["הכל", "ממתין", "נאסף", "בוטל"]
-//                         .map((status) {
+//                     children: ["הכל", "ממתין", "נאסף", "בוטל"].map((status) {
 //                       final selected = selectedStatus == status;
 
 //                       return Expanded(
 //                         child: Padding(
-//                           padding:
-//                               const EdgeInsets.symmetric(horizontal: 4),
+//                           padding: const EdgeInsets.symmetric(horizontal: 4),
 //                           child: GestureDetector(
 //                             onTap: () {
 //                               setState(() {
@@ -154,15 +190,13 @@
 //                               });
 //                             },
 //                             child: Container(
-//                               padding: const EdgeInsets.symmetric(
-//                                   vertical: 10),
+//                               padding: const EdgeInsets.symmetric(vertical: 10),
 //                               alignment: Alignment.center,
-//                               decoration: MyDonationsTheme
-//                                   .statusChipDecoration(selected),
+//                               decoration:
+//                                   MyDonationsTheme.statusChipDecoration(selected),
 //                               child: Text(
 //                                 status,
-//                                 style:
-//                                     MyDonationsTheme.statusChipText,
+//                                 style: MyDonationsTheme.statusChipText,
 //                               ),
 //                             ),
 //                           ),
@@ -175,47 +209,84 @@
 //                 const SizedBox(height: 25),
 
 //                 Expanded(
-//                   child: ListView.builder(
-//                     padding:
-//                         const EdgeInsets.symmetric(horizontal: 20),
-//                     itemCount: filteredDonations.length,
-//                     itemBuilder: (context, index) {
-//                       final donation =
-//                           filteredDonations[index];
+//                   child: isLoading
+//                       ? const Center(child: CircularProgressIndicator())
+//                       : filteredDonations.isEmpty
+//                           ? const Center(child: Text("אין תרומות להצגה"))
+//                           : ListView.builder(
+//                               padding:
+//                                   const EdgeInsets.symmetric(horizontal: 20),
+//                               itemCount: filteredDonations.length,
+//                               itemBuilder: (context, index) {
+//                                 final donation = filteredDonations[index];
 
-//                       return Container(
-//                         margin:
-//                             const EdgeInsets.only(bottom: 15),
-//                         padding: const EdgeInsets.all(18),
-//                         decoration:
-//                             MyDonationsTheme.cardDecoration,
-//                         child: Column(
-//                           crossAxisAlignment:
-//                               CrossAxisAlignment.start,
-//                           children: [
-//                             Text(
-//                               donation["businessName"],
-//                               style:
-//                                   MyDonationsTheme.titleStyle,
+//                                 return Container(
+//                                   margin: const EdgeInsets.only(bottom: 16),
+//                                   padding: const EdgeInsets.all(16),
+//                                   decoration: MyDonationsTheme.donationCardDecoration,
+//                                   child: Column(
+//                                     crossAxisAlignment:
+//                                         CrossAxisAlignment.start,
+//                                     children: [
+//                                       Row(
+//                                         mainAxisAlignment:
+//                                             MainAxisAlignment.spaceBetween,
+//                                         children: [
+//                                           Text(
+//                                             donation.businessAddress.name,
+//                                             style: MyDonationsTheme.donationTitle,
+//                                           ),
+//                                           Text(
+//                                             "${donation.createdAt.day}/${donation.createdAt.month}/${donation.createdAt.year}",
+//                                             style: MyDonationsTheme.donationDate,
+//                                           ),
+//                                         ],
+//                                       ),
+
+//                                       const SizedBox(height: 10),
+
+//                                       Container(
+//                                         padding: const EdgeInsets.symmetric(
+//                                           vertical: 4,
+//                                           horizontal: 10,
+//                                         ),
+//                                         decoration: BoxDecoration(
+//                                           color: MyDonationsTheme.statusColor(
+//                                               donation.status),
+//                                           borderRadius:
+//                                               BorderRadius.circular(12),
+//                                         ),
+//                                         child: Text(
+//                                           _statusText(donation.status),
+//                                           style: const TextStyle(
+//                                             color: Colors.black,
+//                                           ),
+//                                         ),
+//                                       ),
+
+//                                       const SizedBox(height: 12),
+
+//                                       Column(
+//                                         crossAxisAlignment:
+//                                             CrossAxisAlignment.start,
+//                                         children:
+//                                             donation.products.map((product) {
+//                                           final isOther =
+//                                               product.type.name == "אחר";
+
+//                                           return Text(
+//                                             isOther
+//                                                 ? "אחר - ${product.quantity} (${product.type.description})"
+//                                                 : "${product.type.name} - ${product.quantity}",
+//                                             style: MyDonationsTheme.dateStyle,
+//                                           );
+//                                         }).toList(),
+//                                       ),
+//                                     ],
+//                                   ),
+//                                 );
+//                               },
 //                             ),
-//                             const SizedBox(height: 5),
-//                             Text(
-//                               "${donation["date"].day}/${donation["date"].month}/${donation["date"].year}",
-//                               style:
-//                                   MyDonationsTheme.dateStyle,
-//                             ),
-//                             const SizedBox(height: 8),
-//                             Text(
-//                               donation["status"],
-//                               style:
-//                                   MyDonationsTheme.statusStyle(
-//                                       donation["status"]),
-//                             ),
-//                           ],
-//                         ),
-//                       );
-//                     },
-//                   ),
 //                 ),
 //               ],
 //             ),
@@ -226,7 +297,11 @@
 //   }
 // }
 
-//--------------------------------------------------------------------------
+
+
+
+
+
 
 
 
@@ -245,6 +320,7 @@ import '../theme/homepage_theme.dart';
 import '../theme/my_donations_theme.dart';
 import '../../data/models/donation_model.dart';
 import '../../services/donation_service.dart';
+import 'edit_donation.dart';
 
 class MyDonations extends StatefulWidget {
   const MyDonations({super.key});
@@ -271,15 +347,6 @@ class _MyDonationsState extends State<MyDonations> {
   Future<void> _loadDonations() async {
     try {
       final result = await _service.getMyDonations();
-
-      print("🟢 total donations from service: ${result.length}");
-      for (var d in result) {
-        print("➡ donation id: ${d.id}");
-        print("   status: ${d.status}");
-        print("   address: ${d.businessAddress.name}");
-        print("   products count: ${d.products.length}");
-      }
-
       setState(() {
         donations = result;
         isLoading = false;
@@ -314,7 +381,6 @@ class _MyDonationsState extends State<MyDonations> {
     }
   }
 
-
   List<DonationModel> get filteredDonations {
     return donations.where((donation) {
       final donationDate = donation.createdAt;
@@ -322,7 +388,7 @@ class _MyDonationsState extends State<MyDonations> {
       if (selectedStatus != "הכל") {
         final statusMap = {
           "ממתין": "pending",
-          "נאסף": "collected",
+          "נאסף": "confirmed",
           "בוטל": "cancelled",
         };
 
@@ -348,7 +414,7 @@ class _MyDonationsState extends State<MyDonations> {
     switch (status) {
       case "pending":
         return "ממתין";
-      case "collected":
+      case "confirmed":
         return "נאסף";
       case "cancelled":
         return "בוטל";
@@ -374,15 +440,14 @@ class _MyDonationsState extends State<MyDonations> {
                 ),
                 const SizedBox(height: 20),
 
-                /// 📅 Date Filter
+                // Date Filter
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: GestureDetector(
                     onTap: _pickDateRange,
                     child: Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 14, horizontal: 18),
+                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
                       decoration: MyDonationsTheme.dateFilterDecoration,
                       child: Row(
                         children: [
@@ -414,7 +479,7 @@ class _MyDonationsState extends State<MyDonations> {
 
                 const SizedBox(height: 20),
 
-                /// 🎛 Status Filter
+                // Status Filter
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
@@ -431,7 +496,7 @@ class _MyDonationsState extends State<MyDonations> {
                               });
                             },
                             child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
                               alignment: Alignment.center,
                               decoration:
                                   MyDonationsTheme.statusChipDecoration(selected),
@@ -447,88 +512,76 @@ class _MyDonationsState extends State<MyDonations> {
                   ),
                 ),
 
-                const SizedBox(height: 25),
+                const SizedBox(height: 20),
 
+                // Donations List
                 Expanded(
                   child: isLoading
                       ? const Center(child: CircularProgressIndicator())
                       : filteredDonations.isEmpty
                           ? const Center(child: Text("אין תרומות להצגה"))
                           : ListView.builder(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
+                              padding: const EdgeInsets.symmetric(vertical: 10),
                               itemCount: filteredDonations.length,
                               itemBuilder: (context, index) {
                                 final donation = filteredDonations[index];
 
-                                return Container(
-                                  margin: const EdgeInsets.only(bottom: 16),
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: MyDonationsTheme.donationCardDecoration,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(
-                                            donation.businessAddress.name,
-                                            style: MyDonationsTheme.donationTitle,
+                                return GestureDetector(
+                                  onTap: () {
+                                    // Navigator.push(
+                                    //   context,
+                                    //   MaterialPageRoute(
+                                    //     builder: (_) => EditDonation(donation: donation),
+                                    //   ),
+                                    // );
+                                  },
+                                  child: Align(
+                                    alignment: Alignment.center, 
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width * 0.4,
+                                      margin: const EdgeInsets.symmetric(vertical: 8),
+                                      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(12),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black12,
+                                            blurRadius: 4,
+                                            offset: Offset(0, 2),
                                           ),
+                                        ],
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          const Icon(Icons.info_outline, size: 28),
+                                          const SizedBox(width: 12),
                                           Text(
                                             "${donation.createdAt.day}/${donation.createdAt.month}/${donation.createdAt.year}",
                                             style: MyDonationsTheme.donationDate,
                                           ),
+                                          const SizedBox(width: 12),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                                            decoration: BoxDecoration(
+                                              color: MyDonationsTheme.statusColor(donation.status),
+                                              borderRadius: BorderRadius.circular(10),
+                                            ),
+                                            child: Text(
+                                              _statusText(donation.status),
+                                              style: const TextStyle(color: Colors.black),
+                                            ),
+                                          ),
                                         ],
                                       ),
-
-                                      const SizedBox(height: 10),
-
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 4,
-                                          horizontal: 10,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: MyDonationsTheme.statusColor(
-                                              donation.status),
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                        child: Text(
-                                          _statusText(donation.status),
-                                          style: const TextStyle(
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                      ),
-
-                                      const SizedBox(height: 12),
-
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children:
-                                            donation.products.map((product) {
-                                          final isOther =
-                                              product.type.name == "אחר";
-
-                                          return Text(
-                                            isOther
-                                                ? "אחר - ${product.quantity} (${product.type.description})"
-                                                : "${product.type.name} - ${product.quantity}",
-                                            style: MyDonationsTheme.dateStyle,
-                                          );
-                                        }).toList(),
-                                      ),
-                                    ],
+                                    ),
                                   ),
                                 );
                               },
                             ),
-                ),
+                          ),
               ],
             ),
           ),

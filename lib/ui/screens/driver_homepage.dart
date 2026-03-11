@@ -295,7 +295,7 @@ Widget build(BuildContext context) {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '!שמחים לראות אותך שוב',
+                    'שמחים לראות אותך שוב!',
                     style: HomepageTheme.subtitleTextStyle.copyWith(
                       color: HomepageTheme.latetBlue.withOpacity(0.7),
                     ),

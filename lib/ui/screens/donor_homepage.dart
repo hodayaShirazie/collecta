@@ -101,7 +101,7 @@ class DonorHomepage extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          '!שמחים לראות אותך שוב',
+                          'שמחים לראות אותך שוב!',
                           style: HomepageTheme.subtitleTextStyle.copyWith(
                             color: HomepageTheme.latetBlue.withOpacity(0.7),
                           ),
@@ -119,12 +119,7 @@ class DonorHomepage extends StatelessWidget {
                                 icon: Icons.volunteer_activism_outlined,
                                 flipIcon: true,
                                  onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const ReportDonation(),
-                                    ),
-                                  );
+                                  Navigator.pushNamed(context, Routes.reportDonation);
                                 },
                               ),
                               const SizedBox(height: HomepageTheme.betweenButtons),
@@ -132,13 +127,7 @@ class DonorHomepage extends StatelessWidget {
                                 title: 'התרומות שלי',
                                 icon: Icons.assignment_outlined,
                                 onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const MyDonations(),
-                                    ),
-                                  );
-
+                                  Navigator.pushNamed(context, Routes.myDonations);
                                 },
                               ),
 
