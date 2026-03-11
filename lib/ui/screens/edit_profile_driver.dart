@@ -4,12 +4,14 @@ import '../../services/user_service.dart';
 import '../../services/destination_service.dart';
 import '../../services/address_service.dart';
 import '../../services/places_service.dart';
-
 import '../../data/models/driver_model.dart';
 import '../../data/models/destination_model.dart';
 import '../../data/models/lat_lng_model.dart';
 import '../../data/models/place_prediction.dart';
-import '../../app/routes.dart';
+import '../widgets/labeled_text_field.dart';
+import '../widgets/address_autocomplete_field.dart';
+import '../widgets/loading_indicator.dart';
+import 'package:collecta/app/routes.dart';
 
 
 class DriverEditProfileScreen extends StatefulWidget {
@@ -120,12 +122,10 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
 
     try {
 
-      /// update user
       await _userService.updateUserProfile(
         name: nameCtrl.text,
       );
 
-      /// update driver
       final updatedDriver = driver!.copyWith(
         phone: phoneCtrl.text,
         area: areaCtrl.text,
@@ -133,7 +133,6 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
 
       await _driverService.updateDriverProfile(updatedDriver);
 
-      /// update destinations
       for (var destination in driver!.destinations) {
 
         final id = destination.id;
@@ -159,7 +158,7 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("הפרטים עודכנו")),
       );
-      Navigator.pushReplacementNamed(context, Routes.donor);
+      Navigator.pushReplacementNamed(context, Routes.driver);
 
     } catch (e) {
 
@@ -181,7 +180,7 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
       backgroundColor: Colors.white,
 
       body: driver == null
-          ? const Center(child: CircularProgressIndicator())
+          ? const LoadingIndicator()
           : SingleChildScrollView(
 
               child: Padding(
@@ -203,13 +202,20 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
                     ),
 
                     const SizedBox(height: 30),
+                    LabeledTextField(
+                      label: "שם משתמש",
+                      controller: nameCtrl,
+                    ),
 
-                    _buildField("שם משתמש", nameCtrl),
+                    LabeledTextField(
+                      label: "פלאפון",
+                      controller: phoneCtrl,
+                    ),
 
-                    _buildField("פלאפון", phoneCtrl),
-
-                    _buildField("אזור", areaCtrl),
-
+                    LabeledTextField(
+                      label: "אזור",
+                      controller: areaCtrl,
+                    ),
                     const SizedBox(height: 30),
 
                     const Align(
@@ -242,24 +248,22 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
 
                               children: [
 
-                                _buildField("שם יעד", nameCtrls[id]!),
-
-                                _buildField("יום", dayCtrls[id]!),
-
-                                _buildField(
-                                  "כתובת",
-                                  addressCtrls[id]!,
-                                  onChanged: (v) => _searchAddress(id, v),
+                                LabeledTextField(
+                                  label: "שם יעד",
+                                  controller: nameCtrls[id]!,
+                                ),
+                                LabeledTextField(
+                                  label: "יום",
+                                  controller: dayCtrls[id]!,
                                 ),
 
-                                if (predictions[id]!.isNotEmpty)
-                                  ...predictions[id]!.map(
-                                    (p) => ListTile(
-                                      title: Text(p.description),
-                                      onTap: () => _selectPlace(id, p),
-                                    ),
-                                  )
-
+                                AddressAutocompleteField(
+                                  label: "כתובת",
+                                  controller: addressCtrls[id]!,
+                                  predictions: predictions[id]!,
+                                  onChanged: (v) => _searchAddress(id, v),
+                                  onSelect: (p) => _selectPlace(id, p),
+                                ),
                               ],
 
                             ),
@@ -296,53 +300,4 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
     );
 
   }
-
-  Widget _buildField(
-    String label,
-    TextEditingController ctrl, {
-    Function(String)? onChanged,
-  }) {
-
-    return Padding(
-
-      padding: const EdgeInsets.only(bottom: 12),
-
-      child: Column(
-
-        crossAxisAlignment: CrossAxisAlignment.end,
-
-        children: [
-
-          Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
-
-          const SizedBox(height: 4),
-
-          Directionality(
-
-            textDirection: TextDirection.rtl,
-
-            child: TextField(
-
-              controller: ctrl,
-
-              onChanged: onChanged,
-
-              textAlign: TextAlign.center,
-
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-              ),
-
-            ),
-
-          ),
-
-        ],
-
-      ),
-
-    );
-
-  }
-
 }
