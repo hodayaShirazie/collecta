@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
+
 import '../../services/driver_service.dart';
 import '../../services/user_service.dart';
 import '../../services/destination_service.dart';
 import '../../services/address_service.dart';
-import '../../services/places_service.dart';
-import '../../data/models/driver_model.dart';
-import '../../data/models/destination_model.dart';
-import '../../data/models/lat_lng_model.dart';
-import '../../data/models/place_prediction.dart';
-import '../widgets/labeled_text_field.dart';
-import '../widgets/address_autocomplete_field.dart';
-import '../widgets/loading_indicator.dart';
-import 'package:collecta/app/routes.dart';
 
+import '../../data/models/driver_model.dart';
+import '../../data/models/lat_lng_model.dart';
+
+import '../widgets/layout_wrapper.dart';
+import '../widgets/loading_indicator.dart';
+
+import '../widgets/personal_details/driver_details_card.dart';
+import '../widgets/personal_details/destination_card.dart';
+
+import '../theme/homepage_theme.dart';
+import '../theme/edit_profile_donor_theme.dart';
+
+import 'package:collecta/app/routes.dart';
 
 class DriverEditProfileScreen extends StatefulWidget {
   const DriverEditProfileScreen({super.key});
@@ -27,7 +32,8 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
   final UserService _userService = UserService();
   final DestinationService _destinationService = DestinationService();
   final AddressService _addressService = AddressService();
-  final PlacesService _placesService = PlacesService();
+
+  final _formKey = GlobalKey<FormState>();
 
   DriverProfile? driver;
 
@@ -40,7 +46,6 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
   final Map<String, TextEditingController> addressCtrls = {};
 
   final Map<String, LatLngModel?> selectedLatLng = {};
-  final Map<String, List<PlacePrediction>> predictions = {};
 
   bool isSaving = false;
 
@@ -66,7 +71,6 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
         dayCtrls[d.id] = TextEditingController(text: d.day);
         addressCtrls[d.id] = TextEditingController(text: d.address.name);
 
-        predictions[d.id] = [];
         selectedLatLng[d.id] = null;
 
       }
@@ -83,38 +87,11 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
 
   }
 
-  Future<void> _searchAddress(String destId, String input) async {
+  Future<void> _saveProfile() async {
 
-    if (input.isEmpty) {
-      setState(() => predictions[destId] = []);
+    if (!_formKey.currentState!.validate()) {
       return;
     }
-
-    final results = await _placesService.autocomplete(input);
-
-    setState(() {
-      predictions[destId] = results;
-    });
-
-  }
-
-  Future<void> _selectPlace(String destId, PlacePrediction place) async {
-
-    final details = await _placesService.getPlaceDetails(place.placeId);
-
-    setState(() {
-
-      addressCtrls[destId]!.text = place.description;
-
-      selectedLatLng[destId] = details;
-
-      predictions[destId] = [];
-
-    });
-
-  }
-
-  Future<void> _saveProfile() async {
 
     if (driver == null) return;
 
@@ -158,6 +135,7 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("הפרטים עודכנו")),
       );
+
       Navigator.pushReplacementNamed(context, Routes.driver);
 
     } catch (e) {
@@ -175,129 +153,111 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
   @override
   Widget build(BuildContext context) {
 
+    if (driver == null) {
+      return const Scaffold(
+        body: LoadingIndicator(),
+      );
+    }
+
     return Scaffold(
 
-      backgroundColor: Colors.white,
+      body: LayoutWrapper(
 
-      body: driver == null
-          ? const LoadingIndicator()
-          : SingleChildScrollView(
+        child: Container(
 
-              child: Padding(
+          decoration: const BoxDecoration(
+            gradient: HomepageTheme.pageGradient,
+          ),
 
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+          child: SafeArea(
 
-                child: Column(
+            child: SingleChildScrollView(
 
-                  children: [
+              padding: const EdgeInsets.symmetric(horizontal: 25),
 
-                    const SizedBox(height: 50),
+              child: Column(
 
-                    const Text(
-                      "עריכת פרטי נהג",
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                children: [
 
-                    const SizedBox(height: 30),
-                    LabeledTextField(
-                      label: "שם משתמש",
-                      controller: nameCtrl,
-                    ),
+                  const SizedBox(height: HomepageTheme.topPadding),
 
-                    LabeledTextField(
-                      label: "פלאפון",
-                      controller: phoneCtrl,
-                    ),
+                  const Text(
+                    "עריכת פרטי נהג",
+                    style: DonorEditProfileTheme.headerStyle,
+                  ),
 
-                    LabeledTextField(
-                      label: "אזור",
-                      controller: areaCtrl,
-                    ),
-                    const SizedBox(height: 30),
+                  const SizedBox(height: 35),
 
-                    const Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        "יעדים",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                  Form(
+
+                    key: _formKey,
+
+                    child: Column(
+
+                      children: [
+
+                        DriverDetailsCard(
+                          name: nameCtrl,
+                          phone: phoneCtrl,
+                          area: areaCtrl,
                         ),
-                      ),
-                    ),
 
-                    const SizedBox(height: 10),
+                        const SizedBox(height: 15),
 
-                    Column(
-                      children: driver!.destinations.map((destination) {
+                        ...driver!.destinations.map((destination) {
 
-                        final id = destination.id;
+                          final id = destination.id;
 
-                        return Card(
+                          return DestinationCard(
+                            name: nameCtrls[id]!,
+                            day: dayCtrls[id]!,
+                            address: addressCtrls[id]!,
+                            onLocationSelected: (lat, lng) {
 
-                          margin: const EdgeInsets.only(bottom: 16),
+                              selectedLatLng[id] =
+                                  LatLngModel(lat: lat, lng: lng);
 
-                          child: Padding(
+                            },
+                          );
 
-                            padding: const EdgeInsets.all(12),
+                        }).toList(),
 
-                            child: Column(
+                        const SizedBox(height: 30),
 
-                              children: [
-
-                                LabeledTextField(
-                                  label: "שם יעד",
-                                  controller: nameCtrls[id]!,
-                                ),
-                                LabeledTextField(
-                                  label: "יום",
-                                  controller: dayCtrls[id]!,
-                                ),
-
-                                AddressAutocompleteField(
-                                  label: "כתובת",
-                                  controller: addressCtrls[id]!,
-                                  predictions: predictions[id]!,
-                                  onChanged: (v) => _searchAddress(id, v),
-                                  onSelect: (p) => _selectPlace(id, p),
-                                ),
-                              ],
-
-                            ),
-
+                        SizedBox(
+                          width: 160,
+                          child: ElevatedButton(
+                            onPressed: isSaving ? null : _saveProfile,
+                            style: DonorEditProfileTheme.saveButtonStyle,
+                            child: isSaving
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white)
+                                : const Text("שמור"),
                           ),
+                        ),
 
-                        );
+                        const SizedBox(height: 40),
 
-                      }).toList(),
+                      ],
+
                     ),
 
-                    const SizedBox(height: 40),
+                  ),
 
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: isSaving ? null : _saveProfile,
-                        child: isSaving
-                            ? const CircularProgressIndicator(color: Colors.white)
-                            : const Text("שמור שינויים"),
-                      ),
-                    ),
-
-                    const SizedBox(height: 40),
-
-                  ],
-
-                ),
+                ],
 
               ),
 
             ),
 
+          ),
+
+        ),
+
+      ),
+
     );
 
   }
+
 }
