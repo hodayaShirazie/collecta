@@ -42,6 +42,9 @@ class AddressFieldWidget extends StatelessWidget {
           },
 
           fieldViewBuilder: (context, fieldController, focusNode, onEditingComplete) {
+            if (controller.text.isNotEmpty && fieldController.text.isEmpty) {
+              fieldController.text = controller.text;
+            }
             return TextFormField(
               controller: fieldController,
               focusNode: focusNode,
@@ -49,6 +52,9 @@ class AddressFieldWidget extends StatelessWidget {
                   value == null || value.isEmpty ? "שדה חובה" : null,
               decoration: ReportDonationTheme.inputDecoration("כתובת העסק"),
               textAlign: TextAlign.right,
+              onChanged: (value) {
+                controller.text = value;
+              },
               onEditingComplete: onEditingComplete,
             );
           },
