@@ -5,8 +5,9 @@ Future<Map<String, dynamic>?> showQuantityDialog({
   required BuildContext context,
   required String productName,
   String? productId,
+  int initialQuantity = 1,
 }) async {
-  int quantity = 1;
+  int quantity = initialQuantity;
 
   return showDialog<Map<String, dynamic>>(
     context: context,
