@@ -5,33 +5,19 @@ import '../theme/homepage_theme.dart';
 import '../theme/report_donation_theme.dart';
 
 import '../widgets/layout_wrapper.dart';
-import '../widgets/donation_widgets/card.dart';
-import '../widgets/donation_widgets/input_field.dart';
-import '../widgets/donation_widgets/section_title.dart';
-import '../widgets/donation_widgets/quantity_dialog.dart';
-import '../widgets/donation_widgets/donated_item_tile.dart';
-import '../widgets/donation_widgets/address_field.dart';
-import '../widgets/donation_widgets/product_chip.dart';
-import '../widgets/donation_widgets/products_card.dart';
-import '../widgets/donation_widgets/time_slots_card.dart';
-import '../widgets/personal_details/business_details_card.dart';
-import '../widgets/personal_details/contact_details_card.dart';
-import '../widgets/donation_widgets/donated_items_section.dart';
-import '../widgets/donation_widgets/dialog/edit_quantity_dialog.dart';
-import '../widgets/donation_widgets/dialog/other_item_dialog.dart';
 import '../widgets/donation_widgets/donation_form.dart';
+import '../widgets/loading_indicator.dart';
 
-import '../utils/validators/phone_validator.dart';
-import '../utils/validators/business_id_validator.dart';
 import '../utils/donation/donation_toggle_product_helper.dart';
 import '../utils/donation/donation_edit_helper.dart';
 import '../utils/donation/donation_constants.dart';
 
-
 import '../../services/donation_flow_service.dart';
-import '../../services/places_service.dart';
+import '../../services/donor_service.dart';
 
-import '../../data/models/place_prediction.dart';
+import '../../data/models/donor_model.dart';
+
+
 
 const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
 
@@ -58,6 +44,35 @@ class _ReportDonationState extends State<ReportDonation> {
 
   double? selectedLat;
   double? selectedLng;
+
+  DonorProfile? donor;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDonorProfileIfExists();
+  }
+
+  Future<void> _loadDonorProfileIfExists() async {
+    try {
+      donor = await DonorService().getMyDonorProfile();
+
+      businessName.text = donor!.businessName;
+      businessPhone.text = donor!.businessPhone;
+      contactName.text = donor!.contactName;
+      contactPhone.text = donor!.contactPhone;
+      businessId.text = donor!.crn;
+      address.text = donor!.businessAddress.name;
+
+      selectedLat = donor!.businessAddress.lat;
+      selectedLng = donor!.businessAddress.lng;
+
+      setState(() {});
+    } catch (e) {
+      debugPrint("No donor profile found: $e");
+    }
+  }
 
 
   void toggleTime(String slot) {
@@ -150,6 +165,13 @@ class _ReportDonationState extends State<ReportDonation> {
 
   @override
   Widget build(BuildContext context) {
+
+    if (donor == null) {
+      return const Scaffold(
+        body: LoadingIndicator(),
+      );
+    }
+
     return Scaffold(
       body: LayoutWrapper(
         child: Container(
