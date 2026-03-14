@@ -316,6 +316,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:collecta/ui/guards/auth_guard.dart';
 import '../theme/homepage_theme.dart';
 import '../theme/my_donations_theme.dart';
 import '../../data/models/donation_model.dart';
@@ -528,12 +529,33 @@ class _MyDonationsState extends State<MyDonations> {
 
                                 return GestureDetector(
                                   onTap: () {
-                                    // Navigator.push(
-                                    //   context,
-                                    //   MaterialPageRoute(
-                                    //     builder: (_) => EditDonation(donation: donation),
-                                    //   ),
-                                    // );
+                                    print("========== DONATION ==========");
+                                    print(donation.toJson());
+                                    print("==============================");
+                                    if (donation.status == "pending") {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => AuthGuard(
+                                            child: EditDonation(donation: donation),
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                          title: const Text("עריכה אינה אפשרית"),
+                                          content: const Text("לא ניתן לערוך תרומה זו."),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () => Navigator.of(context).pop(),
+                                              child: const Text("סגור"),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }
                                   },
                                   child: Align(
                                     alignment: Alignment.center, 
