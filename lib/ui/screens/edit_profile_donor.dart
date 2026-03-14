@@ -65,16 +65,16 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
       nameCtrl.text = donor!.user.name;
       businessNameCtrl.text = donor!.businessName;
       businessPhoneCtrl.text = donor!.businessPhone;
-      businessAddressCtrl.text = donor!.businessAddress.name;
+      // businessAddressCtrl.text = donor!.businessAddress.name;
       contactNameCtrl.text = donor!.contactName;
       contactPhoneCtrl.text = donor!.contactPhone;
       crnCtrl.text = donor!.crn;
 
-      // businessAddressCtrl.text = donor!.businessAddress.name;
-
-
-      selectedLat = donor!.businessAddress.lat;
-      selectedLng = donor!.businessAddress.lng;
+      if (donor!.businessAddress.name.isNotEmpty) {
+        businessAddressCtrl.text = donor!.businessAddress.name;
+        selectedLat = donor!.businessAddress.lat;
+        selectedLng = donor!.businessAddress.lng;
+      }
 
       setState(() {});
 
@@ -93,25 +93,56 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
 
     try {
 
+      /// update user
       await _userService.updateUserProfile(
         name: nameCtrl.text,
       );
 
-      final updatedAddress = donor!.businessAddress.copyWith(
-        name: businessAddressCtrl.text,
-        lat: selectedLat ?? donor!.businessAddress.lat,
-        lng: selectedLng ?? donor!.businessAddress.lng,
-      );
+      String addressId = donor!.businessAddress.id;
+      var address = donor!.businessAddress;
 
-      await _addressService.updateAddress(updatedAddress);
+      final hasAddress =
+          addressId.isNotEmpty &&
+          addressId.trim().isNotEmpty &&
+          address.name.trim().isNotEmpty;
 
+      /// אם אין כתובת → צור חדשה
+      if (!hasAddress) {
+
+        addressId = await _addressService.createAddress(
+          name: businessAddressCtrl.text,
+          lat: selectedLat!,
+          lng: selectedLng!,
+        );
+
+        address = address.copyWith(
+          id: addressId,
+          name: businessAddressCtrl.text,
+          lat: selectedLat!,
+          lng: selectedLng!,
+        );
+
+      } else {
+
+        /// אם יש כתובת → עדכן
+        final updatedAddress = address.copyWith(
+          name: businessAddressCtrl.text,
+          lat: selectedLat ?? address.lat,
+          lng: selectedLng ?? address.lng,
+        );
+
+        await _addressService.updateAddress(updatedAddress);
+        address = updatedAddress;
+      }
+
+      /// update donor
       final updatedDonor = donor!.copyWith(
         businessName: businessNameCtrl.text,
         businessPhone: businessPhoneCtrl.text,
         contactName: contactNameCtrl.text,
         contactPhone: contactPhoneCtrl.text,
         crn: crnCtrl.text,
-        businessAddress: updatedAddress,
+        businessAddress: address,
       );
 
       await _donorService.updateDonorProfile(updatedDonor);
@@ -130,6 +161,7 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
 
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
