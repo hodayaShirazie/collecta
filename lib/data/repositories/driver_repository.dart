@@ -1,8 +1,10 @@
-import '../datasources/remote/api_source.dart';
+// import '../datasources/remote/api_source.dart';
+import '../datasources/remote/driver_api.dart';
 import '../models/driver_model.dart';
 
 class DriverRepository {
-  final ApiSource _source = ApiSource();
+  // final ApiSource _source = ApiSource();
+  final DriverApi _source = DriverApi();
 
   Future<List<DriverProfile>> getDriversByOrganization(String organizationId) async {
     final data = await _source.getDriversByOrganization(organizationId);
