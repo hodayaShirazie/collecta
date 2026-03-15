@@ -76,7 +76,6 @@ class _ReportDonationState extends State<ReportDonation> {
     }
   }
 
-
   void toggleTime(String slot) {
     setState(() {
       selectedTimeSlots.contains(slot)
@@ -149,6 +148,7 @@ class _ReportDonationState extends State<ReportDonation> {
       await DonationFlowService().submitDonation(
         businessName: businessName.text,
         businessPhone: businessPhone.text,
+        address: address.text,
         contactName: contactName.text,
         contactPhone: contactPhone.text,
         businessId: businessId.text,
@@ -166,6 +166,7 @@ class _ReportDonationState extends State<ReportDonation> {
           buttonText: "סגור",
         ),
       );
+      Navigator.pop(context);
 
       return true; 
 

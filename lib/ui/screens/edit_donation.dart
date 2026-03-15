@@ -7,6 +7,7 @@ import '../theme/report_donation_theme.dart';
 import '../widgets/layout_wrapper.dart';
 import '../widgets/donation_widgets/donation_form.dart';
 import '../widgets/loading_indicator.dart';
+import '../widgets/custom_popup_dialog.dart'; 
 
 import '../utils/donation/donation_toggle_product_helper.dart';
 import '../utils/donation/donation_edit_helper.dart';
@@ -106,16 +107,40 @@ class _EditDonationState extends State<EditDonation> {
     });
   }
 
-  Future<void> toggleProduct(Map<String, dynamic> product) async {
-    await DonationToggleProductHelper.toggleProduct(
-      context: context,
-      product: product,
-      selectedProducts: selectedProducts,
-      donatedItems: donatedItems,
-      refresh: () => setState(() {}),
-    );
-  }
+  // Future<void> toggleProduct(Map<String, dynamic> product) async {
+  //   await DonationToggleProductHelper.toggleProduct(
+  //     context: context,
+  //     product: product,
+  //     selectedProducts: selectedProducts,
+  //     donatedItems: donatedItems,
+  //     refresh: () => setState(() {}),
+  //   );
+  // }
 
+  Future<void> toggleProduct(Map<String, dynamic> product) async {
+  // מדפיסים את המקור
+  debugPrint("==== toggleProduct called ====");
+  debugPrint("Original product type: ${product.runtimeType}");
+  debugPrint("Original product contents: $product");
+
+  // המרה ל-Map<String, Object> רגיל
+  final safeProduct = <String, Object>{
+    "name": product["name"] ?? "",
+    "id": product["id"] ?? "",
+    "icon": product["icon"] ?? "",
+  };
+
+  debugPrint("Safe product type: ${safeProduct.runtimeType}");
+  debugPrint("Safe product contents: $safeProduct");
+
+  await DonationToggleProductHelper.toggleProduct(
+    context: context,
+    product: safeProduct,
+    selectedProducts: selectedProducts,
+    donatedItems: donatedItems,
+    refresh: () => setState(() {}),
+  );
+}
   Future<void> editItem(int index) async {
     await DonationEditHelper.editDonatedItem(
       context: context,
@@ -169,8 +194,14 @@ class _EditDonationState extends State<EditDonation> {
     //     lng: selectedLng,
     //   );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("💙 התרומה נשמרה בהצלחה")),
+
+      await showDialog(
+        context: context,
+        builder: (context) => const CustomPopupDialog(
+          title: "תודה על תרומתך!",
+          message: "התרומה עודכנה בהצלחה",
+          buttonText: "סגור",
+        ),
       );
       Navigator.pop(context); // חזרה למסך הקודם
     // } catch (e) {

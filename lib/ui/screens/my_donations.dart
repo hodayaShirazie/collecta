@@ -218,14 +218,7 @@ class _MyDonationsState extends State<MyDonations> {
                                     // print(donation.toJson());
                                     // print("==============================");
                                     if (donation.status == "pending") {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => AuthGuard(
-                                            child: EditDonation(donationId: donation.id),
-                                          ),
-                                        ),
-                                      );
+                                      Navigator.pushNamed(context, '/donor/edit-donation/${donation.id}');
                                     } else {
                                       showDialog(
                                         context: context,
