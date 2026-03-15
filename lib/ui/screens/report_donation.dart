@@ -11,6 +11,7 @@ import '../widgets/loading_indicator.dart';
 import '../utils/donation/donation_toggle_product_helper.dart';
 import '../utils/donation/donation_edit_helper.dart';
 import '../utils/donation/donation_constants.dart';
+import '../utils/donation/donation_category_helper.dart';
 
 import '../../services/donation_flow_service.dart';
 import '../../services/donor_service.dart';
@@ -202,6 +203,10 @@ class _ReportDonationState extends State<ReportDonation> {
                     selectedProducts: selectedProducts,
                     toggleProduct: toggleProduct,
                     donatedItems: donatedItems,
+                    isCategoryDisabled: (product) => DonationCategoryHelper.isCategoryDisabled(
+                      product: product,
+                      donatedItems: donatedItems,
+                    ),
                     onEditItem: _editDonatedItem,
                     onDeleteItem: (index) {
                       setState(() {

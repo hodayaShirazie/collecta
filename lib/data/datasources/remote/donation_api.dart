@@ -46,6 +46,7 @@ class DonationApi extends ApiSource {
       final response = await http.get(
         Uri.parse('${ApiConfig.baseUrl}/getDonationById?donationId=$donationId'),
         // headers: headers,
+        headers: await headers(),
       );
 
       if (response.statusCode != 200) {

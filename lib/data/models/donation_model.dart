@@ -88,7 +88,6 @@ class DonationModel {
     print('$k => $v (${v.runtimeType})');
   });
 
-  // עכשיו ניצור את המודל כמו קודם, עם null check
   return DonationModel(
     id: json['id'] ?? 'MISSING_ID',
     status: json['status'] ?? 'UNKNOWN',

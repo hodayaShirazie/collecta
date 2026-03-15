@@ -6,10 +6,6 @@ import '../models/donation_list_item_model.dart';
 class DonationRepository {
   final DonationApi _source = DonationApi();
 
-  // Future<String> reportDonation(DonationModel donation) {
-  //   return _source.reportDonation(donation);
-  // }
-
   Future<String> reportDonationRaw(Map<String, dynamic> body) {
     return _source.reportDonationRaw(body);
   }
@@ -21,7 +17,6 @@ class DonationRepository {
         .map<DonationListItemModel>((json) => DonationListItemModel.fromApi(json))
         .toList();
   }
-
   
   Future<DonationModel> getDonationById(String donationId) async {
     final data = await _source.getDonationById(donationId);

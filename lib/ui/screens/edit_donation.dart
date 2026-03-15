@@ -11,6 +11,7 @@ import '../widgets/loading_indicator.dart';
 import '../utils/donation/donation_toggle_product_helper.dart';
 import '../utils/donation/donation_edit_helper.dart';
 import '../utils/donation/donation_constants.dart';
+import '../utils/donation/donation_category_helper.dart'; 
 
 import '../../services/donation_service.dart';
 import '../../services/donor_service.dart';
@@ -221,6 +222,10 @@ class _EditDonationState extends State<EditDonation> {
                     buttonText: "שמור שינויים",
                     onLocationSelected: onLocationSelected,
                     buttonStyle: ReportDonationTheme.simpleButton,
+                    isCategoryDisabled: (product) => DonationCategoryHelper.isCategoryDisabled(
+                    product: product,
+                    donatedItems: donatedItems,
+                ),
                   ),
                 ],
               ),
