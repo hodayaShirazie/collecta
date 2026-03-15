@@ -7,6 +7,7 @@ import '../theme/report_donation_theme.dart';
 import '../widgets/layout_wrapper.dart';
 import '../widgets/donation_widgets/donation_form.dart';
 import '../widgets/loading_indicator.dart';
+import '../widgets/custom_popup_dialog.dart'; 
 
 import '../utils/donation/donation_toggle_product_helper.dart';
 import '../utils/donation/donation_edit_helper.dart';
@@ -103,7 +104,7 @@ class _ReportDonationState extends State<ReportDonation> {
     );
   }
 
-  bool _validateBeforeSubmit() {
+  Future<bool> _validateBeforeSubmit() async {
     final isFormValid = _formKey.currentState!.validate();
 
     if (!isFormValid) {
@@ -112,9 +113,12 @@ class _ReportDonationState extends State<ReportDonation> {
 
 
     if (selectedTimeSlots.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("יש לבחור לפחות חלון זמן אחד"),
+      await showDialog(
+        context: context,
+        builder: (context) => const CustomPopupDialog(
+          title: "שים לב",
+          message: "יש לבחור לפחות חלון זמן אחד",
+          buttonText: "סגור",
         ),
       );
       return false;
@@ -122,9 +126,12 @@ class _ReportDonationState extends State<ReportDonation> {
 
 
     if (donatedItems.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("יש להוסיף לפחות מוצר אחד לתרומה"),
+      await showDialog(
+        context: context,
+        builder: (context) => const CustomPopupDialog(
+          title: "שים לב",
+          message: "יש להוסיף לפחות מוצר אחד לתרומה",
+          buttonText: "סגור",
         ),
       );
       return false;
@@ -134,7 +141,7 @@ class _ReportDonationState extends State<ReportDonation> {
   }
 
   Future<bool> submit() async {
-    if (!_validateBeforeSubmit()) {
+    if (!await _validateBeforeSubmit()) {
       return false;
     }
 
@@ -151,9 +158,15 @@ class _ReportDonationState extends State<ReportDonation> {
         lng: selectedLng,
       );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("💙 התרומה נשלחה בהצלחה")),
+      await showDialog(
+        context: context,
+        builder: (context) => const CustomPopupDialog(
+          title: "תודה על תרומתך!",
+          message: "התרומה נשלחה בהצלחה",
+          buttonText: "סגור",
+        ),
       );
+
       return true; 
 
     } catch (e) {
