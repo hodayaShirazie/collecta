@@ -1,8 +1,10 @@
-import '../datasources/remote/api_source.dart';
+// import '../datasources/remote/api_source.dart';
+import '../datasources/remote/address_api.dart';
 import '../models/address_model.dart';
 
 class AddressRepository {
-  final ApiSource _source = ApiSource();
+  // final ApiSource _source = ApiSource();
+  final AddressApi _source = AddressApi();
 
   
   Future<String> createAddress({

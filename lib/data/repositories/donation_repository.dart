@@ -1,9 +1,10 @@
-import '../datasources/remote/api_source.dart';
+// import '../datasources/remote/api_source.dart';
+import '../datasources/remote/donation_api.dart';
 import '../models/donation_model.dart';
 import '../models/donation_list_item_model.dart';
 
 class DonationRepository {
-  final ApiSource _source = ApiSource();
+  final DonationApi _source = DonationApi();
 
   // Future<String> reportDonation(DonationModel donation) {
   //   return _source.reportDonation(donation);

@@ -1,9 +1,11 @@
 // lib/data/repositories/donor_repository.dart
-import '../datasources/remote/api_source.dart';
+// import '../datasources/remote/api_source.dart';
+import '../datasources/remote/donor_api.dart';
 import '../models/donor_model.dart';
 
 class DonorRepository {
-  final ApiSource _source = ApiSource();
+  // final ApiSource _source = ApiSource();
+  final DonorApi _source = DonorApi();
 
   Future<DonorProfile> getDonorProfile() async {
     final data = await _source.getDonorProfile();
