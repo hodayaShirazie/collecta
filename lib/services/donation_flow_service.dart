@@ -10,6 +10,7 @@ class DonationFlowService {
   Future<void> submitDonation({
     required String businessName,
     required String businessPhone,
+    required String address,
     required String contactName,
     required String contactPhone,
     required String businessId,
@@ -22,7 +23,7 @@ class DonationFlowService {
     final addressService = AddressService();
 
     final addressId = await addressService.createAddress(
-      name: businessName,
+      name: address,
       lat: lat ?? 30,
       lng: lng ?? 30,
     );

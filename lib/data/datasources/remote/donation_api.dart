@@ -40,6 +40,22 @@ class DonationApi extends ApiSource {
         return json.decode(response.body);
     }
 
+    Future<Map<String, dynamic>> getDonationById(String donationId) async {
+      // final headers = await AuthHeaders.build();
+
+      final response = await http.get(
+        Uri.parse('${ApiConfig.baseUrl}/getDonationById?donationId=$donationId'),
+        // headers: headers,
+        headers: await headers(),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception(response.body);
+      }
+
+      return Map<String, dynamic>.from(json.decode(response.body));
+    }
+
 
     Future<List<Map<String, dynamic>>> getDonationsByOrganization(String organizationId) async {
 

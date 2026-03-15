@@ -7,10 +7,12 @@ import '../theme/report_donation_theme.dart';
 import '../widgets/layout_wrapper.dart';
 import '../widgets/donation_widgets/donation_form.dart';
 import '../widgets/loading_indicator.dart';
+import '../widgets/custom_popup_dialog.dart'; 
 
 import '../utils/donation/donation_toggle_product_helper.dart';
 import '../utils/donation/donation_edit_helper.dart';
 import '../utils/donation/donation_constants.dart';
+import '../utils/donation/donation_category_helper.dart';
 
 import '../../services/donation_flow_service.dart';
 import '../../services/donor_service.dart';
@@ -74,7 +76,6 @@ class _ReportDonationState extends State<ReportDonation> {
     }
   }
 
-
   void toggleTime(String slot) {
     setState(() {
       selectedTimeSlots.contains(slot)
@@ -102,7 +103,7 @@ class _ReportDonationState extends State<ReportDonation> {
     );
   }
 
-  bool _validateBeforeSubmit() {
+  Future<bool> _validateBeforeSubmit() async {
     final isFormValid = _formKey.currentState!.validate();
 
     if (!isFormValid) {
@@ -111,9 +112,12 @@ class _ReportDonationState extends State<ReportDonation> {
 
 
     if (selectedTimeSlots.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("יש לבחור לפחות חלון זמן אחד"),
+      await showDialog(
+        context: context,
+        builder: (context) => const CustomPopupDialog(
+          title: "שים לב",
+          message: "יש לבחור לפחות חלון זמן אחד",
+          buttonText: "סגור",
         ),
       );
       return false;
@@ -121,9 +125,12 @@ class _ReportDonationState extends State<ReportDonation> {
 
 
     if (donatedItems.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("יש להוסיף לפחות מוצר אחד לתרומה"),
+      await showDialog(
+        context: context,
+        builder: (context) => const CustomPopupDialog(
+          title: "שים לב",
+          message: "יש להוסיף לפחות מוצר אחד לתרומה",
+          buttonText: "סגור",
         ),
       );
       return false;
@@ -133,7 +140,7 @@ class _ReportDonationState extends State<ReportDonation> {
   }
 
   Future<bool> submit() async {
-    if (!_validateBeforeSubmit()) {
+    if (!await _validateBeforeSubmit()) {
       return false;
     }
 
@@ -141,6 +148,7 @@ class _ReportDonationState extends State<ReportDonation> {
       await DonationFlowService().submitDonation(
         businessName: businessName.text,
         businessPhone: businessPhone.text,
+        address: address.text,
         contactName: contactName.text,
         contactPhone: contactPhone.text,
         businessId: businessId.text,
@@ -150,9 +158,16 @@ class _ReportDonationState extends State<ReportDonation> {
         lng: selectedLng,
       );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("💙 התרומה נשלחה בהצלחה")),
+      await showDialog(
+        context: context,
+        builder: (context) => const CustomPopupDialog(
+          title: "תודה על תרומתך!",
+          message: "התרומה נשלחה בהצלחה",
+          buttonText: "סגור",
+        ),
       );
+      Navigator.pop(context);
+
       return true; 
 
     } catch (e) {
@@ -202,6 +217,10 @@ class _ReportDonationState extends State<ReportDonation> {
                     selectedProducts: selectedProducts,
                     toggleProduct: toggleProduct,
                     donatedItems: donatedItems,
+                    isCategoryDisabled: (product) => DonationCategoryHelper.isCategoryDisabled(
+                      product: product,
+                      donatedItems: donatedItems,
+                    ),
                     onEditItem: _editDonatedItem,
                     onDeleteItem: (index) {
                       setState(() {
