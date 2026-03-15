@@ -1,5 +1,6 @@
 import '../datasources/remote/api_source.dart';
 import '../models/donation_model.dart';
+import '../models/donation_list_item_model.dart';
 
 class DonationRepository {
   final ApiSource _source = ApiSource();
@@ -12,12 +13,18 @@ class DonationRepository {
     return _source.reportDonationRaw(body);
   }
 
-  Future<List<DonationModel>> getMyDonations() async {
+  Future<List<DonationListItemModel>> getMyDonations() async {
     final data = await _source.getMyDonations();
 
     return data
-        .map<DonationModel>((json) => DonationModel.fromApi(json))
+        .map<DonationListItemModel>((json) => DonationListItemModel.fromApi(json))
         .toList();
+  }
+
+  
+  Future<DonationModel> getDonationById(String donationId) async {
+    final data = await _source.getDonationById(donationId);
+    return DonationModel.fromApi(data['donation']);
   }
 
   Future<List<DonationModel>> getDonationsByOrganization(
