@@ -17,6 +17,8 @@ import '../utils/donation/donation_category_helper.dart';
 import '../../services/donation_service.dart';
 import '../../services/donor_service.dart';
 
+import '../../data/models/donation_model.dart';
+
 class EditDonation extends StatefulWidget {
   final String donationId;
 
@@ -46,6 +48,8 @@ class _EditDonationState extends State<EditDonation> {
 
   bool isLoading = true;
 
+  DonationModel? currentDonation;
+
   @override
   void initState() {
     super.initState();
@@ -55,6 +59,8 @@ class _EditDonationState extends State<EditDonation> {
   Future<void> _loadDonation() async {
     try {
       final donation = await DonationService().getDonationById(widget.donationId);
+      currentDonation = donation;
+
       final donor = await DonorService().getMyDonorProfile();
 
 
@@ -72,25 +78,31 @@ class _EditDonationState extends State<EditDonation> {
       selectedTimeSlots = donation.pickupTimes.map((e) => "${e.from}-${e.to}").toList();
 
 
-      donatedItems = donation.products.map((p) {
-        final typeName = p.type?.name ?? '';
-        final unit = 'יחידות/ק"ג'; 
-        final quantity = p.quantity;
-        return {
-          "name": typeName,
-          "quantity": quantity,
-          "unit": unit,
-          "display": "$quantity $unit", 
-        };
-      }).toList();
+      donatedItems = donation.products.map<Map<String, dynamic>>((p) {
+      final typeName = p.type?.name ?? '';
+      final quantity = p.quantity;
+
+      return <String, dynamic>{
+        "id": p.type?.id ?? '',
+        "name": typeName,
+        "icon": '',
+        "quantity": quantity.toString(),
+        "unit": 'יחידות/ק"ג',
+        "display": "$typeName - $quantity",
+      };
+    }).toList();
 
       selectedProducts = donatedItems.map((e) => e["name"] as String).toList();
+
+      if (!mounted) return;
 
       setState(() {
         isLoading = false;
       });
     } catch (e) {
       debugPrint("Error loading donation: $e");
+
+      if (!mounted) return;
       setState(() {
         isLoading = false;
       });
@@ -107,31 +119,8 @@ class _EditDonationState extends State<EditDonation> {
     });
   }
 
-  // Future<void> toggleProduct(Map<String, dynamic> product) async {
-  //   await DonationToggleProductHelper.toggleProduct(
-  //     context: context,
-  //     product: product,
-  //     selectedProducts: selectedProducts,
-  //     donatedItems: donatedItems,
-  //     refresh: () => setState(() {}),
-  //   );
-  // }
-
   Future<void> toggleProduct(Map<String, dynamic> product) async {
-  // מדפיסים את המקור
-  debugPrint("==== toggleProduct called ====");
-  debugPrint("Original product type: ${product.runtimeType}");
-  debugPrint("Original product contents: $product");
-
-  // המרה ל-Map<String, Object> רגיל
-  final safeProduct = <String, Object>{
-    "name": product["name"] ?? "",
-    "id": product["id"] ?? "",
-    "icon": product["icon"] ?? "",
-  };
-
-  debugPrint("Safe product type: ${safeProduct.runtimeType}");
-  debugPrint("Safe product contents: $safeProduct");
+  final safeProduct = Map<String, dynamic>.from(product);
 
   await DonationToggleProductHelper.toggleProduct(
     context: context,
@@ -141,6 +130,33 @@ class _EditDonationState extends State<EditDonation> {
     refresh: () => setState(() {}),
   );
 }
+
+//   Future<void> toggleProduct(Map<String, dynamic> product) async {
+//   // מדפיסים את המקור
+//   debugPrint("==== toggleProduct called ====");
+//   debugPrint("Original product type: ${product.runtimeType}");
+//   debugPrint("Original product contents: $product");
+
+//   // המרה ל-Map<String, Object> רגיל
+//   final safeProduct = <String, Object>{
+//     "name": product["name"] ?? "",
+//     "id": product["id"] ?? "",
+//     "icon": product["icon"] ?? "",
+//   };
+
+//   debugPrint("Safe product type: ${safeProduct.runtimeType}");
+//   debugPrint("Safe product contents: $safeProduct");
+
+//   await DonationToggleProductHelper.toggleProduct(
+//     context: context,
+//     product: safeProduct,
+//     selectedProducts: selectedProducts,
+//     donatedItems: donatedItems,
+//     refresh: () => setState(() {}),
+//   );
+// }
+
+
   Future<void> editItem(int index) async {
     await DonationEditHelper.editDonatedItem(
       context: context,
@@ -179,6 +195,11 @@ class _EditDonationState extends State<EditDonation> {
       );
       return;
     }
+
+    // final updatedDonation = currentDonation!.copyWith(
+    //   contactName: contactNameCtrl.text,
+    //   contactPhone: contactPhoneCtrl.text,
+    // );
 
     // try {
     //   await DonationService().updateDonation(

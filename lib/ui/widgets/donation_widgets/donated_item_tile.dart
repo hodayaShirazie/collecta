@@ -43,7 +43,7 @@ class DonatedItemTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  item["name"] ?? "",
+                  item["display"] ?? item["name"] ?? "",
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,

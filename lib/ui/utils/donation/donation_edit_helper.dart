@@ -14,14 +14,15 @@ class DonationEditHelper {
   }) async {
     Map<String, dynamic> item = donatedItems[index];
     String name = item["name"] ?? "";
-    String quantity = item["quantity"] ?? "";
+    String quantity = item["quantity"]?.toString() ?? "";
     String unit = item["unit"] ?? "";
 
     if (name.startsWith("אחר")) {
       // פריט "אחר" – פתיחת dialog של תיאור
       final result = await showOtherItemDialog(context: context);
       if (result != null) {
-        donatedItems[index] = result;
+        // donatedItems[index] = result;
+        donatedItems[index] = Map<String, dynamic>.from(result);
         refresh();
       }
     } else {
@@ -30,12 +31,14 @@ class DonationEditHelper {
       final result = await showQuantityDialog(
         context: context,
         productName: name,
-        productId: item["productTypeId"],
+        // productId: item["productTypeId"],
+        productId: item["id"],
         initialQuantity: currentQuantity,
       );
 
       if (result != null) {
-        donatedItems[index] = result;
+        // donatedItems[index] = result;
+        donatedItems[index] = Map<String, dynamic>.from(result);
         refresh();
       }
     }
