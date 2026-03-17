@@ -71,4 +71,18 @@ class DonorProfile {
       crn: crn ?? this.crn,
     );
   }
+
+   List<String> missingFields() {
+    final missing = <String>[];
+
+    if (user.name.isEmpty) missing.add("name");
+    if (businessName.isEmpty) missing.add("businessName");
+    if (businessPhone.isEmpty) missing.add("businessPhone");
+    if (businessAddress.name.isEmpty) missing.add("address");
+    if (contactName.isEmpty) missing.add("contactName");
+    if (contactPhone.isEmpty) missing.add("contactPhone");
+    if (crn.isEmpty) missing.add("crn");
+
+    return missing;
+  }
 }
