@@ -1,168 +1,26 @@
 
-// import 'package:flutter/material.dart';
-// import '../theme/homepage_theme.dart';
-// import '../theme/report_donation_theme.dart';
-// import '../widgets/layout_wrapper.dart';
-// import '../widgets/donation_widgets/donation_form.dart';
-// import '../utils/donation/donation_constants.dart';
-// import '../../data/models/donation_model.dart';
-
-// class EditDonation extends StatefulWidget {
-//   final DonationModel donation; 
-
-//   const EditDonation({super.key, required this.donation});
-
-//   @override
-//   State<EditDonation> createState() => _EditDonationState();
-// }
-
-// class _EditDonationState extends State<EditDonation> {
-//   final _formKey = GlobalKey<FormState>();
-
-//   late TextEditingController businessNameCtrl;
-//   late TextEditingController addressCtrl;
-//   late TextEditingController businessPhoneCtrl;
-//   late TextEditingController businessIdCtrl;
-//   late TextEditingController contactNameCtrl;
-//   late TextEditingController contactPhoneCtrl;
-
-//   List<String> selectedTimeSlots = [];
-//   List<String> selectedProducts = [];
-//   List<Map<String, dynamic>> donatedItems = [];
-
-//   @override
-//   @override
-//   void initState() {
-//     super.initState();
-
-//     // אתחול controllers עם נתונים קיימים אם קיימים, אחרת עם מחרוזת ריקה
-//     businessNameCtrl = TextEditingController(
-//         text: '');
-//     addressCtrl = TextEditingController(
-//         text: '');
-//     businessPhoneCtrl = TextEditingController(
-//         text:  '');
-//     businessIdCtrl = TextEditingController(
-//         text:  '');
-//     contactNameCtrl = TextEditingController(
-//         text: widget.donation.contactName ?? '');
-//     contactPhoneCtrl = TextEditingController(
-//         text: widget.donation.contactPhone ?? '');
-
-//     // אתחול רשימות או ריקות
-//     selectedTimeSlots = List<String>.from([]);
-//     selectedProducts = List<String>.from( []);
-//     donatedItems = List<Map<String, dynamic>>.from( []);
-//   }
-
-//    void toggleTime(String slot) {
-//     setState(() {
-//       if (selectedTimeSlots.contains(slot)) {
-//         selectedTimeSlots.remove(slot);
-//       } else {
-//         selectedTimeSlots.add(slot);
-//       }
-//     });
-//   }
-
-//   void toggleProduct(Map<String, dynamic> product) {
-//     final name = product["name"];
-
-//     setState(() {
-//       if (selectedProducts.contains(name)) {
-//         selectedProducts.remove(name);
-//       } else {
-//         selectedProducts.add(name);
-//       }
-//     });
-//   }
-//   void editItem(int index) {
-//     // בהמשך
-//   }
-
-//   void deleteItem(int index) {
-//     setState(() {
-//       donatedItems.removeAt(index);
-//     });
-//   }
-
-//   void submit() {
-//     // בהמשך update donation
-//   }
-
-//   void onLocationSelected(double lat, double lng) {
-//     // בהמשך אם תרצי לשמור מיקום
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: LayoutWrapper(
-//         child: Container(
-//           decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
-//           child: SafeArea(
-//             child: SingleChildScrollView(
-//               padding: const EdgeInsets.symmetric(horizontal: 25),
-//               child: Column(
-//                 children: [
-//                   const SizedBox(height: HomepageTheme.topPadding),
-//                   const Text("עריכת תרומה", style: ReportDonationTheme.headerStyle),
-//                   const SizedBox(height: 35),
-//                   DonationForm(
-//                     formKey: _formKey,
-//                     businessName: businessNameCtrl,
-//                     address: addressCtrl,
-//                     businessPhone: businessPhoneCtrl,
-//                     businessId: businessIdCtrl,
-//                     contactName: contactNameCtrl,
-//                     contactPhone: contactPhoneCtrl,
-//                     timeSlots: DonationConstants.timeSlots,
-//                     selectedTimeSlots: selectedTimeSlots,
-//                     toggleTime: toggleTime,
-//                     products: DonationConstants.products,
-//                     selectedProducts: selectedProducts,
-//                     toggleProduct: toggleProduct,
-//                     donatedItems: donatedItems,
-//                     onEditItem: editItem,
-//                     onDeleteItem: deleteItem,
-//                     onSubmit: submit,
-//                     buttonText: "שמור שינויים",
-//                     onLocationSelected: onLocationSelected,
-//                     buttonStyle: ReportDonationTheme.simpleButton,
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-
-
-
-
-
-
-
-
-
 import 'package:flutter/material.dart';
+
 import '../theme/homepage_theme.dart';
 import '../theme/report_donation_theme.dart';
+
 import '../widgets/layout_wrapper.dart';
 import '../widgets/donation_widgets/donation_form.dart';
+import '../widgets/loading_indicator.dart';
+import '../widgets/custom_popup_dialog.dart'; 
+
+import '../utils/donation/donation_toggle_product_helper.dart';
+import '../utils/donation/donation_edit_helper.dart';
 import '../utils/donation/donation_constants.dart';
-import '../../data/models/donation_model.dart';
-import '../../data/models/product_model.dart';
-// import '../../data/models/pickup_time.dart';
+import '../utils/donation/donation_category_helper.dart'; 
+
+import '../../services/donation_service.dart';
+import '../../services/donor_service.dart';
 
 class EditDonation extends StatefulWidget {
-  final DonationModel donation;
+  final String donationId;
 
-  const EditDonation({super.key, required this.donation});
+  const EditDonation({super.key, required this.donationId});
 
   @override
   State<EditDonation> createState() => _EditDonationState();
@@ -171,55 +29,72 @@ class EditDonation extends StatefulWidget {
 class _EditDonationState extends State<EditDonation> {
   final _formKey = GlobalKey<FormState>();
 
-  late TextEditingController businessNameCtrl;
-  late TextEditingController addressCtrl;
-  late TextEditingController businessPhoneCtrl;
-  late TextEditingController businessIdCtrl;
-  late TextEditingController contactNameCtrl;
-  late TextEditingController contactPhoneCtrl;
+  // Controllers
+  late TextEditingController businessNameCtrl = TextEditingController();
+  late TextEditingController addressCtrl = TextEditingController();
+  late TextEditingController businessPhoneCtrl = TextEditingController();
+  late TextEditingController businessIdCtrl = TextEditingController();
+  late TextEditingController contactNameCtrl = TextEditingController();
+  late TextEditingController contactPhoneCtrl = TextEditingController();
 
   List<String> selectedTimeSlots = [];
   List<String> selectedProducts = [];
   List<Map<String, dynamic>> donatedItems = [];
 
+  double? selectedLat;
+  double? selectedLng;
+
+  bool isLoading = true;
+
   @override
   void initState() {
     super.initState();
+    _loadDonation();
+  }
+
+  Future<void> _loadDonation() async {
+    try {
+      final donation = await DonationService().getDonationById(widget.donationId);
+      final donor = await DonorService().getMyDonorProfile();
 
 
-    businessNameCtrl = TextEditingController(
-        text: widget.donation.businessAddress.name ?? '');
-    addressCtrl = TextEditingController(
-        text: widget.donation.businessAddress.name ?? ''); // או כתובת מפורטת
-    businessPhoneCtrl = TextEditingController(
-        text: widget.donation.contactPhone ?? ''); // change to real field
-    businessIdCtrl = TextEditingController(
-        text: widget.donation.businessAddress.id ?? '');
-    contactNameCtrl = TextEditingController(
-        text: widget.donation.contactName ?? '');
-    contactPhoneCtrl = TextEditingController(
-        text: widget.donation.contactPhone ?? '');
+      businessNameCtrl.text = donor.businessName;
+      addressCtrl.text = donation.businessAddress.name;
+      businessPhoneCtrl.text = donor.businessPhone;
+      businessIdCtrl.text = donor.crn;
+      contactNameCtrl.text = donation.contactName ?? '';
+      contactPhoneCtrl.text = donation.contactPhone ?? '';
 
-    // ❗ אתחול רשימות
-    selectedTimeSlots = widget.donation.pickupTimes.isNotEmpty
-        ? widget.donation.pickupTimes
-            .map((slot) => "${slot.from} - ${slot.to}")
-            .toList()
-        : [];
+      selectedLat = donor.businessAddress.lat;
+      selectedLng = donor.businessAddress.lng;
 
-    selectedProducts = widget.donation.products.isNotEmpty
-        ? widget.donation.products.map((p) => p.type.name).toList()
-        : [];
 
-    donatedItems = widget.donation.products.isNotEmpty
-        ? widget.donation.products
-            .map((p) => {
-                  "id": p.id,
-                  "type": {"name": p.type.name, "description": p.type.description},
-                  "quantity": p.quantity,
-                })
-            .toList()
-        : [];
+      selectedTimeSlots = donation.pickupTimes.map((e) => "${e.from}-${e.to}").toList();
+
+
+      donatedItems = donation.products.map((p) {
+        final typeName = p.type?.name ?? '';
+        final unit = 'יחידות/ק"ג'; 
+        final quantity = p.quantity;
+        return {
+          "name": typeName,
+          "quantity": quantity,
+          "unit": unit,
+          "display": "$quantity $unit", 
+        };
+      }).toList();
+
+      selectedProducts = donatedItems.map((e) => e["name"] as String).toList();
+
+      setState(() {
+        isLoading = false;
+      });
+    } catch (e) {
+      debugPrint("Error loading donation: $e");
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   void toggleTime(String slot) {
@@ -232,19 +107,47 @@ class _EditDonationState extends State<EditDonation> {
     });
   }
 
-  void toggleProduct(Map<String, dynamic> product) {
-    final name = product["name"];
-    setState(() {
-      if (selectedProducts.contains(name)) {
-        selectedProducts.remove(name);
-      } else {
-        selectedProducts.add(name);
-      }
-    });
-  }
+  // Future<void> toggleProduct(Map<String, dynamic> product) async {
+  //   await DonationToggleProductHelper.toggleProduct(
+  //     context: context,
+  //     product: product,
+  //     selectedProducts: selectedProducts,
+  //     donatedItems: donatedItems,
+  //     refresh: () => setState(() {}),
+  //   );
+  // }
 
-  void editItem(int index) {
-    // TODO: טיפול בעריכת פריט
+  Future<void> toggleProduct(Map<String, dynamic> product) async {
+  // מדפיסים את המקור
+  debugPrint("==== toggleProduct called ====");
+  debugPrint("Original product type: ${product.runtimeType}");
+  debugPrint("Original product contents: $product");
+
+  // המרה ל-Map<String, Object> רגיל
+  final safeProduct = <String, Object>{
+    "name": product["name"] ?? "",
+    "id": product["id"] ?? "",
+    "icon": product["icon"] ?? "",
+  };
+
+  debugPrint("Safe product type: ${safeProduct.runtimeType}");
+  debugPrint("Safe product contents: $safeProduct");
+
+  await DonationToggleProductHelper.toggleProduct(
+    context: context,
+    product: safeProduct,
+    selectedProducts: selectedProducts,
+    donatedItems: donatedItems,
+    refresh: () => setState(() {}),
+  );
+}
+  Future<void> editItem(int index) async {
+    await DonationEditHelper.editDonatedItem(
+      context: context,
+      index: index,
+      donatedItems: donatedItems,
+      refresh: () => setState(() {}),
+    );
   }
 
   void deleteItem(int index) {
@@ -253,27 +156,81 @@ class _EditDonationState extends State<EditDonation> {
     });
   }
 
-  void submit() {
-    // TODO: עדכון התרומה דרך API
+  void onLocationSelected(double lat, double lng) {
+    setState(() {
+      selectedLat = lat;
+      selectedLng = lng;
+    });
   }
 
-  void onLocationSelected(double lat, double lng) {
-    // TODO: אם רוצים לשמור מיקום
+  Future<void> submit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    if (selectedTimeSlots.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("יש לבחור לפחות חלון זמן אחד")),
+      );
+      return;
+    }
+
+    if (donatedItems.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("יש להוסיף לפחות מוצר אחד לתרומה")),
+      );
+      return;
+    }
+
+    // try {
+    //   await DonationService().updateDonation(
+    //     donationId: widget.donationId,
+    //     businessName: businessNameCtrl.text,
+    //     businessPhone: businessPhoneCtrl.text,
+    //     contactName: contactNameCtrl.text,
+    //     contactPhone: contactPhoneCtrl.text,
+    //     businessId: businessIdCtrl.text,
+    //     donatedItems: donatedItems,
+    //     selectedTimeSlots: selectedTimeSlots,
+    //     lat: selectedLat,
+    //     lng: selectedLng,
+    //   );
+
+
+      await showDialog(
+        context: context,
+        builder: (context) => const CustomPopupDialog(
+          title: "תודה על תרומתך!",
+          message: "התרומה עודכנה בהצלחה",
+          buttonText: "סגור",
+        ),
+      );
+      Navigator.pop(context); // חזרה למסך הקודם
+    // } catch (e) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text("Error: $e")),
+    //   );
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) return const Scaffold(body: LoadingIndicator());
+
     return Scaffold(
       body: LayoutWrapper(
         child: Container(
-          decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
+          decoration: const BoxDecoration(
+            gradient: HomepageTheme.pageGradient,
+          ),
           child: SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 25),
               child: Column(
                 children: [
                   const SizedBox(height: HomepageTheme.topPadding),
-                  const Text("עריכת תרומה", style: ReportDonationTheme.headerStyle),
+                  const Text(
+                    "עריכת תרומה",
+                    style: ReportDonationTheme.headerStyle,
+                  ),
                   const SizedBox(height: 35),
                   DonationForm(
                     formKey: _formKey,
@@ -296,6 +253,10 @@ class _EditDonationState extends State<EditDonation> {
                     buttonText: "שמור שינויים",
                     onLocationSelected: onLocationSelected,
                     buttonStyle: ReportDonationTheme.simpleButton,
+                    isCategoryDisabled: (product) => DonationCategoryHelper.isCategoryDisabled(
+                    product: product,
+                    donatedItems: donatedItems,
+                ),
                   ),
                 ],
               ),

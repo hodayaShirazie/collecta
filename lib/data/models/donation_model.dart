@@ -60,25 +60,27 @@ class DonationModel {
 
   factory DonationModel.fromApi(Map<String, dynamic> json) {
     return DonationModel(
-      id: json['id'],
-      status: json['status'],
+      id: json['id'] ?? 'MISSING_ID',
+      status: json['status'] ?? 'UNKNOWN',
       receipt: json['receipt'] ?? '',
       cancelingReason: json['canceling_reason'] ?? '',
-      organizationId: json['organization_id'],
-      donorId: json['donor_id'],
-      driverId: json['driver_id'],
-      contactName: json['contactName'],
-      contactPhone: json['contactPhone'],
-      createdAt: DateTime.parse(json['created_at']),
-      businessAddress: AddressModel.fromApi(json['businessAddress']),
-      pickupTimes: (json['pickupTimes'] as List)
-          .map((e) => PickupTime.fromApi(e))
-          .toList(),
-      products: (json['products'] as List)
-          .map((e) => ProductModel.fromApi(e))
-          .toList(),
+      organizationId: json['organization_id'] ?? '',
+      donorId: json['donor_id'] ?? '',
+      driverId: json['driver_id'] ?? '',
+      contactName: json['contactName'] ?? '',
+      contactPhone: json['contactPhone'] ?? '',
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : DateTime.now(),
+      businessAddress: json['businessAddress'] != null
+          ? AddressModel.fromApi(json['businessAddress'])
+          : AddressModel(id: 'MISSING', lat: 0, lng: 0, name: 'MISSING'),
+      pickupTimes: (json['pickupTimes'] as List?)?.map((e) => PickupTime.fromApi(e)).toList() ?? [],
+      products: (json['products'] as List?)?.map((e) => ProductModel.fromApi(e)).toList() ?? [],
     );
   }
+
+
    Map<String, dynamic> toJson() {
     return {
       'id': id,

@@ -3,6 +3,8 @@ import 'package:collecta/app/routes.dart';
 import 'package:collecta/app/theme.dart';
 import 'package:collecta/ui/screens/entering.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:collecta/ui/screens/edit_donation.dart';
+import 'package:collecta/ui/guards/auth_guard.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -14,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       initialRoute: Routes.entering,
-      routes: Routes.routesMap,
+      routes: Routes.routesMap, 
       debugShowCheckedModeBanner: false,
 
       locale: const Locale('he'),
@@ -24,6 +26,30 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      onGenerateRoute: (settings) {
+        final uri = Uri.parse(settings.name!);
+
+        if (uri.pathSegments.length == 3 &&
+            uri.pathSegments[0] == 'donor' &&
+            uri.pathSegments[1] == 'edit-donation') {
+          final donationId = uri.pathSegments[2];
+          return MaterialPageRoute(
+            builder: (context) => AuthGuard(
+              child: EditDonation(donationId: donationId),
+            ),
+            settings: settings,
+          );
+        }
+
+        final builder = Routes.routesMap[settings.name];
+        if (builder != null) {
+          return MaterialPageRoute(
+            builder: builder,
+            settings: settings,
+          );
+        }
+        return null;
+      },
     );
   }
 }

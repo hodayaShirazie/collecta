@@ -25,6 +25,7 @@ class DonationForm extends StatelessWidget {
   final Function(Map<String, dynamic>) toggleProduct;
 
   final List<Map<String, dynamic>> donatedItems;
+  final bool Function(Map<String, dynamic>) isCategoryDisabled;
   final Function(int) onEditItem;
   final Function(int) onDeleteItem;
 
@@ -33,6 +34,7 @@ class DonationForm extends StatelessWidget {
 
   final Function(double, double) onLocationSelected;
   final ButtonStyle buttonStyle;
+  
 
   const DonationForm({
     super.key,
@@ -50,6 +52,7 @@ class DonationForm extends StatelessWidget {
     required this.selectedProducts,
     required this.toggleProduct,
     required this.donatedItems,
+    required this.isCategoryDisabled,
     required this.onEditItem,
     required this.onDeleteItem,
     required this.onSubmit,
@@ -84,6 +87,7 @@ class DonationForm extends StatelessWidget {
             products: products,
             selectedProducts: selectedProducts,
             toggleProduct: toggleProduct,
+            isCategoryDisabled: isCategoryDisabled,
           ),
           const SizedBox(height: 30),
           DonatedItemsSection(

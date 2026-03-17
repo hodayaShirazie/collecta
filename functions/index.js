@@ -104,6 +104,10 @@ exports.getMyDonations = onRequest(
   require("./donations/getMyDonations")
 );  
 
+exports.getDonationById = onRequest(
+  require("./donations/getDonationById")
+); 
+
 exports.getAllDonationsByOrganization = functions.https.onRequest(
   require("./donations/getAllDonationByOrganization")
 );

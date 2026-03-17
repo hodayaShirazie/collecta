@@ -1,5 +1,9 @@
 import '../data/models/donation_model.dart';
 import '../data/repositories/donation_repository.dart';
+import '../data/models/donation_list_item_model.dart';
+import '../data/models/address_model.dart';
+import '../data/models/product_model.dart';
+
 
 class DonationService {
   final DonationRepository _repo = DonationRepository();
@@ -12,10 +16,16 @@ class DonationService {
     return _repo.reportDonationRaw(body);
   }
 
-  Future<List<DonationModel>> getMyDonations() {
+  Future<List<DonationListItemModel>> getMyDonations() {
     return _repo.getMyDonations();
   }
 
+  Future<DonationModel> getDonationById(String donationId) async {
+    final donation = await _repo.getDonationById(donationId);
+    return donation;
+  }
+
+  
   Future<List<DonationModel>> getDonationsByOrganization(
     String organizationId) {
 
