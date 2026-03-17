@@ -153,3 +153,11 @@ exports.placeDetails = onRequest(
   { secrets: [config] },
   (req, res) => placeDetails(req, res)
 );
+
+exports.updateDonation = functions.https.onRequest(
+  require("./donations/updateDonation")
+);
+
+exports.cancelDonation = functions.https.onRequest(
+  require("./donations/cancelDonation")
+);

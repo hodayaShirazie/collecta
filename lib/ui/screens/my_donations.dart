@@ -109,6 +109,28 @@ class _MyDonationsState extends State<MyDonations> {
     }
   }
 
+  Future<void> cancelDonation(String donationId) async {
+    try {
+      await _service.cancelDonation(donationId);
+
+      await _loadDonations();
+
+      if (!mounted) return;
+
+      showDialog(
+        context: context,
+        builder: (context) => const CustomPopupDialog(
+          title: "התרומה בוטלה",
+          message: "התרומה בוטלה בהצלחה",
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("שגיאה: $e")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -246,30 +268,98 @@ class _MyDonationsState extends State<MyDonations> {
                                           ),
                                         ],
                                       ),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          const Icon(Icons.info_outline, size: 28),
-                                          const SizedBox(width: 12),
-                                          Text(
-                                            "${donation.createdAt.day}/${donation.createdAt.month}/${donation.createdAt.year}",
-                                            style: MyDonationsTheme.donationDate,
-                                          ),
-                                          const SizedBox(width: 12),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-                                            decoration: BoxDecoration(
-                                              color: MyDonationsTheme.statusColor(donation.status),
-                                              borderRadius: BorderRadius.circular(10),
+                                      // child: Row(
+                                      //   mainAxisAlignment: MainAxisAlignment.start,
+                                      //   crossAxisAlignment: CrossAxisAlignment.center,
+                                      //   children: [
+                                      //     const Icon(Icons.info_outline, size: 28),
+                                      //     const SizedBox(width: 12),
+                                      //     Text(
+                                      //       "${donation.createdAt.day}/${donation.createdAt.month}/${donation.createdAt.year}",
+                                      //       style: MyDonationsTheme.donationDate,
+                                      //     ),
+                                      //     const SizedBox(width: 12),
+                                      //     Container(
+                                      //       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                                      //       decoration: BoxDecoration(
+                                      //         color: MyDonationsTheme.statusColor(donation.status),
+                                      //         borderRadius: BorderRadius.circular(10),
+                                      //       ),
+                                      //       child: Text(
+                                      //         _statusText(donation.status),
+                                      //         style: const TextStyle(color: Colors.black),
+                                      //       ),
+                                      //     ),
+                                      //   ],
+                                      // ),
+
+                                      child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            const Icon(Icons.info_outline, size: 28),
+                                            const SizedBox(width: 12),
+                                            Text(
+                                              "${donation.createdAt.day}/${donation.createdAt.month}/${donation.createdAt.year}",
+                                              style: MyDonationsTheme.donationDate,
                                             ),
-                                            child: Text(
-                                              _statusText(donation.status),
-                                              style: const TextStyle(color: Colors.black),
+                                            const SizedBox(width: 12),
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                                              decoration: BoxDecoration(
+                                                color: MyDonationsTheme.statusColor(donation.status),
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                              child: Text(
+                                                _statusText(donation.status),
+                                                style: const TextStyle(color: Colors.black),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+
+                                        if (donation.status == "pending") ...[
+                                          const SizedBox(height: 8),
+                                          Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: TextButton(
+                                              onPressed: () {
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (context) => CustomPopupDialog(
+                                                    title: "ביטול תרומה",
+                                                    message: "האם אתה בטוח שברצונך לבטל את התרומה?",
+                                                    buttonText: "אישור",
+                                                    cancelText: "חזור",
+                                                    onConfirm: () {
+                                                      cancelDonation(donation.id);
+                                                    },
+                                                  ),
+                                                ).then((_) {
+                                                  cancelDonation(donation.id);
+                                                });
+                                              },
+                                              style: TextButton.styleFrom(
+                                                padding: EdgeInsets.zero,
+                                                minimumSize: Size.zero,
+                                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                              ),
+                                              child: const Text(
+                                                "בטל תרומה",
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.black54,
+                                                  decoration: TextDecoration.underline,
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ],
-                                      ),
+                                      ],
+                                    ),
                                     ),
                                   ),
                                 );

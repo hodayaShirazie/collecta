@@ -39,11 +39,12 @@ class DonatedItemTile extends StatelessWidget {
           children: [
 
             /// צד ימין - שם וכמות
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  item["display"] ?? item["name"] ?? "",
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item["display"] ?? item["name"] ?? "",
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
@@ -57,7 +58,9 @@ class DonatedItemTile extends StatelessWidget {
                   textAlign: TextAlign.right,
                 ),
               ],
+              ),
             ),
+          
 
             /// צד שמאל - אייקונים
             Row(

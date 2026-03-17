@@ -63,6 +63,14 @@ class DonationRepository {
     return _source.getDonationsConfirmedCount(organizationId);
   }
 
+  Future<String> updateDonation(Map<String, dynamic> body) {
+    return _source.updateDonation(body);
+  }
+
+  Future<String> cancelDonation(String donationId) {
+    return _source.cancelDonation(donationId);
+  }
+
   
 
 

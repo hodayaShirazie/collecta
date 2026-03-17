@@ -5,7 +5,7 @@ import '../../widgets/donation_widgets/dialog/other_item_dialog.dart';
 
 
 class DonationEditHelper {
-  /// פונקציה לעריכת פריט תרומה
+
   static Future<void> editDonatedItem({
     required BuildContext context,
     required int index,
@@ -19,7 +19,12 @@ class DonationEditHelper {
 
     if (name.startsWith("אחר")) {
       // פריט "אחר" – פתיחת dialog של תיאור
-      final result = await showOtherItemDialog(context: context);
+      // final result = await showOtherItemDialog(context: context);
+      final result = await showOtherItemDialog(
+        context: context,
+        initialText: item["name"] ?? "",
+        initialQuantity: int.tryParse(item["quantity"]?.toString() ?? "1") ?? 1,
+      );
       if (result != null) {
         // donatedItems[index] = result;
         donatedItems[index] = Map<String, dynamic>.from(result);

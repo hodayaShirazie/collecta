@@ -78,8 +78,8 @@ class _EditDonationState extends State<EditDonation> {
       selectedTimeSlots = donation.pickupTimes.map((e) => "${e.from}-${e.to}").toList();
 
 
-      donatedItems = donation.products.map<Map<String, dynamic>>((p) {
-      final typeName = p.type?.name ?? '';
+      donatedItems = (donation.products ?? []).map<Map<String, dynamic>>((p) {
+      final typeName = p.type?.name ?? 'ש';
       final quantity = p.quantity;
 
       return <String, dynamic>{
@@ -87,8 +87,8 @@ class _EditDonationState extends State<EditDonation> {
         "name": typeName,
         "icon": '',
         "quantity": quantity.toString(),
-        "unit": 'יחידות/ק"ג',
-        "display": "$typeName - $quantity",
+        "unit": 'ק"ג/יחידות',
+        "display": "$typeName",
       };
     }).toList();
 
@@ -131,32 +131,6 @@ class _EditDonationState extends State<EditDonation> {
   );
 }
 
-//   Future<void> toggleProduct(Map<String, dynamic> product) async {
-//   // מדפיסים את המקור
-//   debugPrint("==== toggleProduct called ====");
-//   debugPrint("Original product type: ${product.runtimeType}");
-//   debugPrint("Original product contents: $product");
-
-//   // המרה ל-Map<String, Object> רגיל
-//   final safeProduct = <String, Object>{
-//     "name": product["name"] ?? "",
-//     "id": product["id"] ?? "",
-//     "icon": product["icon"] ?? "",
-//   };
-
-//   debugPrint("Safe product type: ${safeProduct.runtimeType}");
-//   debugPrint("Safe product contents: $safeProduct");
-
-//   await DonationToggleProductHelper.toggleProduct(
-//     context: context,
-//     product: safeProduct,
-//     selectedProducts: selectedProducts,
-//     donatedItems: donatedItems,
-//     refresh: () => setState(() {}),
-//   );
-// }
-
-
   Future<void> editItem(int index) async {
     await DonationEditHelper.editDonatedItem(
       context: context,
@@ -179,58 +153,141 @@ class _EditDonationState extends State<EditDonation> {
     });
   }
 
+  // Future<void> submit() async {
+  //   if (!_formKey.currentState!.validate()) return;
+
+  //   if (selectedTimeSlots.isEmpty) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text("יש לבחור לפחות חלון זמן אחד")),
+  //     );
+  //     return;
+  //   }
+
+  //   if (donatedItems.isEmpty) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text("יש להוסיף לפחות מוצר אחד לתרומה")),
+  //     );
+  //     return;
+  //   }
+
+  //   // final updatedDonation = currentDonation!.copyWith(
+  //   //   contactName: contactNameCtrl.text,
+  //   //   contactPhone: contactPhoneCtrl.text,
+  //   // );
+
+  //   // try {
+  //   //   await DonationService().updateDonation(
+  //   //     donationId: widget.donationId,
+  //   //     businessName: businessNameCtrl.text,
+  //   //     businessPhone: businessPhoneCtrl.text,
+  //   //     contactName: contactNameCtrl.text,
+  //   //     contactPhone: contactPhoneCtrl.text,
+  //   //     businessId: businessIdCtrl.text,
+  //   //     donatedItems: donatedItems,
+  //   //     selectedTimeSlots: selectedTimeSlots,
+  //   //     lat: selectedLat,
+  //   //     lng: selectedLng,
+  //   //   );
+
+    
+
+
+  //     await showDialog(
+  //       context: context,
+  //       builder: (context) => const CustomPopupDialog(
+  //         title: "תודה על תרומתך!",
+  //         message: "התרומה עודכנה בהצלחה",
+  //         buttonText: "סגור",
+  //       ),
+  //     );
+  //     Navigator.pop(context); // חזרה למסך הקודם
+  //   // } catch (e) {
+  //   //   ScaffoldMessenger.of(context).showSnackBar(
+  //   //     SnackBar(content: Text("Error: $e")),
+  //   //   );
+  //   // }
+  // }
+
   Future<void> submit() async {
-    if (!_formKey.currentState!.validate()) return;
+  if (!_formKey.currentState!.validate()) return;
 
-    if (selectedTimeSlots.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("יש לבחור לפחות חלון זמן אחד")),
-      );
-      return;
-    }
-
-    if (donatedItems.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("יש להוסיף לפחות מוצר אחד לתרומה")),
-      );
-      return;
-    }
-
-    // final updatedDonation = currentDonation!.copyWith(
-    //   contactName: contactNameCtrl.text,
-    //   contactPhone: contactPhoneCtrl.text,
-    // );
-
-    // try {
-    //   await DonationService().updateDonation(
-    //     donationId: widget.donationId,
-    //     businessName: businessNameCtrl.text,
-    //     businessPhone: businessPhoneCtrl.text,
-    //     contactName: contactNameCtrl.text,
-    //     contactPhone: contactPhoneCtrl.text,
-    //     businessId: businessIdCtrl.text,
-    //     donatedItems: donatedItems,
-    //     selectedTimeSlots: selectedTimeSlots,
-    //     lat: selectedLat,
-    //     lng: selectedLng,
-    //   );
-
-
-      await showDialog(
-        context: context,
-        builder: (context) => const CustomPopupDialog(
-          title: "תודה על תרומתך!",
-          message: "התרומה עודכנה בהצלחה",
-          buttonText: "סגור",
-        ),
-      );
-      Navigator.pop(context); // חזרה למסך הקודם
-    // } catch (e) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(content: Text("Error: $e")),
-    //   );
-    // }
+  // בדיקת חלונות זמן
+  if (selectedTimeSlots.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("יש לבחור לפחות חלון זמן אחד")),
+    );
+    return;
   }
+
+  // בדיקת מוצרים
+  if (donatedItems.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("יש להוסיף לפחות מוצר אחד לתרומה")),
+    );
+    return;
+  }
+
+  try {
+    // יצירת ה-body שנשלח ל-API
+    final body = <String, dynamic>{
+      "donationId": widget.donationId, // חובה!
+    };
+
+    // מוסיפים רק אם יש ערך
+    if (businessNameCtrl.text.isNotEmpty) body["businessName"] = businessNameCtrl.text;
+    if (businessPhoneCtrl.text.isNotEmpty) body["businessPhone"] = businessPhoneCtrl.text;
+    if (businessIdCtrl.text.isNotEmpty) body["businessId"] = businessIdCtrl.text;
+    if (contactNameCtrl.text.isNotEmpty) body["contactName"] = contactNameCtrl.text;
+    if (contactPhoneCtrl.text.isNotEmpty) body["contactPhone"] = contactPhoneCtrl.text;
+
+    body["businessAddress"] = {
+      "id": currentDonation?.businessAddress.id,
+      "name": addressCtrl.text,
+      "lat": selectedLat ?? 0,
+      "lng": selectedLng ?? 0,
+    };
+
+    body["pickupTimes"] = selectedTimeSlots.map((slot) {
+      final parts = slot.split("-");
+      return {"from": parts[0], "to": parts[1]};
+    }).toList();
+
+    body["products"] = donatedItems.map((item) {
+      return {
+        "id": item["id"] ?? '',
+        "name": item["name"] ?? '',
+        "quantity": int.tryParse(item["quantity"] ?? '0') ?? 0,
+        "unit": item["unit"] ?? 'ק"ג/יחידות',
+        "description": item["description"] ?? '',
+      };
+    }).toList();
+
+    // קריאה ל-Service לעדכון התרומה
+    await DonationService().updateDonation(body);
+
+    // הודעה למשתמש
+    await showDialog(
+      context: context,
+      builder: (context) => const CustomPopupDialog(
+        title: "תודה על תרומתך!",
+        message: "התרומה עודכנה בהצלחה",
+        buttonText: "סגור",
+      ),
+    );
+
+    Navigator.pop(context); // חזרה למסך הקודם
+
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Error: $e")),
+    );
+  }
+}
+
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
