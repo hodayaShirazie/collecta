@@ -22,7 +22,7 @@ class ProductModel {
     return {
       'id': id,
       'quantity': quantity,
-      'type': type.toJson(),  // גם סוג המוצר מומר ל־JSON
+      'type': type.toJson(),  
     };
   }
 }

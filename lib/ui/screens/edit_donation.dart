@@ -61,6 +61,12 @@ class _EditDonationState extends State<EditDonation> {
       final donation = await DonationService().getDonationById(widget.donationId);
       currentDonation = donation;
 
+      debugPrint("==== DEBUG: Donation products from server ====");
+      for (var p in donation.products) {
+        debugPrint("Product: id=${p.id}, name=${p.type.name}, quantity=${p.quantity}");
+      }
+      debugPrint("===============================================");
+
       final donor = await DonorService().getMyDonorProfile();
 
 
@@ -79,11 +85,13 @@ class _EditDonationState extends State<EditDonation> {
 
 
       donatedItems = (donation.products ?? []).map<Map<String, dynamic>>((p) {
-      final typeName = p.type?.name ?? 'ש';
+      final typeName = p.type?.name ?? '';
       final quantity = p.quantity;
 
+      
       return <String, dynamic>{
-        "id": p.type?.id ?? '',
+        "id": p.id ?? '', // מזהה שורת המוצר בתרומה
+        "productTypeId": p.type?.id ?? '', // ✅ חשוב מאוד
         "name": typeName,
         "icon": '',
         "quantity": quantity.toString(),
@@ -153,61 +161,7 @@ class _EditDonationState extends State<EditDonation> {
     });
   }
 
-  // Future<void> submit() async {
-  //   if (!_formKey.currentState!.validate()) return;
-
-  //   if (selectedTimeSlots.isEmpty) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(content: Text("יש לבחור לפחות חלון זמן אחד")),
-  //     );
-  //     return;
-  //   }
-
-  //   if (donatedItems.isEmpty) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(content: Text("יש להוסיף לפחות מוצר אחד לתרומה")),
-  //     );
-  //     return;
-  //   }
-
-  //   // final updatedDonation = currentDonation!.copyWith(
-  //   //   contactName: contactNameCtrl.text,
-  //   //   contactPhone: contactPhoneCtrl.text,
-  //   // );
-
-  //   // try {
-  //   //   await DonationService().updateDonation(
-  //   //     donationId: widget.donationId,
-  //   //     businessName: businessNameCtrl.text,
-  //   //     businessPhone: businessPhoneCtrl.text,
-  //   //     contactName: contactNameCtrl.text,
-  //   //     contactPhone: contactPhoneCtrl.text,
-  //   //     businessId: businessIdCtrl.text,
-  //   //     donatedItems: donatedItems,
-  //   //     selectedTimeSlots: selectedTimeSlots,
-  //   //     lat: selectedLat,
-  //   //     lng: selectedLng,
-  //   //   );
-
-    
-
-
-  //     await showDialog(
-  //       context: context,
-  //       builder: (context) => const CustomPopupDialog(
-  //         title: "תודה על תרומתך!",
-  //         message: "התרומה עודכנה בהצלחה",
-  //         buttonText: "סגור",
-  //       ),
-  //     );
-  //     Navigator.pop(context); // חזרה למסך הקודם
-  //   // } catch (e) {
-  //   //   ScaffoldMessenger.of(context).showSnackBar(
-  //   //     SnackBar(content: Text("Error: $e")),
-  //   //   );
-  //   // }
-  // }
-
+  
   Future<void> submit() async {
   if (!_formKey.currentState!.validate()) return;
 
@@ -228,6 +182,9 @@ class _EditDonationState extends State<EditDonation> {
   }
 
   try {
+
+
+
     // יצירת ה-body שנשלח ל-API
     final body = <String, dynamic>{
       "donationId": widget.donationId, // חובה!
@@ -253,14 +210,32 @@ class _EditDonationState extends State<EditDonation> {
     }).toList();
 
     body["products"] = donatedItems.map((item) {
-      return {
-        "id": item["id"] ?? '',
-        "name": item["name"] ?? '',
-        "quantity": int.tryParse(item["quantity"] ?? '0') ?? 0,
-        "unit": item["unit"] ?? 'ק"ג/יחידות',
-        "description": item["description"] ?? '',
-      };
-    }).toList();
+    return {
+      "id": item["id"] ?? '',
+      "productTypeId": item["productTypeId"] ?? '',
+      "name": item["name"] ?? '',
+      "quantity": int.tryParse(item["quantity"] ?? '0') ?? 0,
+      "unit": item["unit"] ?? 'ק"ג/יחידות',
+      "description": item["description"] ?? '',
+    };
+  }).toList();
+
+
+    // 🔹 הדפסה של כל הנתונים לפני שליחה
+    debugPrint("==== DEBUG: Data to send ====");
+    debugPrint("Donation ID: ${body['donationId']}");
+    debugPrint("Business Name: ${body['businessName']}");
+    debugPrint("Business Phone: ${body['businessPhone']}");
+    debugPrint("Business ID: ${body['businessId']}");
+    debugPrint("Contact Name: ${body['contactName']}");
+    debugPrint("Contact Phone: ${body['contactPhone']}");
+    debugPrint("Address: ${body['businessAddress']}");
+    debugPrint("Pickup Times: ${body['pickupTimes']}");
+    debugPrint("Products / Donated Items:");
+    for (var p in body['products']) {
+      debugPrint(p.toString());
+    }
+    debugPrint("=============================");
 
     // קריאה ל-Service לעדכון התרומה
     await DonationService().updateDonation(body);

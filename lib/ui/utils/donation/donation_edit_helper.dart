@@ -36,8 +36,8 @@ class DonationEditHelper {
       final result = await showQuantityDialog(
         context: context,
         productName: name,
-        // productId: item["productTypeId"],
-        productId: item["id"],
+        productId: item["productTypeId"],
+        // productId: item["id"],
         initialQuantity: currentQuantity,
       );
 
