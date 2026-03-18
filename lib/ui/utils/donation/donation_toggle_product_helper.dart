@@ -22,23 +22,48 @@ class DonationToggleProductHelper {
 
     selectedProducts.add(name);
 
+    // if (name == "אחר") {
+    //   final result = await showOtherItemDialog(context: context);
+
+    //   if (result != null) {
+    //     donatedItems.add(result);
+    //   }
+    // } else {
+    //   final result = await showQuantityDialog(
+    //     context: context,
+    //     productName: name,
+    //     productId: id,
+    //   );
+
+    //   if (result != null) {
+    //     donatedItems.add(result);
+    //   }
+    // }
     if (name == "אחר") {
-      final result = await showOtherItemDialog(context: context);
+    final result = await showOtherItemDialog(context: context);
 
-      if (result != null) {
-        donatedItems.add(result);
-      }
-    } else {
-      final result = await showQuantityDialog(
-        context: context,
-        productName: name,
-        productId: id,
-      );
-
-      if (result != null) {
-        donatedItems.add(result);
-      }
+    if (result != null) {
+      donatedItems.add({
+        ...result,
+        "id": "",
+        "productTypeId": "",
+      });
     }
+  } else {
+    final result = await showQuantityDialog(
+      context: context,
+      productName: name,
+      productId: id,
+    );
+
+    if (result != null) {
+      donatedItems.add({
+        ...result,
+        "id": "",
+        "productTypeId": id,
+      });
+    }
+  }
 
     refresh();
   }
