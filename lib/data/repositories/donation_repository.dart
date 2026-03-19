@@ -83,6 +83,15 @@ class DonationRepository {
     );
   }
 
+
+  Future<List<DonationModel>> getDriverDonationsById() async {
+    final data = await _source.getDriverDonationsById();
+
+    return data
+        .map<DonationModel>((json) => DonationModel.fromApi(json))
+        .toList();
+  }
+
   
 
 

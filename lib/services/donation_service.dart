@@ -83,6 +83,10 @@ class DonationService {
     );
   }
 
+  Future<List<DonationModel>> getDriverDonationsById() {
+    return _repo.getDriverDonationsById();
+  }
+
 
 
 

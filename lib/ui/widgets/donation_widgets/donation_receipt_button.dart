@@ -5,7 +5,7 @@ class DonationReceiptButton extends StatelessWidget {
   final String donationId;
   final String receiptUrl;
   final VoidCallback onUploadSuccess;
-  final bool isAdmin; // מאפשר לשלוט אם תורם יכול רק לצפות או גם להעלות
+  final bool isAdmin; 
 
   const DonationReceiptButton({
     super.key,
@@ -17,7 +17,6 @@ class DonationReceiptButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // אם אין קבלה והמשתמש הוא לא אדמין, לא נציג כלום (או נציג אייקון אפור/טקסט)
     if (receiptUrl.isEmpty && !isAdmin) {
       return const SizedBox.shrink();
     }
@@ -37,7 +36,6 @@ class DonationReceiptButton extends StatelessWidget {
           ),
           onPressed: () async {
             if (!hasReceipt) {
-              // רק אדמין מגיע לכאן בדרך כלל בגלל התנאי למעלה
               await DonationReceiptHelper.pickAndUploadPDF(context, donationId);
               onUploadSuccess();
             } else {

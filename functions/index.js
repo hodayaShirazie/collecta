@@ -163,3 +163,7 @@ exports.cancelDonation = functions.https.onRequest(
 );
 
 exports.updateDonationReceipt = require("./donations/updateDonationReceipt");
+
+exports.getDriverDonationsById = onRequest(
+  require("./donations/getDriverDonationsById")
+);

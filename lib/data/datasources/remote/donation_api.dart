@@ -233,4 +233,17 @@ Future<String> uploadDonationReceipt({
   throw Exception("Invalid respond from server");
 }
 
+Future<List<dynamic>> getDriverDonationsById() async {
+  final response = await http.get(
+    Uri.parse('${ApiConfig.baseUrl}/getDriverDonationsById'),
+    headers: await headers(),
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception(response.body);
+  }
+
+  return json.decode(response.body);
+}
+
 }
