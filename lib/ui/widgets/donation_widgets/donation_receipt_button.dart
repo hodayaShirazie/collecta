@@ -49,7 +49,7 @@ class DonationReceiptButton extends StatelessWidget {
           !hasReceipt ? "העלה" : "צפה",
           style: TextStyle(
             fontSize: 12,
-            color: !hasReceipt ? Colors.blueGrey : Colors.green,
+            color: !hasReceipt ? Colors.blueGrey : Colors.blueGrey,
             fontWeight: FontWeight.bold,
           ),
         ),

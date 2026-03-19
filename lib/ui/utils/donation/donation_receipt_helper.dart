@@ -88,6 +88,7 @@ import 'package:file_picker/file_picker.dart';
 import '../../../services/donation_service.dart'; 
 import '../../widgets/custom_popup_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../pdf_view_page.dart'; 
 
 class DonationReceiptHelper {
   static Future<void> pickAndUploadPDF(BuildContext context, String donationId) async {
@@ -124,17 +125,46 @@ class DonationReceiptHelper {
     }
   }
 
+  // static Future<void> viewReceipt(BuildContext context, String urlString) async {
+  //   if (urlString.isEmpty) return;
+  //   final Uri url = Uri.parse(urlString);
+  //   try {
+  //     if (await canLaunchUrl(url)) {
+  //       await launchUrl(url, mode: LaunchMode.externalApplication);
+  //     } else {
+  //       throw 'Could not launch $urlString';
+  //     }
+  //   } catch (e) {
+  //     _showPopup(context, "שגיאה", "לא ניתן לפתוח את הקובץ: $e");
+  //   }
+  // }
+
   static Future<void> viewReceipt(BuildContext context, String urlString) async {
     if (urlString.isEmpty) return;
-    final Uri url = Uri.parse(urlString);
+
+    final Uri? url = Uri.tryParse(urlString);
+    if (url == null || !urlString.startsWith('https')) {
+       _showPopup(context, "שגיאה", "קישור לקובץ אינו תקין");
+       return;
+    }
+
     try {
-      if (await canLaunchUrl(url)) {
-        await launchUrl(url, mode: LaunchMode.externalApplication);
-      } else {
-        throw 'Could not launch $urlString';
-      }
+      debugPrint("📄 Helper: Opening In-App PDF Viewer for URL: $urlString");
+
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PdfViewPage(
+            url: urlString,
+            title: "קבלה לתרומה",
+          ),
+        ),
+      );
+      
     } catch (e) {
-      _showPopup(context, "שגיאה", "לא ניתן לפתוח את הקובץ: $e");
+      debugPrint("🔴 Helper Error opening PDF: $e");
+      _showPopup(context, "שגיאה", "לא ניתן להציג את הקובץ במכשיר זה");
     }
   }
 
