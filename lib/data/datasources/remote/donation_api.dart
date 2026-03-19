@@ -203,55 +203,6 @@ class DonationApi extends ApiSource {
     }
 
 
-  //   Future<String> uploadDonationReceipt({
-  //   required String donationId,
-  //   required List<int> fileBytes,
-  //   required String fileName,
-  // }) async {
-  //   final uri = Uri.parse('${ApiConfig.baseUrl}/updateDonationReceipt');
-
-  //   var request = http.MultipartRequest('POST', uri)
-  //     ..headers.addAll(await headers()) 
-  //     ..fields['donationId'] = donationId
-  //     ..files.add(http.MultipartFile.fromBytes(
-  //       'file',
-  //       fileBytes,
-  //       filename: fileName,
-  //       contentType: MediaType('application', 'pdf'),
-  //     ));
-
-  //   final streamedResponse = await request.send();
-  //   final response = await http.Response.fromStream(streamedResponse);
-
-  //   if (response.statusCode != 200) {
-  //     throw Exception('Upload failed: ${response.body}');
-  //   }
-
-  //   return response.body; // החזרת ה-URL מה-Function
-  // }
-
-
-
-// Future<String> uploadDonationReceipt({
-//   required String donationId,
-//   required List<int> fileBytes,
-//   required String fileName,
-// }) async {
-//   final dio = Dio();
-//   final formData = FormData.fromMap({
-//     "donationId": donationId,
-//     "file": MultipartFile.fromBytes(fileBytes, filename: fileName, contentType: MediaType("application", "pdf")),
-//   });
-
-//   final res = await dio.post(
-//     '${ApiConfig.baseUrl}/updateDonationReceipt',
-//     data: formData,
-//     options: Options(headers: await headers()),
-//   );
-
-//   return res.data; // ה-URL שהפונקציה מחזירה
-// }
-
 Future<String> uploadDonationReceipt({
   required String donationId,
   required List<int> fileBytes,

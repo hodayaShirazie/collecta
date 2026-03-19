@@ -4,7 +4,7 @@ import '../theme/my_donations_theme.dart';
 import '../../data/models/donation_model.dart';
 import '../../services/donation_service.dart';
 import '../utils/donation/donation_receipt_helper.dart';
-import 'package:url_launcher/url_launcher.dart';
+import '../widgets/donation_widgets/donation_receipt_button.dart';
 
 const String organizationId = 'xFKMWqidL2uZ5wnksdYX';
 
@@ -259,204 +259,74 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
                                 
                                 final donation =
                                     filteredDonations[index];
-                                
-
-
+ 
                                 return Container(
-  margin: const EdgeInsets.only(bottom: 16),
-  padding: const EdgeInsets.all(16),
-  decoration: MyDonationsTheme.donationCardDecoration,
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Text(
-              donation.businessAddress.name,
-              style: MyDonationsTheme.donationTitle,
-            ),
-          ),
-          Text(
-            "${donation.createdAt.day}/${donation.createdAt.month}/${donation.createdAt.year}",
-            style: MyDonationsTheme.donationDate,
-          ),
-        ],
-      ),
-      const SizedBox(height: 10),
-      Container(
-        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-        decoration: BoxDecoration(
-          color: MyDonationsTheme.statusColor(donation.status),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Text(
-          _statusText(donation.status),
-          style: const TextStyle(color: Colors.black),
-        ),
-      ),
-      const SizedBox(height: 12),
+                                  margin: const EdgeInsets.only(bottom: 16),
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: MyDonationsTheme.donationCardDecoration,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              donation.businessAddress.name,
+                                              style: MyDonationsTheme.donationTitle,
+                                            ),
+                                          ),
+                                          Text(
+                                            "${donation.createdAt.day}/${donation.createdAt.month}/${donation.createdAt.year}",
+                                            style: MyDonationsTheme.donationDate,
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                                        decoration: BoxDecoration(
+                                          color: MyDonationsTheme.statusColor(donation.status),
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: Text(
+                                          _statusText(donation.status),
+                                          style: const TextStyle(color: Colors.black),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 12),
 
-      /// --- שורת המוצרים והקבלה ---
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          // רשימת המוצרים תופסת את כל המקום הפנוי
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: donation.products.map((product) {
-                final isOther = product.type.name == "אחר";
-                return Text(
-                  isOther
-                      ? "אחר - ${product.quantity} (${product.type.description})"
-                      : "${product.type.name} - ${product.quantity}",
-                  style: MyDonationsTheme.dateStyle,
-                );
-              }).toList(),
-            ),
-          ),
 
-          // כפתור העלאה / צפייה בצד שמאל
-          Column(
-            children: [
-              IconButton(
-                icon: Icon(
-                  donation.receipt.isEmpty 
-                    ? Icons.cloud_upload_outlined 
-                    : Icons.visibility_outlined,  
-                  color: donation.receipt.isEmpty ? Colors.blueGrey : Colors.green,
-                  size: 28,
-                ),
-                onPressed: () async {
-                  if (donation.receipt.isEmpty) {
-                    await DonationReceiptHelper.pickAndUploadPDF(context, donation.id);
-                    _loadDonations(); 
-                  } else {
-                    await DonationReceiptHelper.viewReceipt(context, donation.receipt);
-                  }
-                },
-              ),
-              Text(
-                donation.receipt.isEmpty ? "העלה" : "צפה",
-                style: TextStyle(
-                  fontSize: 12,
-                  color: donation.receipt.isEmpty ? Colors.blueGrey : Colors.green,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    ],
-  ),
-);
+                                      Row(
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: [
+                                          // רשימת המוצרים תופסת את כל המקום הפנוי
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: donation.products.map((product) {
+                                                final isOther = product.type.name == "אחר";
+                                                return Text(
+                                                  isOther
+                                                      ? "אחר - ${product.quantity} (${product.type.description})"
+                                                      : "${product.type.name} - ${product.quantity}",
+                                                  style: MyDonationsTheme.dateStyle,
+                                                );
+                                              }).toList(),
+                                            ),
+                                          ),
 
-                                // return Container(
-                                //   margin:
-                                //       const EdgeInsets.only(bottom: 16),
-                                //   padding:
-                                //       const EdgeInsets.all(16),
-                                //   decoration:
-                                //       MyDonationsTheme
-                                //           .donationCardDecoration,
-                                //   child: Column(
-                                //     crossAxisAlignment:
-                                //         CrossAxisAlignment.start,
-                                //     children: [
-                                //       Row(
-                                //         mainAxisAlignment:
-                                //             MainAxisAlignment
-                                //                 .spaceBetween,
-                                //         children: [
-                                //           Expanded(
-                                //             child: Text(
-                                //               donation
-                                //                   .businessAddress.name,
-                                //               style:
-                                //                   MyDonationsTheme
-                                //                       .donationTitle,
-                                //             ),
-                                //           ),
-                                //           Text(
-                                //             "${donation.createdAt.day}/${donation.createdAt.month}/${donation.createdAt.year}",
-                                //             style:
-                                //                 MyDonationsTheme
-                                //                     .donationDate,
-                                //           ),
-                                //         ],
-                                //       ),
-                                //       const SizedBox(height: 10),
-                                //       Container(
-                                //         padding:
-                                //             const EdgeInsets.symmetric(
-                                //           vertical: 4,
-                                //           horizontal: 10,
-                                //         ),
-                                //         decoration: BoxDecoration(
-                                //           color: MyDonationsTheme
-                                //               .statusColor(
-                                //                   donation.status),
-                                //           borderRadius:
-                                //               BorderRadius.circular(
-                                //                   12),
-                                //         ),
-                                //         child: Text(
-                                //           _statusText(
-                                //               donation.status),
-                                //           style: const TextStyle(
-                                //               color:
-                                //                   Colors.black),
-                                //         ),
-                                //       ),
-                                //       const SizedBox(height: 12),
-
-                                //         Row(
-                                //           children: [
-                                //             IconButton(
-                                //               icon: Icon(
-                                //                 donation.receipt.isEmpty ? Icons.upload_file : Icons.receipt,
-                                //                 color: donation.receipt.isEmpty ? Colors.grey : Colors.green,
-                                //               ),
-                                //               onPressed: () async {
-                                //                 if (donation.receipt.isEmpty) {
-                                //                   await DonationReceiptHelper.pickAndUploadPDF(context, donation.id);
-                                //                   _loadDonations(); 
-                                //                 } else {
-                                //                   await DonationReceiptHelper.viewReceipt(context, donation.receipt);
-                                //                 }
-                                //               },
-                                //             ),
-                                //             Text(
-                                //               donation.receipt.isEmpty ? "העלה קבלה" : "צפה בקבלה",
-                                //             ),
-                                //           ],
-                                //         ),
-
-                                //         const SizedBox(height: 12),
-
-                                //         Column(
-                                //           crossAxisAlignment: CrossAxisAlignment.start,
-                                //           children: donation.products.map((product) {
-                                //           final isOther =
-                                //               product.type.name ==
-                                //                   "אחר";
-
-                                //           return Text(
-                                //             isOther
-                                //                 ? "אחר - ${product.quantity} (${product.type.description})"
-                                //                 : "${product.type.name} - ${product.quantity}",
-                                //             style:
-                                //                 MyDonationsTheme
-                                //                     .dateStyle,
-                                //           );
-                                //         }).toList(),
-                                //       ),
-                                //     ],
-                                //   ),
-                                // );
+                                          DonationReceiptButton(
+                                            donationId: donation.id,
+                                            receiptUrl: donation.receipt,
+                                            isAdmin: true, 
+                                            onUploadSuccess: _loadDonations, 
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                );
                               },
                             ),
                 ),

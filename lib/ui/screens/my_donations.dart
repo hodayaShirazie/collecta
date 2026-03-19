@@ -6,6 +6,7 @@ import '../../data/models/donation_list_item_model.dart';
 import '../../services/donation_service.dart';
 // import 'edit_donation.dart';
 import '../widgets/custom_popup_dialog.dart';
+import '../widgets/donation_widgets/donation_receipt_button.dart';
 
 class MyDonations extends StatefulWidget {
   const MyDonations({super.key});
@@ -238,113 +239,220 @@ class _MyDonationsState extends State<MyDonations> {
                           : ListView.builder(
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               itemCount: filteredDonations.length,
+                              // itemBuilder: (context, index) {
+                              //   final donation = filteredDonations[index];
+
+                              //   return GestureDetector(
+                              //     onTap: () {
+                              //       // print("========== DONATION ==========");
+                              //       // print(donation.toJson());
+                              //       // print("==============================");
+                              //       if (donation.status == "pending") {
+                              //         // Navigator.pushNamed(context, '/donor/edit-donation/${donation.id}');
+                              //       } else {
+                              //         showDialog(
+                              //           context: context,
+                              //           builder: (context) => const CustomPopupDialog(
+                              //             title: "עריכה אינה אפשרית",
+                              //             message: "לא ניתן לערוך תרומה זו.",
+                              //           ),
+                              //         );
+                              //       }
+                              //     },
+                              //     child: Align(
+                              //       alignment: Alignment.center, 
+                              //       child: Container(
+                              //         width: MediaQuery.of(context).size.width * 0.8,
+                              //         margin: const EdgeInsets.symmetric(vertical: 8),
+                              //         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                              //         decoration: BoxDecoration(
+                              //           color: Colors.white,
+                              //           borderRadius: BorderRadius.circular(12),
+                              //           boxShadow: [
+                              //             BoxShadow(
+                              //               color: Colors.black12,
+                              //               blurRadius: 4,
+                              //               offset: Offset(0, 2),
+                              //             ),
+                              //           ],
+                              //         ),
+
+                              //         child: Column(
+                              //         crossAxisAlignment: CrossAxisAlignment.start,
+                              //         children: [
+                              //           Row(
+                              //             mainAxisAlignment: MainAxisAlignment.start,
+                              //             crossAxisAlignment: CrossAxisAlignment.center,
+                              //             children: [
+                              //               const Icon(Icons.info_outline, size: 28),
+                              //               const SizedBox(width: 12),
+                              //               Text(
+                              //                 "${donation.createdAt.day}/${donation.createdAt.month}/${donation.createdAt.year}",
+                              //                 style: MyDonationsTheme.donationDate,
+                              //               ),
+                              //               const SizedBox(width: 12),
+                              //               Container(
+                              //                 padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                              //                 decoration: BoxDecoration(
+                              //                   color: MyDonationsTheme.statusColor(donation.status),
+                              //                   borderRadius: BorderRadius.circular(10),
+                              //                 ),
+                              //                 child: Text(
+                              //                   _statusText(donation.status),
+                              //                   style: const TextStyle(color: Colors.black),
+                              //                 ),
+                              //               ),
+                              //             ],
+                              //           ),
+
+                              //           if (donation.status == "pending") ...[
+                              //             const SizedBox(height: 8),
+                              //             Align(
+                              //               alignment: Alignment.centerLeft,
+                              //               child: TextButton(
+                              //                 onPressed: () {
+                              //                   showDialog(
+                              //                     context: context,
+                              //                     builder: (context) => CustomPopupDialog(
+                              //                       title: "ביטול תרומה",
+                              //                       message: "האם אתה בטוח שברצונך לבטל את התרומה?",
+                              //                       buttonText: "אישור",
+                              //                       cancelText: "חזור",
+                              //                       onConfirm: () {
+                              //                         cancelDonation(donation.id);
+                              //                       },
+                              //                     ),
+                              //                   );
+                              //                 },
+                              //                 style: TextButton.styleFrom(
+                              //                   padding: EdgeInsets.zero,
+                              //                   minimumSize: Size.zero,
+                              //                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              //                 ),
+                              //                 child: const Text(
+                              //                   "בטל תרומה",
+                              //                   style: TextStyle(
+                              //                     fontSize: 13,
+                              //                     color: Colors.black54,
+                              //                     decoration: TextDecoration.underline,
+                              //                   ),
+                              //                 ),
+                              //               ),
+                              //             ),
+                              //           ],
+                              //         ],
+                              //       ),
+                              //       ),
+                              //     ),
+                              //   );
+                              // },
+
                               itemBuilder: (context, index) {
-                                final donation = filteredDonations[index];
+                              final donation = filteredDonations[index];
 
-                                return GestureDetector(
-                                  onTap: () {
-                                    // print("========== DONATION ==========");
-                                    // print(donation.toJson());
-                                    // print("==============================");
-                                    if (donation.status == "pending") {
-                                      // Navigator.pushNamed(context, '/donor/edit-donation/${donation.id}');
-                                    } else {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) => const CustomPopupDialog(
-                                          title: "עריכה אינה אפשרית",
-                                          message: "לא ניתן לערוך תרומה זו.",
-                                        ),
-                                      );
-                                    }
-                                  },
-                                  child: Align(
-                                    alignment: Alignment.center, 
-                                    child: Container(
-                                      width: MediaQuery.of(context).size.width * 0.8,
-                                      margin: const EdgeInsets.symmetric(vertical: 8),
-                                      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(12),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black12,
-                                            blurRadius: 4,
-                                            offset: Offset(0, 2),
-                                          ),
-                                        ],
+                              return GestureDetector(
+                                onTap: () {
+                                  if (donation.status != "pending") {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => const CustomPopupDialog(
+                                        title: "עריכה אינה אפשרית",
+                                        message: "לא ניתן לערוך תרומה זו.",
                                       ),
-
-                                      child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          children: [
-                                            const Icon(Icons.info_outline, size: 28),
-                                            const SizedBox(width: 12),
-                                            Text(
-                                              "${donation.createdAt.day}/${donation.createdAt.month}/${donation.createdAt.year}",
-                                              style: MyDonationsTheme.donationDate,
-                                            ),
-                                            const SizedBox(width: 12),
-                                            Container(
-                                              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-                                              decoration: BoxDecoration(
-                                                color: MyDonationsTheme.statusColor(donation.status),
-                                                borderRadius: BorderRadius.circular(10),
-                                              ),
-                                              child: Text(
-                                                _statusText(donation.status),
-                                                style: const TextStyle(color: Colors.black),
-                                              ),
-                                            ),
-                                          ],
+                                    );
+                                  }
+                                },
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width * 0.8,
+                                    margin: const EdgeInsets.symmetric(vertical: 8),
+                                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                      boxShadow: const [
+                                        BoxShadow(
+                                          color: Colors.black12,
+                                          blurRadius: 4,
+                                          offset: Offset(0, 2),
                                         ),
-
-                                        if (donation.status == "pending") ...[
-                                          const SizedBox(height: 8),
-                                          Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: TextButton(
-                                              onPressed: () {
-                                                showDialog(
-                                                  context: context,
-                                                  builder: (context) => CustomPopupDialog(
-                                                    title: "ביטול תרומה",
-                                                    message: "האם אתה בטוח שברצונך לבטל את התרומה?",
-                                                    buttonText: "אישור",
-                                                    cancelText: "חזור",
-                                                    onConfirm: () {
-                                                      cancelDonation(donation.id);
-                                                    },
-                                                  ),
-                                                );
-                                              },
-                                              style: TextButton.styleFrom(
-                                                padding: EdgeInsets.zero,
-                                                minimumSize: Size.zero,
-                                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                              ),
-                                              child: const Text(
-                                                "בטל תרומה",
-                                                style: TextStyle(
-                                                  fontSize: 13,
-                                                  color: Colors.black54,
-                                                  decoration: TextDecoration.underline,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
                                       ],
                                     ),
+                                    child: Row( // הוספנו Row כדי שהכפתור יהיה בצד שמאל
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        // צד ימין - פרטי התרומה
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  const Icon(Icons.info_outline, size: 28),
+                                                  const SizedBox(width: 12),
+                                                  Text(
+                                                    "${donation.createdAt.day}/${donation.createdAt.month}/${donation.createdAt.year}",
+                                                    style: MyDonationsTheme.donationDate,
+                                                  ),
+                                                  const SizedBox(width: 12),
+                                                  Container(
+                                                    padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                                                    decoration: BoxDecoration(
+                                                      color: MyDonationsTheme.statusColor(donation.status),
+                                                      borderRadius: BorderRadius.circular(10),
+                                                    ),
+                                                    child: Text(
+                                                      _statusText(donation.status),
+                                                      style: const TextStyle(color: Colors.black),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              if (donation.status == "pending") ...[
+                                                const SizedBox(height: 8),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (context) => CustomPopupDialog(
+                                                        title: "ביטול תרומה",
+                                                        message: "האם אתה בטוח שברצונך לבטל את התרומה?",
+                                                        buttonText: "אישור",
+                                                        cancelText: "חזור",
+                                                        onConfirm: () => cancelDonation(donation.id),
+                                                      ),
+                                                    );
+                                                  },
+                                                  style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                                                  child: const Text(
+                                                    "בטל תרומה",
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      color: Colors.black54,
+                                                      decoration: TextDecoration.underline,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ],
+                                          ),
+                                        ),
+
+                                        // צד שמאל - כפתור הקבלה החדש
+                                        DonationReceiptButton(
+                                          donationId: donation.id,
+                                          receiptUrl: donation.receipt,
+                                          onUploadSuccess: _loadDonations,
+                                          isAdmin: false, // תורם לא יכול להעלות
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                );
-                              },
+                                ),
+                              );
+                            },
+                            
                             ),
                           ),
               ],
