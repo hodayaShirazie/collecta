@@ -82,16 +82,11 @@ class DonationModel {
   // }
 
   factory DonationModel.fromApi(Map<String, dynamic> json) {
-  // 🔹 בדיקות דיבאג
-  // print('DonationModel.fromApi: json keys = ${json.keys}');
-  // json.forEach((k, v) {
-  //   print('$k => $v (${v.runtimeType})');
-  // });
 
   return DonationModel(
     id: json['id'] ?? 'MISSING_ID',
     status: json['status'] ?? 'UNKNOWN',
-    receipt: json['receipt'] ?? '',
+    receipt: json['recipe'] ?? json['receipt'] ?? '',
     cancelingReason: json['canceling_reason'] ?? '',
     organizationId: json['organization_id'] ?? '',
     donorId: json['donor_id'] ?? '',

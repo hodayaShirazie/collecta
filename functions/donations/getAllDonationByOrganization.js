@@ -69,7 +69,7 @@ module.exports = async (req, res) => {
         donations.push({
           id: doc.id,
           status: donationData.status,
-          receipt: donationData.receipt || "",
+          receipt: donationData.receipt || donationData.recipe || "",
           canceling_reason: donationData.canceling_reason || "",
           organization_id: donationData.organization_id,
           donor_id: donationData.donor_id,
