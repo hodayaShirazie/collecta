@@ -146,23 +146,24 @@ class _EnteringScreenState extends State<EnteringScreen> {
                             final result =
                                 await _signInAndSync("donor");
 
-                            // if (result == "success") {
-                            //   _navigateToDonor();
-                            // }
-                            if (result == "success") {
-                              final donor = await DonorService().getMyDonorProfile();
 
-                              if (donor.missingFields().isNotEmpty) {
-                                Navigator.pushNamed(
-                                  context,
-                                  Routes.completeProfile,
-                                  // "/complete-profile",
-                                  arguments: donor,
-                                );
-                              } else {
-                                _navigateToDonor();
-                              }
+                            if (result == "success") {
+                              _navigateToDonor();
                             }
+                            // if (result == "success") {
+                            //   final donor = await DonorService().getMyDonorProfile();
+
+                            //   if (donor.missingFields().isNotEmpty) {
+                            //     Navigator.pushNamed(
+                            //       context,
+                            //       Routes.completeProfile,
+                            //       // "/complete-profile",
+                            //       arguments: donor,
+                            //     );
+                            //   } else {
+                            //     _navigateToDonor();
+                            //   }
+                            // }
                             else {
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(
