@@ -122,6 +122,7 @@ module.exports = async (req, res) => {
           id: doc.id,
           status: donationData.status,
           created_at: donationData.created_at.toDate().toISOString(),
+          receipt: donationData.receipt || donationData.recipe || "",
         };
       });
 

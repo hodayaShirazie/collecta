@@ -3,6 +3,9 @@ import 'package:http/http.dart' as http;
 import '../../../config/api_config.dart';
 // import 'auth_headers.dart';
 import 'api_source.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:dio/dio.dart';
+
 
 class DonationApi extends ApiSource {
     Future<String> reportDonationRaw(Map<String, dynamic> body) async {
@@ -198,4 +201,36 @@ class DonationApi extends ApiSource {
 
       return data['status'];
     }
+
+
+Future<String> uploadDonationReceipt({
+  required String donationId,
+  required List<int> fileBytes,
+  required String fileName,
+}) async {
+  final dio = Dio();
+  
+  final formData = FormData.fromMap({
+    "donationId": donationId,
+    "file": MultipartFile.fromBytes(
+      fileBytes, 
+      filename: fileName, 
+      contentType: MediaType("application", "pdf")
+    ),
+  });
+
+  final res = await dio.post(
+    '${ApiConfig.baseUrl}/updateDonationReceipt',
+    data: formData,
+    options: Options(headers: await headers()),
+  );
+
+  // התיקון כאן: res.data הוא אובייקט (Map). אנחנו צריכים רק את ה-url מתוכו.
+  if (res.data != null && res.data is Map) {
+    return res.data['url'] as String; 
+  }
+  
+  throw Exception("Invalid respond from server");
+}
+
 }
