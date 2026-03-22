@@ -164,6 +164,7 @@
 //   }
 // }
 
+// ===================================================
 
 import 'package:flutter/material.dart';
 import '../../services/organization_service.dart';
@@ -174,7 +175,14 @@ import '../theme/homepage_theme.dart';
 import '../widgets/homepage_button.dart';
 import '../widgets/sign_out.dart';
 import '../widgets/layout_wrapper.dart';
+import '../widgets/custom_popup_dialog.dart';
 import 'package:collecta/app/routes.dart';
+
+import '../utils/validators/phone_validator.dart';
+import '../utils/validators/business_id_validator.dart';
+import '../../services/user_service.dart';
+import '../../services/donor_service.dart';
+import '../../services/address_service.dart';
 
 class DonorHomepage extends StatefulWidget {
   const DonorHomepage({super.key});
@@ -205,57 +213,38 @@ class _DonorHomepageState extends State<DonorHomepage> {
     int index = 0;
     final controller = TextEditingController();
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
+    void showNext() {
+      String field = fields[index];
 
-            String currentField = fields[index];
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => CustomPopupDialog(
+          title: "השלמת פרטים",
+          cancelText: "דלג",
+          buttonText: "שמור",
 
-            return AlertDialog(
-              title: const Text("השלמת פרטים"),
-              content: TextField(
-                controller: controller,
-                decoration: InputDecoration(
-                  labelText: _getLabel(currentField),
-                ),
-              ),
-              actions: [
+          content: TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              labelText: _getLabel(field),
+            ),
+          ),
 
-                TextButton(
-                  onPressed: () {
-                    controller.clear();
+          onConfirm: () {
+            // 🔥 פה תעשי שמירה בעתיד
+            controller.clear();
 
-                    if (index < fields.length - 1) {
-                      setState(() => index++);
-                    } else {
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: const Text("דלג"),
-                ),
-
-                ElevatedButton(
-                  onPressed: () {
-                    // פה בעתיד תשמרי לשרת
-                    controller.clear();
-
-                    if (index < fields.length - 1) {
-                      setState(() => index++);
-                    } else {
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: const Text("שמור"),
-                ),
-              ],
-            );
+            if (index < fields.length - 1) {
+              index++;
+              showNext();
+            }
           },
-        );
-      },
-    );
+        ),
+      );
+    }
+
+    showNext();
   }
 
   String _getLabel(String field) {
@@ -447,3 +436,4 @@ class _DonorHomepageState extends State<DonorHomepage> {
     );
   }
 }
+

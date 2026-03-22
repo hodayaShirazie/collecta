@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:collecta/ui/guards/auth_guard.dart';
+// import 'package:collecta/ui/guards/auth_guard.dart';
 import '../theme/homepage_theme.dart';
 import '../theme/my_donations_theme.dart';
-// import '../../data/models/donation_model.dart';
 import '../../data/models/donation_list_item_model.dart';
 import '../../services/donation_service.dart';
-import 'edit_donation.dart';
+// import 'edit_donation.dart';
 import '../widgets/custom_popup_dialog.dart';
 
 class MyDonations extends StatefulWidget {
@@ -83,14 +82,22 @@ class _MyDonationsState extends State<MyDonations> {
         }
       }
 
+
       if (selectedDateRange != null) {
-        if (donationDate.isBefore(
-                selectedDateRange!.start.subtract(const Duration(days: 1))) ||
-            donationDate.isAfter(
-                selectedDateRange!.end.add(const Duration(days: 1)))) {
-          return false;
-        }
+      final start = DateTime(
+          selectedDateRange!.start.year,
+          selectedDateRange!.start.month,
+          selectedDateRange!.start.day);
+      final end = DateTime(
+          selectedDateRange!.end.year,
+          selectedDateRange!.end.month,
+          selectedDateRange!.end.day,
+          23, 59, 59); 
+
+      if (donationDate.isBefore(start) || donationDate.isAfter(end)) {
+        return false;
       }
+    }
 
       return true;
     }).toList();
@@ -106,6 +113,28 @@ class _MyDonationsState extends State<MyDonations> {
         return "בוטל";
       default:
         return status;
+    }
+  }
+
+  Future<void> cancelDonation(String donationId) async {
+    try {
+      await _service.cancelDonation(donationId);
+
+      await _loadDonations();
+
+      if (!mounted) return;
+
+      showDialog(
+        context: context,
+        builder: (context) => const CustomPopupDialog(
+          title: "התרומה בוטלה",
+          message: "התרומה בוטלה בהצלחה",
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("שגיאה: $e")),
+      );
     }
   }
 
@@ -218,7 +247,7 @@ class _MyDonationsState extends State<MyDonations> {
                                     // print(donation.toJson());
                                     // print("==============================");
                                     if (donation.status == "pending") {
-                                      Navigator.pushNamed(context, '/donor/edit-donation/${donation.id}');
+                                      // Navigator.pushNamed(context, '/donor/edit-donation/${donation.id}');
                                     } else {
                                       showDialog(
                                         context: context,
@@ -232,7 +261,7 @@ class _MyDonationsState extends State<MyDonations> {
                                   child: Align(
                                     alignment: Alignment.center, 
                                     child: Container(
-                                      width: MediaQuery.of(context).size.width * 0.4,
+                                      width: MediaQuery.of(context).size.width * 0.8,
                                       margin: const EdgeInsets.symmetric(vertical: 8),
                                       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                                       decoration: BoxDecoration(
@@ -246,30 +275,72 @@ class _MyDonationsState extends State<MyDonations> {
                                           ),
                                         ],
                                       ),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          const Icon(Icons.info_outline, size: 28),
-                                          const SizedBox(width: 12),
-                                          Text(
-                                            "${donation.createdAt.day}/${donation.createdAt.month}/${donation.createdAt.year}",
-                                            style: MyDonationsTheme.donationDate,
-                                          ),
-                                          const SizedBox(width: 12),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-                                            decoration: BoxDecoration(
-                                              color: MyDonationsTheme.statusColor(donation.status),
-                                              borderRadius: BorderRadius.circular(10),
+
+                                      child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            const Icon(Icons.info_outline, size: 28),
+                                            const SizedBox(width: 12),
+                                            Text(
+                                              "${donation.createdAt.day}/${donation.createdAt.month}/${donation.createdAt.year}",
+                                              style: MyDonationsTheme.donationDate,
                                             ),
-                                            child: Text(
-                                              _statusText(donation.status),
-                                              style: const TextStyle(color: Colors.black),
+                                            const SizedBox(width: 12),
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                                              decoration: BoxDecoration(
+                                                color: MyDonationsTheme.statusColor(donation.status),
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                              child: Text(
+                                                _statusText(donation.status),
+                                                style: const TextStyle(color: Colors.black),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+
+                                        if (donation.status == "pending") ...[
+                                          const SizedBox(height: 8),
+                                          Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: TextButton(
+                                              onPressed: () {
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (context) => CustomPopupDialog(
+                                                    title: "ביטול תרומה",
+                                                    message: "האם אתה בטוח שברצונך לבטל את התרומה?",
+                                                    buttonText: "אישור",
+                                                    cancelText: "חזור",
+                                                    onConfirm: () {
+                                                      cancelDonation(donation.id);
+                                                    },
+                                                  ),
+                                                );
+                                              },
+                                              style: TextButton.styleFrom(
+                                                padding: EdgeInsets.zero,
+                                                minimumSize: Size.zero,
+                                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                              ),
+                                              child: const Text(
+                                                "בטל תרומה",
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.black54,
+                                                  decoration: TextDecoration.underline,
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ],
-                                      ),
+                                      ],
+                                    ),
                                     ),
                                   ),
                                 );

@@ -3,9 +3,13 @@ import '../../../theme/homepage_theme.dart';
 
 Future<Map<String, dynamic>?> showOtherItemDialog({
   required BuildContext context,
+  String initialText = "",
+  int initialQuantity = 1,
 }) async {
-  final TextEditingController otherController = TextEditingController();
-  int quantity = 1;
+  final TextEditingController otherController = TextEditingController(
+    text: initialText.replaceFirst("אחר: ", ""),
+  );
+  int quantity = initialQuantity;
 
   return showDialog<Map<String, dynamic>>(
     context: context,
@@ -93,7 +97,7 @@ Future<Map<String, dynamic>?> showOtherItemDialog({
                     "name": "אחר: ${otherController.text}",
                     "productTypeId": null,
                     "quantity": quantity.toString(),
-                    "unit": "קג/יחידות",
+                    "unit": 'ק"ג/יחידות',
                   });
                 } else {
                   Navigator.pop(context);

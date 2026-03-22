@@ -98,4 +98,36 @@ class DonationModel {
       'products': products.map((e) => e.toJson()).toList(),
     };
   }
+
+  DonationModel copyWith({
+    String? id,
+    String? status,
+    String? receipt,
+    String? cancelingReason,
+    String? organizationId,
+    AddressModel? businessAddress,
+    String? donorId,
+    String? driverId,
+    String? contactName,
+    String? contactPhone,
+    DateTime? createdAt,
+    List<PickupTime>? pickupTimes,
+    List<ProductModel>? products,
+  }) {
+    return DonationModel(
+      id: id ?? this.id,
+      status: status ?? this.status,
+      receipt: receipt ?? this.receipt,
+      cancelingReason: cancelingReason ?? this.cancelingReason,
+      organizationId: organizationId ?? this.organizationId,
+      businessAddress: businessAddress ?? this.businessAddress,
+      donorId: donorId ?? this.donorId,
+      driverId: driverId ?? this.driverId,
+      contactName: contactName ?? this.contactName,
+      contactPhone: contactPhone ?? this.contactPhone,
+      createdAt: createdAt ?? this.createdAt,
+      pickupTimes: pickupTimes ?? this.pickupTimes,
+      products: products ?? this.products,
+    );
+  }
 }

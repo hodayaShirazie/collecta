@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+// import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../theme/homepage_theme.dart';
 import '../theme/report_donation_theme.dart';
@@ -70,6 +70,8 @@ class _ReportDonationState extends State<ReportDonation> {
       selectedLat = donor!.businessAddress.lat;
       selectedLng = donor!.businessAddress.lng;
 
+      if (!mounted) return;
+
       setState(() {});
     } catch (e) {
       debugPrint("No donor profile found: $e");
@@ -89,7 +91,10 @@ class _ReportDonationState extends State<ReportDonation> {
       context: context,
       index: index,
       donatedItems: donatedItems,
-      refresh: () => setState(() {}),
+      refresh: () {
+        if (!mounted) return;
+        setState(() {});
+      },
     );
   }
 
@@ -99,7 +104,10 @@ class _ReportDonationState extends State<ReportDonation> {
       product: product,
       selectedProducts: selectedProducts,
       donatedItems: donatedItems,
-      refresh: () => setState(() {}),
+      refresh: () {
+        if (!mounted) return;
+        setState(() {});
+      },
     );
   }
 
@@ -166,11 +174,15 @@ class _ReportDonationState extends State<ReportDonation> {
           buttonText: "סגור",
         ),
       );
+
+      if (!mounted) return false;
+
       Navigator.pop(context);
 
       return true; 
 
     } catch (e) {
+      if (!mounted) return false;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error: $e")),
       );

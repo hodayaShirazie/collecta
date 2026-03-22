@@ -164,4 +164,38 @@ class DonationApi extends ApiSource {
         return jsonDecode(res.body)["count"];
     }
 
+    Future<String> updateDonation(Map<String, dynamic> body) async {
+      final response = await http.post(
+        Uri.parse('${ApiConfig.baseUrl}/updateDonation'),
+        headers: await headers(),
+        body: json.encode(body),
+      );
+
+      final data = json.decode(response.body);
+
+      if (response.statusCode != 200) {
+        throw Exception(data['error']);
+      }
+
+      return data['status'];
+    }
+
+
+    Future<String> cancelDonation(String donationId) async {
+      final response = await http.post(
+        Uri.parse('${ApiConfig.baseUrl}/cancelDonation'),
+        headers: await headers(),
+        body: json.encode({
+          "donationId": donationId,
+        }),
+      );
+
+      final data = json.decode(response.body);
+
+      if (response.statusCode != 200) {
+        throw Exception(data['error']);
+      }
+
+      return data['status'];
+    }
 }
