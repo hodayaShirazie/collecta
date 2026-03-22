@@ -168,19 +168,19 @@ class DonationApi extends ApiSource {
     }
 
     Future<String> updateDonation(Map<String, dynamic> body) async {
-      final response = await http.post(
-        Uri.parse('${ApiConfig.baseUrl}/updateDonation'),
-        headers: await headers(),
-        body: json.encode(body),
-      );
+        final response = await http.post(
+            Uri.parse('${ApiConfig.baseUrl}/updateDonation'),
+            headers: await headers(),
+            body: json.encode(body),
+        );
 
-      final data = json.decode(response.body);
+        final data = json.decode(response.body);
 
-      if (response.statusCode != 200) {
-        throw Exception(data['error']);
-      }
+        if (response.statusCode != 200) {
+            throw Exception(data['error']);
+        }
 
-      return data['status'];
+        return data['status'];
     }
 
 
@@ -203,34 +203,34 @@ class DonationApi extends ApiSource {
     }
 
 
-Future<String> uploadDonationReceipt({
-  required String donationId,
-  required List<int> fileBytes,
-  required String fileName,
-}) async {
-  final dio = Dio();
-  
-  final formData = FormData.fromMap({
-    "donationId": donationId,
-    "file": MultipartFile.fromBytes(
-      fileBytes, 
-      filename: fileName, 
-      contentType: MediaType("application", "pdf")
-    ),
-  });
+    Future<String> uploadDonationReceipt({
+        required String donationId,
+        required List<int> fileBytes,
+        required String fileName,
+        }) async {
+        final dio = Dio();
+        
+        final formData = FormData.fromMap({
+            "donationId": donationId,
+            "file": MultipartFile.fromBytes(
+            fileBytes, 
+            filename: fileName, 
+            contentType: MediaType("application", "pdf")
+            ),
+        });
 
-  final res = await dio.post(
-    '${ApiConfig.baseUrl}/updateDonationReceipt',
-    data: formData,
-    options: Options(headers: await headers()),
-  );
+        final res = await dio.post(
+            '${ApiConfig.baseUrl}/updateDonationReceipt',
+            data: formData,
+            options: Options(headers: await headers()),
+        );
 
-  // התיקון כאן: res.data הוא אובייקט (Map). אנחנו צריכים רק את ה-url מתוכו.
-  if (res.data != null && res.data is Map) {
-    return res.data['url'] as String; 
-  }
-  
-  throw Exception("Invalid respond from server");
-}
+        // התיקון כאן: res.data הוא אובייקט (Map). אנחנו צריכים רק את ה-url מתוכו.
+        if (res.data != null && res.data is Map) {
+            return res.data['url'] as String; 
+        }
+        
+        throw Exception("Invalid respond from server");
+    }
 
 }

@@ -1,58 +1,3 @@
-// // // lib/app/app.dart
-// // import 'package:flutter/material.dart';
-// // import 'package:collecta/app/routes.dart';
-// // import 'package:collecta/app/theme.dart';
-// // import 'package:collecta/ui/screens/entering.dart';
-
-// // class MyApp extends StatelessWidget {
-// //   const MyApp({super.key});
-
-// //   @override
-// //   Widget build(BuildContext context) {
-// //     return MaterialApp(
-// //       title: 'Collecta Firebase App',
-// //       theme: AppTheme.lightTheme,           
-// //       darkTheme: AppTheme.darkTheme,        
-// //       initialRoute: Routes.entering,        
-// //       routes: Routes.routesMap,        
-// //       debugShowCheckedModeBanner: false,
-// //     );
-// //   }
-// // }
-
-
-
-// import 'package:flutter/material.dart';
-// import 'package:collecta/app/routes.dart';
-// import 'package:collecta/app/theme.dart';
-// import 'package:collecta/ui/screens/entering.dart';
-// import 'package:flutter_localizations/flutter_localizations.dart';
-
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'Collecta Firebase App',
-//       theme: AppTheme.lightTheme,
-//       darkTheme: AppTheme.darkTheme,
-//       initialRoute: Routes.entering,
-//       routes: Routes.routesMap,
-//       debugShowCheckedModeBanner: false,
-
-//       locale: const Locale('he'),
-//       supportedLocales: const [Locale('he')],
-//       localizationsDelegates: const [
-//         GlobalMaterialLocalizations.delegate,
-//         GlobalWidgetsLocalizations.delegate,
-//         GlobalCupertinoLocalizations.delegate,
-//       ],
-//     );
-//   }
-// }
-
-
 import 'package:flutter/material.dart';
 import 'package:collecta/app/routes.dart';
 import 'package:collecta/app/theme.dart';
@@ -71,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       initialRoute: Routes.entering,
-      routes: Routes.routesMap, // routes רגילים
+      routes: Routes.routesMap, 
       debugShowCheckedModeBanner: false,
 
       locale: const Locale('he'),
@@ -81,14 +26,9 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-
-      // -------------------------------
-      // כאן נוסיף onGenerateRoute למסלולים דינמיים
-      // -------------------------------
       onGenerateRoute: (settings) {
         final uri = Uri.parse(settings.name!);
 
-        // בדיקה אם זה מסלול edit-donation עם ID
         if (uri.pathSegments.length == 3 &&
             uri.pathSegments[0] == 'donor' &&
             uri.pathSegments[1] == 'edit-donation') {
@@ -101,7 +41,6 @@ class MyApp extends StatelessWidget {
           );
         }
 
-        // fallback לשאר המסלולים רגילים
         final builder = Routes.routesMap[settings.name];
         if (builder != null) {
           return MaterialPageRoute(
@@ -109,8 +48,6 @@ class MyApp extends StatelessWidget {
             settings: settings,
           );
         }
-
-        // מסלול לא קיים
         return null;
       },
     );

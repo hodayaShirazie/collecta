@@ -24,7 +24,7 @@ class DonorApi extends ApiSource {
     Future<String> updateDonorProfile({
         required String businessName,
         required String businessPhone,
-        required String businessAddressId,
+        required String businessAddress,
         required String contactName,
         required String contactPhone,
         required String crn,
@@ -38,7 +38,7 @@ class DonorApi extends ApiSource {
             body: json.encode({
                 'businessName': businessName,
                 'businessPhone': businessPhone,
-                'businessAddress_id': businessAddressId,
+                'businessAddress': businessAddress,
                 'contactName': contactName,
                 'contactPhone': contactPhone,
                 'crn': crn,

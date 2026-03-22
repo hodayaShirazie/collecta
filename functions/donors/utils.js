@@ -4,7 +4,7 @@ const db = admin.firestore();
 async function createDonor(uid, role) {
   const roleData = {
     id: uid,
-    businessAddress_id: "",
+    businessAddress: "",
     businessName: "",
     businessPhone: "",
     coins: 0,
