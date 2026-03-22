@@ -190,17 +190,14 @@ class CustomPopupDialog extends StatelessWidget {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
+              if (onCancel != null) onCancel!();
             },
             child: Text(cancelText!),
           ),
-
-        ElevatedButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-            if (onConfirm != null) onConfirm!();
-          },
-          child: Text(buttonText),
-        ),
+          ElevatedButton(
+            onPressed: onConfirm,
+            child: Text(buttonText),
+          ),
       ],
     );
   }

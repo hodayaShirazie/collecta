@@ -161,3 +161,5 @@ exports.updateDonation = functions.https.onRequest(
 exports.cancelDonation = functions.https.onRequest(
   require("./donations/cancelDonation")
 );
+
+exports.updateDonationReceipt = require("./donations/updateDonationReceipt");

@@ -22,9 +22,9 @@ module.exports = async (req, res) => {
       if (!donorSnap.exists) return res.status(404).send({ error: "Donor not found" });
 
       const donorData = donorSnap.data();
-      const addressId = donorData.businessAddress_id; // מזהה הכתובת
+      const addressId = donorData.businessAddress; // מזהה הכתובת
 
-      // 3. קח את כתובת העסק לפי businessAddress_id
+      // 3. קח את כתובת העסק לפי businessAddress
       let addressData = null;
       if (addressId) {
         const addressSnap = await db.collection("address").doc(addressId).get();

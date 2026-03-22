@@ -65,7 +65,7 @@ Future<void> main() async {
     'organization_id': orgRef.id,
     'businessPhone': '050-1234567',
     'businessName': 'Bakery Shop',
-    'businessAddress_id': '', // אפשר למלא לאחר מכן
+    'businessAddress': '', // אפשר למלא לאחר מכן
     'crn': '123456789',
     'coins': 50,
     'contactName': 'Shira',

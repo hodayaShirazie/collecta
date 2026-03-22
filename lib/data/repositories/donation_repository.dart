@@ -71,6 +71,18 @@ class DonationRepository {
     return _source.cancelDonation(donationId);
   }
 
+  Future<String> uploadDonationReceipt({
+    required String donationId,
+    required List<int> fileBytes,
+    required String fileName,
+  }) {
+    return _source.uploadDonationReceipt(
+      donationId: donationId,
+      fileBytes: fileBytes,
+      fileName: fileName,
+    );
+  }
+
   
 
 

@@ -71,6 +71,19 @@ class DonationService {
   }
 
 
+  Future<String> uploadDonationReceipt({
+    required String donationId,
+    required List<int> fileBytes,
+    required String fileName,
+  }) {
+    return _repo.uploadDonationReceipt(
+      donationId: donationId,
+      fileBytes: fileBytes,
+      fileName: fileName,
+    );
+  }
+
+
 
 
 

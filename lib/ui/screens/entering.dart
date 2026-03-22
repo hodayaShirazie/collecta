@@ -44,7 +44,7 @@ class _EnteringScreenState extends State<EnteringScreen> {
 
         firebaseUser = userCredential.user;
       } else {
-        final googleSignIn = GoogleSignIn();
+        final GoogleSignIn googleSignIn = GoogleSignIn();
         final googleUser = await googleSignIn.signIn();
         if (googleUser == null) return null;
 
