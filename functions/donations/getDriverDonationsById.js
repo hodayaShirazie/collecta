@@ -14,6 +14,7 @@ module.exports = async (req, res) => {
       const snapshot = await db
         .collection("donation")
         .where("driver_id", "==", firebaseUser.uid)
+        .where("status", "==", "pending")
         .orderBy("created_at", "desc")
         .get();
 
