@@ -1,4 +1,3 @@
-
 import 'address_model.dart';
 import 'product_model.dart';
 
@@ -58,28 +57,6 @@ class DonationModel {
     required this.pickupTimes,
     required this.products,
   });
-
-  // factory DonationModel.fromApi(Map<String, dynamic> json) {
-  //   return DonationModel(
-  //     id: json['id'],
-  //     status: json['status'],
-  //     receipt: json['receipt'] ?? '',
-  //     cancelingReason: json['canceling_reason'] ?? '',
-  //     organizationId: json['organization_id'],
-  //     donorId: json['donor_id'],
-  //     driverId: json['driver_id'],
-  //     contactName: json['contactName'],
-  //     contactPhone: json['contactPhone'],
-  //     createdAt: DateTime.parse(json['created_at']),
-  //     businessAddress: AddressModel.fromApi(json['businessAddress']),
-  //     pickupTimes: (json['pickupTimes'] as List)
-  //         .map((e) => PickupTime.fromApi(e))
-  //         .toList(),
-  //     products: (json['products'] as List)
-  //         .map((e) => ProductModel.fromApi(e))
-  //         .toList(),
-  //   );
-  // }
 
   factory DonationModel.fromApi(Map<String, dynamic> json) {
 

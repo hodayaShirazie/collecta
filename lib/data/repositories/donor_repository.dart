@@ -16,7 +16,7 @@ class DonorRepository {
     return _source.updateDonorProfile(
       businessName: donor.businessName,
       businessPhone: donor.businessPhone,
-      businessAddressId: donor.businessAddress.id,
+      businessAddress: donor.businessAddress.id,
       contactName: donor.contactName,
       contactPhone: donor.contactPhone,
       crn: donor.crn,

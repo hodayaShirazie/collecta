@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
       const {
         businessName,
         businessPhone,
-        businessAddress_id,
+        businessAddress,
         contactName,
         contactPhone,
         crn,
@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
       await db.collection("donor").doc(uid).update({
         businessName,
         businessPhone,
-        businessAddress_id,
+        businessAddress,
         contactName,
         contactPhone,
         crn,

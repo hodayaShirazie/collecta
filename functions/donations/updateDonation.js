@@ -1,4 +1,3 @@
-
 // const admin = require("firebase-admin");
 // const corsHandler = require("../utils/cors");
 // const verifyFirebaseToken = require("../utils/verifyToken");

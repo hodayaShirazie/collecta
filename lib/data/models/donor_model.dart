@@ -21,6 +21,7 @@ class DonorProfile {
     required this.contactPhone,
     required this.crn,
   });
+  
 
   factory DonorProfile.fromApi(Map<String, dynamic> json) {
     final addressJson = json['address'];
@@ -28,7 +29,7 @@ class DonorProfile {
       user: UserModel.fromMap(json['user']),
       businessAddress: addressJson != null
           ? AddressModel.fromApi(addressJson)
-          : AddressModel(id: '', lat: 0.0, lng: 0.0, name: ''), // ברירת מחדל
+          : AddressModel(id: '', lat: 0.0, lng: 0.0, name: ''),
       businessName: json['role']?['businessName'] ?? '',
       businessPhone: json['role']?['businessPhone'] ?? '',
       coins: json['role']?['coins'] ?? 0,
@@ -45,11 +46,10 @@ class DonorProfile {
       "contactName": contactName,
       "contactPhone": contactPhone,
       "crn": crn,
-      "businessAddressId": businessAddress.id,
+      "businessAddress": businessAddress.id,
     };
   }
 
-  /// 🔹 תוספת – לעדכון שדות בקלות
   DonorProfile copyWith({
     UserModel? user,
     AddressModel? businessAddress,
@@ -70,5 +70,19 @@ class DonorProfile {
       contactPhone: contactPhone ?? this.contactPhone,
       crn: crn ?? this.crn,
     );
+  }
+
+   List<String> missingFields() {
+    final missing = <String>[];
+
+    if (user.name.isEmpty) missing.add("name");
+    if (businessName.isEmpty) missing.add("businessName");
+    if (businessPhone.isEmpty) missing.add("businessPhone");
+    if (businessAddress.id.isEmpty) missing.add("address");
+    if (contactName.isEmpty) missing.add("contactName");
+    if (contactPhone.isEmpty) missing.add("contactPhone");
+    if (crn.isEmpty) missing.add("crn");
+
+    return missing;
   }
 }

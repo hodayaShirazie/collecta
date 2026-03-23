@@ -17,7 +17,6 @@ import '../widgets/personal_details/contact_details_card.dart';
 import '../widgets/personal_details/user_details_card.dart';
 import '../widgets/donation_widgets/input_field.dart';
 
-
 import '../utils/validators/phone_validator.dart';
 import '../utils/validators/business_id_validator.dart';
 
