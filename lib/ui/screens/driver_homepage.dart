@@ -311,7 +311,9 @@ Widget build(BuildContext context) {
                           title: 'המסלול היומי',
                           icon: Icons.route_outlined,
                           flipIcon: true,
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pushNamed(context, Routes.dailyRoutDriver);
+                          },
 
                         ),
                         const SizedBox(height: HomepageTheme.betweenButtons),

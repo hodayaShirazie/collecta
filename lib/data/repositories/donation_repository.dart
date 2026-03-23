@@ -83,6 +83,23 @@ class DonationRepository {
     );
   }
 
+
+  Future<List<DonationModel>> getDriverDonationsById() async {
+    final data = await _source.getDriverDonationsById();
+
+    return data
+        .map<DonationModel>((json) => DonationModel.fromApi(json))
+        .toList();
+  }
+
+
+  Future<String> submitPickup({
+    required String donationId,
+    required List<Map<String, dynamic>> products,
+  }) {
+    return _source.submitPickup(donationId: donationId, products: products);
+  }
+
   
 
 

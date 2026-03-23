@@ -23,5 +23,10 @@ class DonorRepository {
     );
   }
 
+  Future<DonorProfile> getDonorProfileById(String donorId) async {
+    final data = await _source.getDonorProfileById(donorId);
+    return DonorProfile.fromApi(data);
+  }
+
 
 }

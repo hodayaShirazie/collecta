@@ -15,6 +15,7 @@ import 'package:collecta/ui/screens/all_driver_admin.dart';
 import 'package:collecta/ui/screens/edit_donation.dart';
 import 'package:collecta/ui/screens/donor_profile_completion.dart';
 import 'package:collecta/data/models/donor_model.dart';
+import 'package:collecta/ui/screens/daily_route_driver.dart';
 
 const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
 
@@ -33,6 +34,7 @@ class Routes {
   static const allDonationAdmin = '/admin/all-donations';
   static const editDonation = '/donor/edit-donation';
   static const completeProfile = '/complete-profile';
+  static const dailyRoutDriver = '/driver/daily-route';
 
 
   static Map<String, WidgetBuilder> routesMap = {
@@ -49,7 +51,9 @@ class Routes {
     allDonationAdmin: (context) => const AuthGuard(child: AllDonationsAdmin()),
       completeProfile: (context) {
     final donor = ModalRoute.of(context)!.settings.arguments as DonorProfile;
-    return AuthGuard(child: DonorProfileCompletionScreen(donor: donor));    },
+    return AuthGuard(child: DonorProfileCompletionScreen(donor: donor));    },    dailyRoutDriver: (context) => const AuthGuard(child: DailyRouteDriverPage()),
+    
+
   };
 
 }

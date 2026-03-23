@@ -233,4 +233,37 @@ class DonationApi extends ApiSource {
         throw Exception("Invalid respond from server");
     }
 
+Future<List<dynamic>> getDriverDonationsById() async {
+  final response = await http.get(
+    Uri.parse('${ApiConfig.baseUrl}/getDriverDonationsById'),
+    headers: await headers(),
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception(response.body);
+  }
+
+  return json.decode(response.body);
+}
+
+
+Future<String> submitPickup({
+  required String donationId,
+  required List<Map<String, dynamic>> products,
+}) async {
+  final response = await http.post(
+    Uri.parse('${ApiConfig.baseUrl}/submitPickup'),
+    headers: await headers(),
+    body: json.encode({
+      "donationId": donationId,
+      "products": products,
+    }),
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception(json.decode(response.body)['error'] ?? 'Failed to submit pickup');
+  }
+  return "success";
+}
+
 }

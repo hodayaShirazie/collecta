@@ -12,4 +12,8 @@ class DonorService {
     Future<String> updateDonorProfile(DonorProfile donor) {
     return _repo.updateDonorProfile(donor);
   }
+
+  Future<DonorProfile> getDonorProfileById(String donorId) {
+    return _repo.getDonorProfileById(donorId);
+  }
 }
