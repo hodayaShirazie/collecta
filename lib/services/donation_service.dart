@@ -88,6 +88,14 @@ class DonationService {
   }
 
 
+  Future<String> submitPickup({
+    required String donationId,
+    required List<Map<String, dynamic>> products,
+  }) {
+    return _repo.submitPickup(donationId: donationId, products: products);
+  }
+
+
 
 
 

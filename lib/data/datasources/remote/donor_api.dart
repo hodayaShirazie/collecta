@@ -53,4 +53,18 @@ class DonorApi extends ApiSource {
 
         return data['status'];
     }
+
+    Future<Map<String, dynamic>> getDonorProfileById(String donorId) async {
+        final response = await http.get(
+            // שימי לב שאנחנו מעבירים את ה-ID כפרמטר ב-URL
+            Uri.parse('${ApiConfig.baseUrl}/getDonorProfileById?donorId=$donorId'),
+            headers: await headers(),
+        );
+
+        if (response.statusCode != 200) {
+            throw Exception(json.decode(response.body)['error'] ?? 'Failed to load donor');
+        }
+
+        return Map<String, dynamic>.from(json.decode(response.body));
+    }
 }

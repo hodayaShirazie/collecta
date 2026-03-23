@@ -246,4 +246,24 @@ Future<List<dynamic>> getDriverDonationsById() async {
   return json.decode(response.body);
 }
 
+
+Future<String> submitPickup({
+  required String donationId,
+  required List<Map<String, dynamic>> products,
+}) async {
+  final response = await http.post(
+    Uri.parse('${ApiConfig.baseUrl}/submitPickup'),
+    headers: await headers(),
+    body: json.encode({
+      "donationId": donationId,
+      "products": products,
+    }),
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception(json.decode(response.body)['error'] ?? 'Failed to submit pickup');
+  }
+  return "success";
+}
+
 }
