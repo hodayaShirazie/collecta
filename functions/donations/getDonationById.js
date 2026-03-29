@@ -3,6 +3,7 @@
 const admin = require("firebase-admin");
 const corsHandler = require("../utils/cors");
 const verifyFirebaseToken = require("../utils/verifyToken");
+const { isValidString } = require("../utils/validate");
 
 const db = admin.firestore();
 
@@ -15,6 +16,10 @@ module.exports = async (req, res) => {
 
       const donationId = req.query.donationId;
       if (!donationId) return res.status(400).send({ error: "Missing donation ID" });
+
+      if (!isValidString(donationId)) {
+        return res.status(400).send({ error: "Invalid input parameters" });
+      }
 
       const donationSnap = await db.collection("donation").doc(donationId).get();
       if (!donationSnap.exists) return res.status(404).send({ error: "Donation not found" });

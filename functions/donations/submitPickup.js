@@ -56,6 +56,7 @@
 const admin = require("firebase-admin");
 const corsHandler = require("../utils/cors");
 const verifyFirebaseToken = require("../utils/verifyToken");
+const { isValidString } = require("../utils/validate");
 const db = admin.firestore();
 
 module.exports = async (req, res) => {
@@ -68,6 +69,10 @@ module.exports = async (req, res) => {
 
             if (!donationId || !products || !Array.isArray(products)) {
                 return res.status(400).send({ error: "Missing donationId or products array" });
+            }
+
+            if (!isValidString(donationId)) {
+                return res.status(400).send({ error: "Invalid input parameters" });
             }
 
             const batch = db.batch();

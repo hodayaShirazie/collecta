@@ -1,6 +1,7 @@
 const admin = require("firebase-admin");
 const corsHandler = require("../../utils/cors");
 const verifyFirebaseToken = require("../../utils/verifyToken");
+const { isValidString } = require("../../utils/validate");
 const db = admin.firestore();
 
 // Function to report a donation
@@ -20,6 +21,10 @@ module.exports = async (req, res) => {
         !description
       ) {
         return res.status(400).send({ error: "Missing fields" });
+      }
+
+      if (!isValidString(name) || !isValidString(description)) {
+        return res.status(400).send({ error: "Invalid input parameters" });
       }
 
       const productTypeData = {

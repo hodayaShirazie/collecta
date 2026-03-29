@@ -4,6 +4,7 @@ const { defineJsonSecret } = require("firebase-functions/params");
 const cors = require("../utils/cors");
 const config = defineJsonSecret("FUNCTIONS_CONFIG_EXPORT");
 const verifyFirebaseToken = require("../utils/verifyToken");
+const { isValidString } = require("../utils/validate");
 
 
 exports.placesAutocomplete = functions.https.onRequest((req, res) => {
@@ -16,6 +17,10 @@ exports.placesAutocomplete = functions.https.onRequest((req, res) => {
 
       if (!input) {
         return res.status(400).json({ error: "Missing input" });
+      }
+
+      if (!isValidString(input)) {
+        return res.status(400).json({ error: "Invalid input parameters" });
       }
 
       const GOOGLE_KEY = config.value().google.key;

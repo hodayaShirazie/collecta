@@ -3,6 +3,7 @@ const { defineJsonSecret } = require("firebase-functions/params");
 const config = defineJsonSecret("FUNCTIONS_CONFIG_EXPORT");
 const corsHandler = require("../utils/cors");
 const verifyFirebaseToken = require("../utils/verifyToken");
+const { isValidString } = require("../utils/validate");
 
 module.exports = (req, res) => {
   corsHandler(req, res, async () => {
@@ -13,6 +14,10 @@ module.exports = (req, res) => {
 
       if (!placeId) {
         return res.status(400).send({ error: "Missing placeId" });
+      }
+
+      if (!isValidString(placeId)) {
+        return res.status(400).send({ error: "Invalid input parameters" });
       }
 
       const GOOGLE_KEY = config.value().google.key;
