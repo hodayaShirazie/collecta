@@ -1,6 +1,7 @@
 const admin = require("firebase-admin");
 const corsHandler = require("../utils/cors");
 const verifyFirebaseToken = require("../utils/verifyToken");
+const { isValidString } = require("../utils/validate");
 
 const db = admin.firestore();
 
@@ -14,6 +15,10 @@ module.exports = async (req, res) => {
 
       if (!role) {
         return res.status(400).send({ error: "Missing role" });
+      }
+
+      if (!isValidString(role)) {
+        return res.status(400).send({ error: "Invalid input parameters" });
       }
 
       const uid = firebaseUser.uid;

@@ -2,6 +2,7 @@
 const admin = require("firebase-admin");
 const corsHandler = require("../utils/cors");
 const verifyFirebaseToken = require("../utils/verifyToken");
+const { isValidString } = require("../utils/validate");
 
 const db = admin.firestore();
 
@@ -14,6 +15,10 @@ module.exports = async (req, res) => {
       const uid = firebaseUser.uid;
     //   const { name, img } = req.body;
       const { name } = req.body;
+
+      if (name !== undefined && !isValidString(name)) {
+        return res.status(400).send({ error: "Invalid input parameters" });
+      }
 
       const updateData = {};
       if (name !== undefined) updateData.name = name;

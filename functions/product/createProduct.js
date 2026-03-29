@@ -1,6 +1,7 @@
 const admin = require("firebase-admin");
 const corsHandler = require("../utils/cors");
 const verifyFirebaseToken = require("../utils/verifyToken");
+const { isValidString } = require("../utils/validate");
 
 const db = admin.firestore();
 
@@ -13,7 +14,7 @@ module.exports = async (req, res) => {
       const { productTypeId, quantity } = req.body;
 
       if (
-        typeof productTypeId !== "string" ||
+        !isValidString(productTypeId) ||
         typeof quantity !== "number" ||
         quantity <= 0
       ) {

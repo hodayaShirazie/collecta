@@ -80,10 +80,11 @@
 
 
 const functions = require("firebase-functions");
-const admin = require("firebase-admin"); 
+const admin = require("firebase-admin");
 const { uploadPDFToStorage } = require("./utils/uploadReceiptHelper");
 const Busboy = require("busboy");
-const cors = require("../utils/cors"); 
+const cors = require("../utils/cors");
+const { isValidString } = require("../utils/validate");
 
 const db = admin.firestore();
 
@@ -125,6 +126,10 @@ module.exports = functions.https.onRequest((req, res) => {
     busboy.on("finish", async () => {
       if (!uploadData || !donationId) {
         return res.status(400).json({ error: "Missing file or donationId" });
+      }
+
+      if (!isValidString(donationId)) {
+        return res.status(400).json({ error: "Invalid input parameters" });
       }
 
       try {

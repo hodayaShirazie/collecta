@@ -2,6 +2,7 @@
 const admin = require("firebase-admin");
 const corsHandler = require("../utils/cors");
 const verifyFirebaseToken = require("../utils/verifyToken");
+const { isValidString } = require("../utils/validate");
 
 const db = admin.firestore();
 
@@ -13,6 +14,10 @@ module.exports = async (req, res) => {
         try {
             const donorId = req.query.donorId;
             if (!donorId) return res.status(400).send({ error: "Missing donor ID" });
+
+            if (!isValidString(donorId)) {
+              return res.status(400).send({ error: "Invalid input parameters" });
+            }
 
             // 1. שליפת נתוני המשתמש הכלליים
             const userSnap = await db.collection("user").doc(donorId).get();

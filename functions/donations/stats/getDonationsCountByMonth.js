@@ -45,6 +45,7 @@
 const admin = require("firebase-admin");
 const corsHandler = require("../../utils/cors");
 const verifyFirebaseToken = require("../../utils/verifyToken");
+const { isValidString } = require("../../utils/validate");
 
 const db = admin.firestore();
 
@@ -67,6 +68,10 @@ module.exports = async (req, res) => {
 
     if (!organizationId) {
         return res.status(400).send({ error: "organizationId is required" });
+    }
+
+    if (!isValidString(organizationId)) {
+      return res.status(400).send({ error: "Invalid input parameters" });
     }
 
     try {
