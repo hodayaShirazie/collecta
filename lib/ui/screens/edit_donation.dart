@@ -304,7 +304,14 @@ class _EditDonationState extends State<EditDonation> {
                     onDeleteItem: deleteItem,
                     onSubmit: submit,
                     buttonText: "שמור שינויים",
+                    isAddressConfirmed: selectedLat != null,
                     onLocationSelected: onLocationSelected,
+                    onLocationCleared: () {
+                      setState(() {
+                        selectedLat = null;
+                        selectedLng = null;
+                      });
+                    },
                     buttonStyle: ReportDonationTheme.simpleButton,
                     isCategoryDisabled: (product) => DonationCategoryHelper.isCategoryDisabled(
                     product: product,

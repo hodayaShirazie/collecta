@@ -33,6 +33,8 @@ class DonationForm extends StatelessWidget {
   final String buttonText;
 
   final Function(double, double) onLocationSelected;
+  final VoidCallback? onLocationCleared;
+  final bool isAddressConfirmed;
   final ButtonStyle buttonStyle;
   
 
@@ -58,6 +60,8 @@ class DonationForm extends StatelessWidget {
     required this.onSubmit,
     required this.buttonText,
     required this.onLocationSelected,
+    this.onLocationCleared,
+    this.isAddressConfirmed = false,
     required this.buttonStyle,
   });
 
@@ -73,6 +77,8 @@ class DonationForm extends StatelessWidget {
             businessPhone: businessPhone,
             businessId: businessId,
             onLocationSelected: onLocationSelected,
+            onLocationCleared: onLocationCleared,
+            isAddressConfirmed: isAddressConfirmed,
           ),
           ContactDetailsCard(
             contactName: contactName,
