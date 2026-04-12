@@ -6,6 +6,7 @@ import '../../data/models/donation_list_item_model.dart';
 import '../../services/donation_service.dart';
 // import 'edit_donation.dart';
 import '../widgets/custom_popup_dialog.dart';
+import 'edit_donation.dart';
 import '../widgets/donation_widgets/donation_receipt_button.dart';
 
 class MyDonations extends StatefulWidget {
@@ -358,6 +359,13 @@ class _MyDonationsState extends State<MyDonations> {
                                       builder: (context) => const CustomPopupDialog(
                                         title: "עריכה אינה אפשרית",
                                         message: "לא ניתן לערוך תרומה זו.",
+                                      ),
+                                    );
+                                  } else {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => EditDonation(donationId: donation.id),
                                       ),
                                     );
                                   }

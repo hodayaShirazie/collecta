@@ -212,10 +212,17 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
                           address: businessAddressCtrl,
                           businessPhone: businessPhoneCtrl,
                           businessId: crnCtrl,
+                          isAddressConfirmed: selectedLat != null,
                           onLocationSelected: (lat, lng) {
                             setState(() {
                               selectedLat = lat;
                               selectedLng = lng;
+                            });
+                          },
+                          onLocationCleared: () {
+                            setState(() {
+                              selectedLat = null;
+                              selectedLng = null;
                             });
                           },
                         ),

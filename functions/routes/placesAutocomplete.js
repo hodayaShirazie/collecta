@@ -33,6 +33,7 @@ exports.placesAutocomplete = functions.https.onRequest((req, res) => {
             input,
             types: "address",
             language: "he",
+            components: "country:il",
             key: GOOGLE_KEY,
           },
         }
