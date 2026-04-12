@@ -21,8 +21,12 @@ module.exports = async (req, res) => {
       }
 
       const updateData = {};
-      if (name !== undefined) updateData.name = name;
+      if (name !== undefined && name !== '') updateData.name = name;
     //   if (img !== undefined) updateData.img = img;
+
+      if (Object.keys(updateData).length === 0) {
+        return res.status(400).send({ error: "No fields to update" });
+      }
 
       await db.collection("user").doc(uid).update(updateData);
 
