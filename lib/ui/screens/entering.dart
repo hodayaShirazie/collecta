@@ -8,6 +8,8 @@ import '../theme/entering_theme.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../services/donor_service.dart';
 import '../../app/routes.dart';
+import 'donor_homepage.dart';
+import 'driver_homepage.dart';
 
 
 const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
@@ -152,6 +154,7 @@ class _EnteringScreenState extends State<EnteringScreen> {
 
 
                             if (result == "success") {
+                              DonorHomepage.markLoginSession();
                               _navigateToDonor();
                             }
                             // if (result == "success") {
@@ -197,6 +200,7 @@ class _EnteringScreenState extends State<EnteringScreen> {
                                 await _signInAndSync("driver");
 
                             if (result == "success") {
+                              DriverHomepage.markLoginSession();
                               _navigateToDriver();
                             } else {
                               ScaffoldMessenger.of(context)

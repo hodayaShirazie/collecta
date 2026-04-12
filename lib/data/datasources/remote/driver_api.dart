@@ -33,8 +33,8 @@ class DriverApi extends ApiSource {
             // headers: headers,
             headers: await headers(),
             body: json.encode({
-                "phone": phone,
-                "area": area,
+                if (phone.isNotEmpty) 'phone': phone,
+                if (area.isNotEmpty) 'area': area,
             }),
         );
 

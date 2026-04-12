@@ -177,15 +177,21 @@ import '../../data/models/address_model.dart';
 import '../widgets/homepage_button.dart';
 import '../widgets/sign_out.dart';
 import '../widgets/layout_wrapper.dart';
-import '../widgets/custom_popup_dialog.dart';
 import 'package:collecta/app/routes.dart';
 import '../theme/homepage_theme.dart';
 import '../widgets/donation_widgets/address_field.dart';
 import '../utils/validators/business_id_validator.dart';
 import '../utils/validators/phone_validator.dart';
+import '../utils/profile_completion_flow.dart';
 
 class DonorHomepage extends StatefulWidget {
   const DonorHomepage({super.key});
+
+  static bool _pendingMissingFieldsCheck = false;
+
+  static void markLoginSession() {
+    _pendingMissingFieldsCheck = true;
+  }
 
   @override
   State<DonorHomepage> createState() => _DonorHomepageState();
@@ -202,99 +208,47 @@ class _DonorHomepageState extends State<DonorHomepage> {
   bool _didCheckMissing = false;
 
   void _checkMissingFields(DonorProfile donor) {
+    if (!DonorHomepage._pendingMissingFieldsCheck) return;
     if (_didCheckMissing) return;
     final missing = donor.missingFields();
-    if (missing.isNotEmpty) {
-      _didCheckMissing = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showMissingFieldsDialog(missing);
-      });
-    }
+    DonorHomepage._pendingMissingFieldsCheck = false;
+    if (missing.isEmpty) return;
+    _didCheckMissing = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ProfileCompletionFlow.show(
+        context: context,
+        fields: missing,
+        contentBuilder: _buildFieldContent,
+        onSave: _saveField,
+      );
+    });
   }
 
-  void _showMissingFieldsDialog(List<String> fields) {
-    int index = 0;
-    final controller = TextEditingController();
-    final _formKey = GlobalKey<FormState>();
-
-    void showNext() {
-      String field = fields[index];
-
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => StatefulBuilder(
-          builder: (context, setStateDialog) {
-            return Form(
-              key: _formKey,
-              child: CustomPopupDialog(
-                title: "השלמת פרטים",
-                cancelText: "דלג",
-                buttonText: "שמור",
-                content: field == "address"
-                    ? AddressFieldWidget(
-                        controller: controller,
-                        onLocationSelected: (lat, lng) {
-                          selectedLat = lat;
-                          selectedLng = lng;
-                        },
-                      )
-                    : TextFormField(
-                        controller: controller,
-                        decoration: InputDecoration(
-                          labelText: _getLabel(field),
-                        ),
-                        validator: (value) {
-                          switch (field) {
-                            case "crn":
-                              return validateBusinessId(value);
-                            case "businessPhone":
-                            case "contactPhone":
-                              return validatePhone(value);
-                            default:
-                              return (value == null || value.isEmpty)
-                                  ? "שדה חובה"
-                                  : null;
-                          }
-                        },
-                      ),
-
-                onCancel: () {
-                  controller.clear();
-                  if (index < fields.length - 1) {
-                    index++;
-                    showNext();
-                  }
-                },
-                onConfirm: () async {
-                  if (_formKey.currentState!.validate()) {
-                    final value = controller.text.trim();
-                    if (value.isNotEmpty) {
-                      await _saveField(field, value);
-                    }
-
-                    controller.clear();
-                    selectedAddressId = null;
-                    selectedLat = null;
-                    selectedLng = null;
-
-                    if (index < fields.length - 1) {
-                      index++;
-                      Navigator.pop(context);
-                      showNext();
-                    } else {
-                      Navigator.pop(context);
-                    }
-                  }
-                },
-              ),
-            );
-          },
-        ),
+  Widget _buildFieldContent(String field, TextEditingController controller) {
+    if (field == "address") {
+      return AddressFieldWidget(
+        controller: controller,
+        onLocationSelected: (lat, lng) {
+          selectedLat = lat;
+          selectedLng = lng;
+        },
       );
     }
-
-    showNext();
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(labelText: _getLabel(field)),
+      validator: (value) {
+        switch (field) {
+          case "crn":
+            return validateBusinessId(value);
+          case "businessPhone":
+          case "contactPhone":
+            return validatePhone(value);
+          default:
+            return (value == null || value.trim().isEmpty) ? "שדה חובה" : null;
+        }
+      },
+    );
   }
 
   String _getLabel(String field) {
@@ -349,6 +303,9 @@ class _DonorHomepageState extends State<DonorHomepage> {
         }
 
         updated = donor.copyWith(businessAddress: address);
+        selectedAddressId = null;
+        selectedLat = null;
+        selectedLng = null;
         break;
 
       case "businessName":
@@ -384,7 +341,7 @@ class _DonorHomepageState extends State<DonorHomepage> {
       body: FutureBuilder<List<dynamic>>(
         future: Future.wait([
           orgService.fetchOrganization('xFKMWqidL2uZ5wnksdYX'),
-          userService.fetchMyProfile("donor"),
+          _donorService.getMyDonorProfile(),
         ]),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -400,7 +357,7 @@ class _DonorHomepageState extends State<DonorHomepage> {
           }
 
           final org = snapshot.data![0] as OrganizationModel;
-          final donor = DonorProfile.fromApi(snapshot.data![1] as Map<String, dynamic>);
+          final donor = snapshot.data![1] as DonorProfile;
 
           print("Business Address ID: '${donor.businessAddress.id}'");
           print("Business Address Name: '${donor.businessAddress.name}'");
