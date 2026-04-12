@@ -33,14 +33,19 @@ module.exports = async (req, res) => {
         return res.status(400).send({ error: "Invalid input parameters" });
       }
 
-      await db.collection("donor").doc(uid).update({
-        businessName,
-        businessPhone,
-        businessAddress,
-        contactName,
-        contactPhone,
-        crn,
-      });
+      const updateData = {};
+      if (businessName !== undefined) updateData.businessName = businessName;
+      if (businessPhone !== undefined) updateData.businessPhone = businessPhone;
+      if (businessAddress !== undefined) updateData.businessAddress = businessAddress;
+      if (contactName !== undefined) updateData.contactName = contactName;
+      if (contactPhone !== undefined) updateData.contactPhone = contactPhone;
+      if (crn !== undefined) updateData.crn = crn;
+
+      if (Object.keys(updateData).length === 0) {
+        return res.status(400).send({ error: "No fields to update" });
+      }
+
+      await db.collection("donor").doc(uid).update(updateData);
 
       return res.status(200).send({ status: "success" });
     } catch (e) {
