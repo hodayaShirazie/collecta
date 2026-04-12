@@ -31,18 +31,20 @@ class DonorApi extends ApiSource {
     }) async {
         // final headers = await AuthHeaders.build();
 
+        // Build request body with only non-empty fields
+        final body = <String, dynamic>{};
+        if (businessName.isNotEmpty) body['businessName'] = businessName;
+        if (businessPhone.isNotEmpty) body['businessPhone'] = businessPhone;
+        if (businessAddress.isNotEmpty) body['businessAddress'] = businessAddress;
+        if (contactName.isNotEmpty) body['contactName'] = contactName;
+        if (contactPhone.isNotEmpty) body['contactPhone'] = contactPhone;
+        if (crn.isNotEmpty) body['crn'] = crn;
+
         final response = await http.put(
         Uri.parse('${ApiConfig.baseUrl}/updateDonorProfile'),
             // headers: headers,
             headers: await headers(),
-            body: json.encode({
-                if (businessName.isNotEmpty) 'businessName': businessName,
-                if (businessPhone.isNotEmpty) 'businessPhone': businessPhone,
-                if (businessAddress.isNotEmpty) 'businessAddress': businessAddress,
-                if (contactName.isNotEmpty) 'contactName': contactName,
-                if (contactPhone.isNotEmpty) 'contactPhone': contactPhone,
-                if (crn.isNotEmpty) 'crn': crn,
-            }),
+            body: json.encode(body),
         );
 
         final data = json.decode(response.body);

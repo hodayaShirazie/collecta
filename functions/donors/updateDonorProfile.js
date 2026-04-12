@@ -34,15 +34,16 @@ module.exports = async (req, res) => {
       }
 
       const updateData = {};
-      if (businessName !== undefined) updateData.businessName = businessName;
-      if (businessPhone !== undefined) updateData.businessPhone = businessPhone;
-      if (businessAddress !== undefined) updateData.businessAddress = businessAddress;
-      if (contactName !== undefined) updateData.contactName = contactName;
-      if (contactPhone !== undefined) updateData.contactPhone = contactPhone;
-      if (crn !== undefined) updateData.crn = crn;
+      if (businessName !== undefined && businessName !== '') updateData.businessName = businessName;
+      if (businessPhone !== undefined && businessPhone !== '') updateData.businessPhone = businessPhone;
+      if (businessAddress !== undefined && businessAddress !== '') updateData.businessAddress = businessAddress;
+      if (contactName !== undefined && contactName !== '') updateData.contactName = contactName;
+      if (contactPhone !== undefined && contactPhone !== '') updateData.contactPhone = contactPhone;
+      if (crn !== undefined && crn !== '') updateData.crn = crn;
 
+      // Ensure we have at least one field to update before calling Firestore
       if (Object.keys(updateData).length === 0) {
-        return res.status(400).send({ error: "No fields to update" });
+        return res.status(400).send({ error: "No valid fields to update" });
       }
 
       await db.collection("donor").doc(uid).update(updateData);
