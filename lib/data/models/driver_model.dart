@@ -39,6 +39,14 @@ class DriverProfile {
   }
 
   /// 🔹 עדכון שדות
+  List<String> missingFields() {
+    final missing = <String>[];
+    if (user.name.isEmpty) missing.add("name");
+    if (phone.isEmpty) missing.add("phone");
+    if (area.isEmpty) missing.add("area");
+    return missing;
+  }
+
   DriverProfile copyWith({
     UserModel? user,
     String? phone,

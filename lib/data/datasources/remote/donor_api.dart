@@ -36,12 +36,12 @@ class DonorApi extends ApiSource {
             // headers: headers,
             headers: await headers(),
             body: json.encode({
-                'businessName': businessName,
-                'businessPhone': businessPhone,
-                'businessAddress': businessAddress,
-                'contactName': contactName,
-                'contactPhone': contactPhone,
-                'crn': crn,
+                if (businessName.isNotEmpty) 'businessName': businessName,
+                if (businessPhone.isNotEmpty) 'businessPhone': businessPhone,
+                if (businessAddress.isNotEmpty) 'businessAddress': businessAddress,
+                if (contactName.isNotEmpty) 'contactName': contactName,
+                if (contactPhone.isNotEmpty) 'contactPhone': contactPhone,
+                if (crn.isNotEmpty) 'crn': crn,
             }),
         );
 

@@ -49,7 +49,7 @@
 //             child: SafeArea(
 //               child: Stack(
 //                 children: [
-                  
+
 //                   Positioned(
 //                     top: -120,
 //                     right: -80,
@@ -97,7 +97,7 @@
 //                               HomepageButton(
 //                                 title: 'המסלול היומי',
 //                                 icon: Icons.route_outlined,
-//                                 flipIcon: true, 
+//                                 flipIcon: true,
 //                                 onPressed: () {
 
 //                                 },
@@ -138,123 +138,148 @@
 
 import 'package:flutter/material.dart';
 import '../../services/organization_service.dart';
+import '../../services/driver_service.dart';
+import '../../services/user_service.dart';
 import '../../data/models/organization_model.dart';
 import '../../data/models/driver_model.dart';
 import '../theme/homepage_theme.dart';
 import '../widgets/homepage_button.dart';
 import '../widgets/sign_out.dart';
 import '../widgets/layout_wrapper.dart';
-import '../../services/user_service.dart';
+import '../utils/profile_completion_flow.dart';
+import '../utils/validators/phone_validator.dart';
 import 'package:collecta/app/routes.dart';
-
 
 const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
 
-
-class DriverHomepage extends StatelessWidget {
-  final DriverProfile? driver;
+class DriverHomepage extends StatefulWidget {
+  final DriverProfile? driver; // for admin view
 
   const DriverHomepage({super.key, this.driver});
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   final orgService = OrganizationService();
-  //   final userService = UserService();
+  static bool _pendingMissingFieldsCheck = false;
 
-  //   if (driver != null) {
-  //     return _buildLayout(context, driver!);
-  //   }
-
-  //   // אחרת → טוענים מהשרת (כמו שהיה)
-  //   return Scaffold(
-  //     body: FutureBuilder<List<dynamic>>(
-  //       future: Future.wait([
-  //         orgService.fetchOrganization('xFKMWqidL2uZ5wnksdYX'),
-  //         userService.fetchMyProfile("driver"),
-  //       ]),
-  //       builder: (context, snapshot) {
-  //         if (snapshot.connectionState == ConnectionState.waiting) {
-  //           return const Center(child: CircularProgressIndicator());
-  //         }
-
-  //         if (snapshot.hasError) {
-  //           return Center(child: Text("שגיאה: ${snapshot.error}"));
-  //         }
-
-  //         if (!snapshot.hasData) {
-  //           return const Center(child: Text("אין נתונים"));
-  //         }
-
-  //         final org = snapshot.data![0] as OrganizationModel;
-  //         final fetchedDriver =
-  //             DriverProfile.fromApi(snapshot.data![1] as Map<String, dynamic>);
-
-  //         return LayoutWrapper(
-  //           child: _buildLayout(context, fetchedDriver, organization: org),
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
-
+  static void markLoginSession() {
+    _pendingMissingFieldsCheck = true;
+  }
 
   @override
-Widget build(BuildContext context) {
-  final orgService = OrganizationService();
-  final userService = UserService();
+  State<DriverHomepage> createState() => _DriverHomepageState();
+}
 
-  // אם נכנסנו דרך אדמין
-  if (driver != null) {
+class _DriverHomepageState extends State<DriverHomepage> {
+  final DriverService _driverService = DriverService();
+  final UserService _userService = UserService();
+
+  bool _didCheckMissing = false;
+
+  void _checkMissingFields(DriverProfile driver) {
+    if (!DriverHomepage._pendingMissingFieldsCheck) return;
+    if (_didCheckMissing) return;
+    final missing = driver.missingFields();
+    DriverHomepage._pendingMissingFieldsCheck = false;
+    if (missing.isEmpty) return;
+    _didCheckMissing = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ProfileCompletionFlow.show(
+        context: context,
+        fields: missing,
+        contentBuilder: _buildFieldContent,
+        onSave: _saveField,
+      );
+    });
+  }
+
+  String _getLabel(String field) {
+    switch (field) {
+      case "name":
+        return "שם";
+      case "phone":
+        return "טלפון";
+      case "area":
+        return "אזור";
+      default:
+        return field;
+    }
+  }
+
+  Widget _buildFieldContent(String field, TextEditingController controller) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(labelText: _getLabel(field)),
+      validator: (value) {
+        if (field == "phone") return validatePhone(value);
+        return (value == null || value.trim().isEmpty) ? "שדה חובה" : null;
+      },
+    );
+  }
+
+  Future<void> _saveField(String field, String value) async {
+    if (field == "name") {
+      await _userService.updateUserProfile(name: value);
+      return;
+    }
+    final driver = await _driverService.getMyDriverProfile();
+    final updated = driver.copyWith(
+      phone: field == "phone" ? value : null,
+      area: field == "area" ? value : null,
+    );
+    await _driverService.updateDriverProfile(updated);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final orgService = OrganizationService();
+    final userService = UserService();
+
+    // Admin view — driver passed directly, no missing-fields dialog
+    if (widget.driver != null) {
+      return Scaffold(
+        body: FutureBuilder<OrganizationModel>(
+          future: orgService.fetchOrganization(widget.driver!.user.organizationId),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(child: Text("שגיאה: ${snapshot.error}"));
+            }
+            return LayoutWrapper(
+              child: _buildLayout(context, widget.driver!, organization: snapshot.data!),
+            );
+          },
+        ),
+      );
+    }
+
+    // Regular driver login
     return Scaffold(
-      body: FutureBuilder<OrganizationModel>(
-        future: orgService.fetchOrganization(
-            driver!.user.organizationId),
+      body: FutureBuilder<List<dynamic>>(
+        future: Future.wait([
+          orgService.fetchOrganization(kOrganizationId),
+          userService.fetchMyProfile("driver"),
+        ]),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-
           if (snapshot.hasError) {
             return Center(child: Text("שגיאה: ${snapshot.error}"));
           }
 
-          final org = snapshot.data!;
+          final org = snapshot.data![0] as OrganizationModel;
+          final fetchedDriver =
+              DriverProfile.fromApi(snapshot.data![1] as Map<String, dynamic>);
+
+          _checkMissingFields(fetchedDriver);
 
           return LayoutWrapper(
-            child: _buildLayout(context, driver!, organization: org),
+            child: _buildLayout(context, fetchedDriver, organization: org),
           );
         },
       ),
     );
   }
-
-  // כניסה רגילה של נהג
-  return Scaffold(
-    body: FutureBuilder<List<dynamic>>(
-      future: Future.wait([
-        orgService.fetchOrganization(kOrganizationId),
-        userService.fetchMyProfile("driver"),
-      ]),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (snapshot.hasError) {
-          return Center(child: Text("שגיאה: ${snapshot.error}"));
-        }
-
-        final org = snapshot.data![0] as OrganizationModel;
-        final fetchedDriver =
-            DriverProfile.fromApi(snapshot.data![1] as Map<String, dynamic>);
-
-        return LayoutWrapper(
-          child: _buildLayout(context, fetchedDriver, organization: org),
-        );
-      },
-    ),
-  );
-}
 
   Widget _buildLayout(
     BuildContext context,
@@ -275,20 +300,16 @@ Widget build(BuildContext context) {
                 decoration: HomepageTheme.decorativeCircle,
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25),
               child: Column(
                 children: [
                   const SizedBox(height: HomepageTheme.topPadding),
-
                   Align(
                     alignment: Alignment.topRight,
                     child: LogoutButton(parentContext: context),
                   ),
-
                   const SizedBox(height: 50),
-
                   Text(
                     'היי, ${driver.user.name}',
                     style: HomepageTheme.welcomeTextStyle,
@@ -300,9 +321,7 @@ Widget build(BuildContext context) {
                       color: HomepageTheme.latetBlue.withOpacity(0.7),
                     ),
                   ),
-
                   const SizedBox(height: 40),
-
                   Expanded(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -314,7 +333,6 @@ Widget build(BuildContext context) {
                           onPressed: () {
                             Navigator.pushNamed(context, Routes.dailyRoutDriver);
                           },
-
                         ),
                         const SizedBox(height: HomepageTheme.betweenButtons),
                         HomepageButton(
@@ -322,17 +340,16 @@ Widget build(BuildContext context) {
                           icon: Icons.edit_outlined,
                           onPressed: () {
                             Navigator.pushNamed(context, Routes.driverEditProfile);
-                          },                        ),
+                          },
+                        ),
                       ],
                     ),
                   ),
-
                   if (organization != null)
                     Image.network(
                       organization.departmentLogo ?? '',
                       height: HomepageTheme.deptLogoHeight,
                     ),
-
                   const SizedBox(height: 20),
                 ],
               ),
