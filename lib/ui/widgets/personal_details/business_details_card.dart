@@ -14,6 +14,8 @@ class BusinessDetailsCard extends StatelessWidget {
   final TextEditingController businessPhone;
   final TextEditingController businessId;
   final Function(double, double) onLocationSelected;
+  final VoidCallback? onLocationCleared;
+  final bool isAddressConfirmed;
 
   const BusinessDetailsCard({
     required this.businessName,
@@ -21,6 +23,8 @@ class BusinessDetailsCard extends StatelessWidget {
     required this.businessPhone,
     required this.businessId,
     required this.onLocationSelected,
+    this.onLocationCleared,
+    this.isAddressConfirmed = false,
     super.key,
   });
 
@@ -34,6 +38,8 @@ class BusinessDetailsCard extends StatelessWidget {
           AddressFieldWidget(
             controller: address,
             onLocationSelected: onLocationSelected,
+            onLocationCleared: onLocationCleared,
+            initialIsConfirmed: isAddressConfirmed,
           ),
           InputFieldWidget(
             hint: "פלאפון העסק",

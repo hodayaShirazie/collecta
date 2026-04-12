@@ -241,10 +241,17 @@ class _ReportDonationState extends State<ReportDonation> {
                     },
                     onSubmit: submit,
                     buttonText: "אשר תרומה",
+                    isAddressConfirmed: selectedLat != null,
                     onLocationSelected: (lat, lng) {
                       setState(() {
                         selectedLat = lat;
                         selectedLng = lng;
+                      });
+                    },
+                    onLocationCleared: () {
+                      setState(() {
+                        selectedLat = null;
+                        selectedLng = null;
                       });
                     },
                     buttonStyle: ReportDonationTheme.simpleButton,
