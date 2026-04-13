@@ -11,9 +11,12 @@ import '../../app/routes.dart';
 import 'donor_homepage.dart';
 import 'driver_homepage.dart';
 
+import '../../services/org_manager.dart';
+import '../utils/org_utils.dart';
 
 
-const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
+
+// const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
 
 class EnteringScreen extends StatefulWidget {
   const EnteringScreen({super.key});
@@ -26,15 +29,15 @@ class _EnteringScreenState extends State<EnteringScreen> {
   final UserService _userService = UserService();
   String? _userToken;
 
-  late Future _orgFuture;
+  late Future<dynamic> _orgFuture;
 
   @override
   void initState() {
     super.initState();
-
-    _orgFuture =
-        OrganizationService().fetchOrganization(kOrganizationId);
+    _orgFuture = OrgUtils.loadOrganization();
   }
+
+  
 
   Future<String?> _signInAndSync(String role) async {
     try {
@@ -73,11 +76,11 @@ class _EnteringScreenState extends State<EnteringScreen> {
         mail: firebaseUser.email ?? '',
         img: firebaseUser.photoURL ?? '',
         role: role,
-        organizationId: kOrganizationId,
+        organizationId: await OrgUtils.getOrgId() ?? '',
       );
 
       //TODO למחוק אחכ- הדפסה של הטוקן
-      String? token = await FirebaseAuth.instance.currentUser?.getIdToken();
+      // String? token = await FirebaseAuth.instance.currentUser?.getIdToken();
       // print("FULL_TOKEN: $token");
 
       return result;
@@ -101,8 +104,15 @@ class _EnteringScreenState extends State<EnteringScreen> {
       body: FutureBuilder(
         future: _orgFuture, 
         builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
+          // if (!snapshot.hasData) {
+          //   return const Center(child: CircularProgressIndicator());
+          // }
+
+          // final org = snapshot.data!;
+          if (!snapshot.hasData || snapshot.data == null) {
+            return const Center(
+              child: Text("No organization found. Please open link."),
+            );
           }
 
           final org = snapshot.data!;
