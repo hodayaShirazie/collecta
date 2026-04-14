@@ -31,10 +31,13 @@ class DonationModel {
   final String cancelingReason;
   final String organizationId;
 
-  final AddressModel businessAddress;         
-  final String donorId;              
-  final String driverId;              
+  final AddressModel businessAddress;
+  final String donorId;
+  final String driverId;
 
+  final String businessName;
+  final String businessPhone;
+  final String crn;
   final String contactName;
   final String contactPhone;
   final DateTime createdAt;
@@ -51,6 +54,9 @@ class DonationModel {
     required this.businessAddress,
     required this.donorId,
     required this.driverId,
+    required this.businessName,
+    required this.businessPhone,
+    required this.crn,
     required this.contactName,
     required this.contactPhone,
     required this.createdAt,
@@ -68,6 +74,9 @@ class DonationModel {
     organizationId: json['organization_id'] ?? '',
     donorId: json['donor_id'] ?? '',
     driverId: json['driver_id'] ?? '',
+    businessName: json['businessName'] ?? '',
+    businessPhone: json['businessPhone'] ?? '',
+    crn: json['crn'] ?? '',
     contactName: json['contactName'] ?? '',
     contactPhone: json['contactPhone'] ?? '',
     createdAt: json['created_at'] != null
@@ -91,6 +100,9 @@ class DonationModel {
       'organization_id': organizationId,
       'donor_id': donorId,
       'driver_id': driverId,
+      'businessName': businessName,
+      'businessPhone': businessPhone,
+      'crn': crn,
       'contactName': contactName,
       'contactPhone': contactPhone,
       'created_at': createdAt.toIso8601String(), // תאריך בפורמט ISO
@@ -109,6 +121,9 @@ class DonationModel {
     AddressModel? businessAddress,
     String? donorId,
     String? driverId,
+    String? businessName,
+    String? businessPhone,
+    String? crn,
     String? contactName,
     String? contactPhone,
     DateTime? createdAt,
@@ -124,6 +139,9 @@ class DonationModel {
       businessAddress: businessAddress ?? this.businessAddress,
       donorId: donorId ?? this.donorId,
       driverId: driverId ?? this.driverId,
+      businessName: businessName ?? this.businessName,
+      businessPhone: businessPhone ?? this.businessPhone,
+      crn: crn ?? this.crn,
       contactName: contactName ?? this.contactName,
       contactPhone: contactPhone ?? this.contactPhone,
       createdAt: createdAt ?? this.createdAt,

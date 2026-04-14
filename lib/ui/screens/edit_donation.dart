@@ -18,6 +18,7 @@ import '../../services/donation_service.dart';
 import '../../services/donor_service.dart';
 
 import '../../data/models/donation_model.dart';
+import '../../data/models/donor_model.dart';
 
 class EditDonation extends StatefulWidget {
   final String donationId;
@@ -67,18 +68,36 @@ class _EditDonationState extends State<EditDonation> {
       }
       debugPrint("===============================================");
 
-      final donor = await DonorService().getMyDonorProfile();
+      DonorProfile? donor;
+      try {
+        donor = await DonorService().getMyDonorProfile();
+      } catch (_) {}
 
+      businessNameCtrl.text = donation.businessName.isNotEmpty
+          ? donation.businessName
+          : (donor?.businessName ?? '');
+      addressCtrl.text = donation.businessAddress.name.isNotEmpty
+          ? donation.businessAddress.name
+          : (donor?.businessAddress.name ?? '');
+      businessPhoneCtrl.text = donation.businessPhone.isNotEmpty
+          ? donation.businessPhone
+          : (donor?.businessPhone ?? '');
+      businessIdCtrl.text = donation.crn.isNotEmpty
+          ? donation.crn
+          : (donor?.crn ?? '');
+      contactNameCtrl.text = donation.contactName.isNotEmpty
+          ? donation.contactName
+          : (donor?.contactName ?? '');
+      contactPhoneCtrl.text = donation.contactPhone.isNotEmpty
+          ? donation.contactPhone
+          : (donor?.contactPhone ?? '');
 
-      businessNameCtrl.text = donor.businessName;
-      addressCtrl.text = donation.businessAddress.name;
-      businessPhoneCtrl.text = donor.businessPhone;
-      businessIdCtrl.text = donor.crn;
-      contactNameCtrl.text = donation.contactName ?? '';
-      contactPhoneCtrl.text = donation.contactPhone ?? '';
-
-      selectedLat = donor.businessAddress.lat;
-      selectedLng = donor.businessAddress.lng;
+      selectedLat = donation.businessAddress.lat != 0
+          ? donation.businessAddress.lat
+          : donor?.businessAddress.lat;
+      selectedLng = donation.businessAddress.lng != 0
+          ? donation.businessAddress.lng
+          : donor?.businessAddress.lng;
 
 
       selectedTimeSlots = donation.pickupTimes.map((e) => "${e.from}-${e.to}").toList();
@@ -290,7 +309,7 @@ class _EditDonationState extends State<EditDonation> {
                     businessName: businessNameCtrl,
                     address: addressCtrl,
                     businessPhone: businessPhoneCtrl,
-                    businessId: businessIdCtrl,
+                    crn: businessIdCtrl,
                     contactName: contactNameCtrl,
                     contactPhone: contactPhoneCtrl,
                     timeSlots: DonationConstants.timeSlots,

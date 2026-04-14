@@ -35,7 +35,7 @@ class _ReportDonationState extends State<ReportDonation> {
   final businessName = TextEditingController();
   final address = TextEditingController();
   final businessPhone = TextEditingController();
-  final businessId = TextEditingController();
+  final crn = TextEditingController();
   final contactName = TextEditingController();
   final contactPhone = TextEditingController();
   final List<String> selectedTimeSlots = [];
@@ -64,7 +64,7 @@ class _ReportDonationState extends State<ReportDonation> {
       businessPhone.text = donor!.businessPhone;
       contactName.text = donor!.contactName;
       contactPhone.text = donor!.contactPhone;
-      businessId.text = donor!.crn;
+      crn.text = donor!.crn;
       address.text = donor!.businessAddress.name;
 
       selectedLat = donor!.businessAddress.lat;
@@ -159,7 +159,7 @@ class _ReportDonationState extends State<ReportDonation> {
         address: address.text,
         contactName: contactName.text,
         contactPhone: contactPhone.text,
-        businessId: businessId.text,
+        crn: crn.text,
         donatedItems: donatedItems,
         selectedTimeSlots: selectedTimeSlots,
         lat: selectedLat,
@@ -219,7 +219,7 @@ class _ReportDonationState extends State<ReportDonation> {
                     businessName: businessName,
                     address: address,
                     businessPhone: businessPhone,
-                    businessId: businessId,
+                    crn: crn,
                     contactName: contactName,
                     contactPhone: contactPhone,
                     timeSlots: timeSlots,

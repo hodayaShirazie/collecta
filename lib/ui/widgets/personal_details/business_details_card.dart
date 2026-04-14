@@ -12,7 +12,7 @@ class BusinessDetailsCard extends StatelessWidget {
   final TextEditingController businessName;
   final TextEditingController address;
   final TextEditingController businessPhone;
-  final TextEditingController businessId;
+  final TextEditingController crn;
   final Function(double, double) onLocationSelected;
   final VoidCallback? onLocationCleared;
   final bool isAddressConfirmed;
@@ -21,7 +21,7 @@ class BusinessDetailsCard extends StatelessWidget {
     required this.businessName,
     required this.address,
     required this.businessPhone,
-    required this.businessId,
+    required this.crn,
     required this.onLocationSelected,
     this.onLocationCleared,
     this.isAddressConfirmed = false,
@@ -48,9 +48,9 @@ class BusinessDetailsCard extends StatelessWidget {
             keyboardType: TextInputType.phone,
           ),
           InputFieldWidget(
-            hint: "ח\"פ / עוסק מורשה",
-            controller: businessId,
-            validator: validateBusinessId,
+            hint: "CRN",
+            controller: crn,
+            validator: validatecrn,
             keyboardType: TextInputType.number,
           ),
         ],

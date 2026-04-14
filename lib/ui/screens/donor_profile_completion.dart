@@ -164,7 +164,7 @@ class _State extends State<DonorProfileCompletionScreen> {
         return InputFieldWidget(
           hint: "ח.פ",
           controller: crnCtrl,
-          validator: validateBusinessId,
+          validator: validatecrn,
         );
 
       default:

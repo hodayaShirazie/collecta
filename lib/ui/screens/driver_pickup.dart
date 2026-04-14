@@ -25,7 +25,7 @@
 //   final businessNameController = TextEditingController();
 //   final businessPhoneController = TextEditingController();
 //   final businessAddressController = TextEditingController();
-//   final businessIdController = TextEditingController();
+//   final crnController = TextEditingController();
 
 //   DonationModel? donation;
 //   bool isLoading = true;
@@ -59,7 +59,7 @@
 //           businessNameController.text = donorProfile.businessName;
 //           businessPhoneController.text = donorProfile.businessPhone;
 //           businessAddressController.text = donorProfile.businessAddress.name;
-//           businessIdController.text = donorProfile.crn; // ח"פ / עוסק מורשה
+//           crnController.text = donorProfile.crn; // ח"פ / עוסק מורשה
 
 //           // אתחול כמויות המוצרים
 //           for (var item in donation!.products) {
@@ -130,7 +130,7 @@
 //                         _buildReadOnlyField("שם העסק:", businessNameController),
 //                         _buildReadOnlyField("פלאפון עסק:", businessPhoneController),
 //                         _buildReadOnlyField("כתובת עסק:", businessAddressController),
-//                         _buildReadOnlyField("ח\"פ / עוסק מורשה:", businessIdController),
+//                         _buildReadOnlyField("ח\"פ / עוסק מורשה:", crnController),
 //                       ],
 //                     ),
 //                   ),
@@ -321,7 +321,7 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
   final businessNameController = TextEditingController();
   final businessPhoneController = TextEditingController();
   final businessAddressController = TextEditingController();
-  final businessIdController = TextEditingController();
+  final crnController = TextEditingController();
 
   // מפות לניהול התיאורים של מוצרי "אחר"
   final Map<String, TextEditingController> otherDescriptionControllers = {};
@@ -360,7 +360,7 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
           businessNameController.text = donorProfile.businessName;
           businessPhoneController.text = donorProfile.businessPhone;
           businessAddressController.text = donorProfile.businessAddress.name;
-          businessIdController.text = donorProfile.crn;
+          crnController.text = donorProfile.crn;
 
           for (var item in donation!.products) {
             collectedQuantities[item.id] = item.quantity;
@@ -464,7 +464,7 @@ Future<void> _submitPickup() async {
                         _buildReadOnlyField("שם העסק:", businessNameController),
                         _buildReadOnlyField("פלאפון עסק:", businessPhoneController),
                         _buildReadOnlyField("כתובת עסק:", businessAddressController),
-                        _buildReadOnlyField("ח\"פ / עוסק מורשה:", businessIdController),
+                        _buildReadOnlyField("ח\"פ / עוסק מורשה:", crnController),
                       ],
                     ),
                   ),
