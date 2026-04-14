@@ -18,6 +18,7 @@ import '../../services/donation_service.dart';
 import '../../services/donor_service.dart';
 
 import '../../data/models/donation_model.dart';
+import '../../data/models/donor_model.dart';
 
 class EditDonation extends StatefulWidget {
   final String donationId;
@@ -47,6 +48,7 @@ class _EditDonationState extends State<EditDonation> {
   double? selectedLng;
 
   bool isLoading = true;
+  bool _isSubmitting = false;
 
   DonationModel? currentDonation;
 
@@ -60,45 +62,58 @@ class _EditDonationState extends State<EditDonation> {
     try {
       final donation = await DonationService().getDonationById(widget.donationId);
       currentDonation = donation;
+      DonorProfile? donor;
+      try {
+        donor = await DonorService().getMyDonorProfile();
+      } catch (_) {}
 
-      debugPrint("==== DEBUG: Donation products from server ====");
-      for (var p in donation.products) {
-        debugPrint("Product: id=${p.id}, name=${p.type.name}, quantity=${p.quantity}");
-      }
-      debugPrint("===============================================");
+      businessNameCtrl.text = donation.businessName.isNotEmpty
+          ? donation.businessName
+          : (donor?.businessName ?? '');
+      addressCtrl.text = donation.businessAddress.name.isNotEmpty
+          ? donation.businessAddress.name
+          : (donor?.businessAddress.name ?? '');
+      businessPhoneCtrl.text = donation.businessPhone.isNotEmpty
+          ? donation.businessPhone
+          : (donor?.businessPhone ?? '');
+      businessIdCtrl.text = donation.crn.isNotEmpty
+          ? donation.crn
+          : (donor?.crn ?? '');
+      contactNameCtrl.text = donation.contactName.isNotEmpty
+          ? donation.contactName
+          : (donor?.contactName ?? '');
+      contactPhoneCtrl.text = donation.contactPhone.isNotEmpty
+          ? donation.contactPhone
+          : (donor?.contactPhone ?? '');
 
-      final donor = await DonorService().getMyDonorProfile();
-
-
-      businessNameCtrl.text = donor.businessName;
-      addressCtrl.text = donation.businessAddress.name;
-      businessPhoneCtrl.text = donor.businessPhone;
-      businessIdCtrl.text = donor.crn;
-      contactNameCtrl.text = donation.contactName ?? '';
-      contactPhoneCtrl.text = donation.contactPhone ?? '';
-
-      selectedLat = donor.businessAddress.lat;
-      selectedLng = donor.businessAddress.lng;
+      selectedLat = donation.businessAddress.lat != 0
+          ? donation.businessAddress.lat
+          : donor?.businessAddress.lat;
+      selectedLng = donation.businessAddress.lng != 0
+          ? donation.businessAddress.lng
+          : donor?.businessAddress.lng;
 
 
       selectedTimeSlots = donation.pickupTimes.map((e) => "${e.from}-${e.to}").toList();
 
 
       donatedItems = (donation.products ?? []).map<Map<String, dynamic>>((p) {
-      final typeName = p.type?.name ?? '';
-      final quantity = p.quantity;
+        final typeName = p.type?.name ?? '';
+        final typeDescription = p.type?.description ?? '';
+        final displayName = (typeName == "אחר" && typeDescription.isNotEmpty)
+            ? "אחר: $typeDescription"
+            : typeName;
 
-      
-      return <String, dynamic>{
-        "id": p.id ?? '', // מזהה שורת המוצר בתרומה
-        "productTypeId": p.type?.id ?? '', // ✅ חשוב מאוד
-        "name": typeName,
-        "icon": '',
-        "quantity": quantity.toString(),
-        "unit": 'ק"ג/יחידות',
-        "display": "$typeName",
-      };
-    }).toList();
+        return <String, dynamic>{
+          "id": p.id ?? '',
+          "productTypeId": p.type?.id ?? '',
+          "name": displayName,
+          "icon": '',
+          "quantity": p.quantity.toString(),
+          "unit": 'ק"ג/יחידות',
+          "display": displayName,
+        };
+      }).toList();
 
       selectedProducts = donatedItems.map((e) => e["name"] as String).toList();
 
@@ -163,6 +178,7 @@ class _EditDonationState extends State<EditDonation> {
 
   
   Future<void> submit() async {
+  if (_isSubmitting) return;
   if (!_formKey.currentState!.validate()) return;
 
   // בדיקת חלונות זמן
@@ -180,6 +196,8 @@ class _EditDonationState extends State<EditDonation> {
     );
     return;
   }
+
+  setState(() => _isSubmitting = true);
 
   try {
 
@@ -221,22 +239,6 @@ class _EditDonationState extends State<EditDonation> {
   }).toList();
 
 
-    // 🔹 הדפסה של כל הנתונים לפני שליחה
-    debugPrint("==== DEBUG: Data to send ====");
-    debugPrint("Donation ID: ${body['donationId']}");
-    debugPrint("Business Name: ${body['businessName']}");
-    debugPrint("Business Phone: ${body['businessPhone']}");
-    debugPrint("Business ID: ${body['businessId']}");
-    debugPrint("Contact Name: ${body['contactName']}");
-    debugPrint("Contact Phone: ${body['contactPhone']}");
-    debugPrint("Address: ${body['businessAddress']}");
-    debugPrint("Pickup Times: ${body['pickupTimes']}");
-    debugPrint("Products / Donated Items:");
-    for (var p in body['products']) {
-      debugPrint(p.toString());
-    }
-    debugPrint("=============================");
-
     // קריאה ל-Service לעדכון התרומה
     await DonationService().updateDonation(body);
 
@@ -253,6 +255,7 @@ class _EditDonationState extends State<EditDonation> {
     Navigator.pop(context); // חזרה למסך הקודם
 
   } catch (e) {
+    setState(() => _isSubmitting = false);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("Error: $e")),
     );
@@ -290,7 +293,7 @@ class _EditDonationState extends State<EditDonation> {
                     businessName: businessNameCtrl,
                     address: addressCtrl,
                     businessPhone: businessPhoneCtrl,
-                    businessId: businessIdCtrl,
+                    crn: businessIdCtrl,
                     contactName: contactNameCtrl,
                     contactPhone: contactPhoneCtrl,
                     timeSlots: DonationConstants.timeSlots,
@@ -302,7 +305,7 @@ class _EditDonationState extends State<EditDonation> {
                     donatedItems: donatedItems,
                     onEditItem: editItem,
                     onDeleteItem: deleteItem,
-                    onSubmit: submit,
+                    onSubmit: _isSubmitting ? null : submit,
                     buttonText: "שמור שינויים",
                     isAddressConfirmed: selectedLat != null,
                     onLocationSelected: onLocationSelected,

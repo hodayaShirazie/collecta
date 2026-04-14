@@ -8,6 +8,7 @@ import '../theme/entering_theme.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../services/donor_service.dart';
 import '../../app/routes.dart';
+import '../widgets/custom_popup_dialog.dart';
 import 'donor_homepage.dart';
 import 'driver_homepage.dart';
 
@@ -28,6 +29,7 @@ class EnteringScreen extends StatefulWidget {
 class _EnteringScreenState extends State<EnteringScreen> {
   final UserService _userService = UserService();
   String? _userToken;
+  bool _isSigningIn = false;
 
   late Future<dynamic> _orgFuture;
 
@@ -45,6 +47,7 @@ class _EnteringScreenState extends State<EnteringScreen> {
 
       if (kIsWeb) {
         final provider = GoogleAuthProvider();
+        provider.setCustomParameters({'prompt': 'select_account'});
         final userCredential =
             await FirebaseAuth.instance.signInWithPopup(provider);
 
@@ -85,9 +88,27 @@ class _EnteringScreenState extends State<EnteringScreen> {
 
       return result;
     } catch (e) {
-      print("AUTH ERROR: $e");
+      if (e is FirebaseAuthException &&
+          (e.code == 'popup-closed-by-user' || e.code == 'canceled')) {
+        return null;
+      }
       return "Authentication failed: ${e.toString()}";
     }
+  }
+
+  void _showErrorDialog(String message) {
+    String displayMessage = message;
+    if (message.contains('different role')) {
+      displayMessage = 'המשתמש רשום עם תפקיד אחר במערכת.\nלא ניתן להתחבר עם תפקיד זה.';
+    }
+    showDialog(
+      context: context,
+      builder: (_) => CustomPopupDialog(
+        title: 'שגיאת התחברות',
+        message: displayMessage,
+        buttonText: 'סגור',
+      ),
+    );
   }
 
   void _navigateToDriver() {
@@ -159,40 +180,20 @@ class _EnteringScreenState extends State<EnteringScreen> {
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () async {
-                            final result =
-                                await _signInAndSync("donor");
-
-
+                          onPressed: _isSigningIn ? null : () async {
+                            setState(() => _isSigningIn = true);
+                            final result = await _signInAndSync("donor");
                             if (result == "success") {
                               DonorHomepage.markLoginSession();
                               _navigateToDonor();
-                            }
-                            // if (result == "success") {
-                            //   final donor = await DonorService().getMyDonorProfile();
-
-                            //   if (donor.missingFields().isNotEmpty) {
-                            //     Navigator.pushNamed(
-                            //       context,
-                            //       Routes.completeProfile,
-                            //       // "/complete-profile",
-                            //       arguments: donor,
-                            //     );
-                            //   } else {
-                            //     _navigateToDonor();
-                            //   }
-                            // }
-                            else {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(
-                                SnackBar(
-                                    content:
-                                        Text(result ?? "Error")),
-                              );
+                            } else {
+                              if (mounted) setState(() => _isSigningIn = false);
+                              if (result != null) {
+                                _showErrorDialog(result);
+                              }
                             }
                           },
-                          style:
-                              EnteringTheme.actionButtonStyle,
+                          style: EnteringTheme.actionButtonStyle,
                           child: const Text("כניסה כתורם"),
                         ),
                       ),
@@ -206,24 +207,20 @@ class _EnteringScreenState extends State<EnteringScreen> {
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () async {
-                            final result =
-                                await _signInAndSync("driver");
-
+                          onPressed: _isSigningIn ? null : () async {
+                            setState(() => _isSigningIn = true);
+                            final result = await _signInAndSync("driver");
                             if (result == "success") {
                               DriverHomepage.markLoginSession();
                               _navigateToDriver();
                             } else {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(
-                                SnackBar(
-                                    content:
-                                        Text(result ?? "Error")),
-                              );
+                              if (mounted) setState(() => _isSigningIn = false);
+                              if (result != null) {
+                                _showErrorDialog(result);
+                              }
                             }
                           },
-                          style:
-                              EnteringTheme.actionButtonStyle,
+                          style: EnteringTheme.actionButtonStyle,
                           child: const Text("כניסה כנהג"),
                         ),
                       ),

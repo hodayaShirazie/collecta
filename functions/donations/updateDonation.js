@@ -1,157 +1,149 @@
-// const admin = require("firebase-admin");
-// const corsHandler = require("../utils/cors");
-// const verifyFirebaseToken = require("../utils/verifyToken");
-
-// const db = admin.firestore();
-
-// module.exports = async (req, res) => {
-//   corsHandler(req, res, async () => {
-//     const firebaseUser = await verifyFirebaseToken(req, res);
-//     if (!firebaseUser) return;
-
-//     try {
-//       const {
-//         donationId,
-//         contactName,
-//         contactPhone,
-//         products,
-//         pickupTimes,
-//         businessAddress,
-//         businessName,
-//         businessPhone,
-//         businessId,
-//         donatedItems
-//       } = req.body;
-
-//       if (!donationId) {
-//         return res.status(400).send({ error: "Missing donationId" });
-//       }
-
-//       // 🔹 1. עדכון כתובת
-//       if (businessAddress?.id) {
-//         await db.collection("address").doc(businessAddress.id).update({
-//           name: businessAddress.name,
-//           lat: Number(businessAddress.lat),
-//           lng: Number(businessAddress.lng),
-//         });
-//       }
-
-//       // 🔹 2. עדכון מסמך Donation
-//       await db.collection("donation").doc(donationId).update({
-//         contactName,
-//         contactPhone,
-//         businessName,
-//         businessPhone,
-//         businessId,
-//         pickupTimes,
-//         products: donatedItems.map(item => item.id), // שמירת IDs בלבד
-//       });
-
-//       // 🔹 3. עדכון פריטים
-//       for (const item of donatedItems || []) {
-//         if (!item["id"]) continue;
-
-//         const productRef = db.collection("product").doc(item["id"]);
-//         const productTypeRef = db.collection("productType").doc(item["productType"]);
-
-//         // אם זה "אחר" נעדכן את ה-description בטבלת ProductType
-//         if (item["name"] === "אחר" && item["description"]) {
-//           await productTypeRef.update({
-//             description: item["description"]
-//           });
-//         }
-
-//         // עדכון הכמות וה-ID בטבלת Product
-//         await productRef.update({
-//           quantity: Number(item["quantity"]),
-//           productType: item["productType"],
-//           description: item["description"] || ""
-//         });
-//       }
-
-//       return res.status(200).send({ status: "success" });
-
-//     } catch (e) {
-//       return res.status(500).send({ error: e.message });
-//     }
-//   });
-// };
-
-
-
-const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-const { uploadPDFToStorage } = require("./utils/uploadReceiptHelper");
-const Busboy = require("busboy");
-const cors = require("../utils/cors");
+const corsHandler = require("../utils/cors");
+const verifyFirebaseToken = require("../utils/verifyToken");
 const { isValidString } = require("../utils/validate");
 
 const db = admin.firestore();
 
-module.exports = functions.https.onRequest((req, res) => {
-  return cors(req, res, async () => {
+module.exports = async (req, res) => {
+  corsHandler(req, res, async () => {
+    const firebaseUser = await verifyFirebaseToken(req, res);
+    if (!firebaseUser) return;
 
-    if (req.method !== "POST") {
-      return res.status(405).send("Method Not Allowed");
-    }
+    try {
+      const {
+        donationId,
+        businessName,
+        businessPhone,
+        businessId,
+        contactName,
+        contactPhone,
+        businessAddress,
+        pickupTimes,
+        products,
+      } = req.body;
 
-    const busboy = Busboy({ headers: req.headers });
-    let uploadData = null;
-    let donationId = null; 
-
-    busboy.on("field", (fieldname, val) => {
-      if (fieldname === "donationId") {
-        donationId = val;
-      }
-    });
-
-    busboy.on("file", (fieldname, file, info) => {
-      const { filename, mimeType } = info;
-      if (fieldname !== "file") {
-        file.resume();
-        return;
-      }
-
-      const buffers = [];
-      file.on("data", (data) => buffers.push(data));
-      file.on("end", () => {
-        uploadData = {
-          buffer: Buffer.concat(buffers),
-          originalname: filename,
-          mimetype: mimeType,
-        };
-      });
-    });
-
-    busboy.on("finish", async () => {
-      if (!uploadData || !donationId) {
-        return res.status(400).json({ error: "Missing file or donationId" });
+      if (!donationId) {
+        return res.status(400).send({ error: "Missing donationId" });
       }
 
       if (!isValidString(donationId)) {
-        return res.status(400).json({ error: "Invalid input parameters" });
+        return res.status(400).send({ error: "Invalid donationId" });
       }
 
-      try {
-        // 1. העלאה ל-Storage
-        const url = await uploadPDFToStorage(uploadData.buffer, uploadData.originalname);
-        
-        // 2. עדכון השדה "recipe" ב-Firestore
-        // חשוב: וודאי ששם הקולקשן הוא "donation" (כמו בדוגמה הקודמת ששלחת)
-        await db.collection("donation").doc(donationId).update({
-          recipe: url // <--- כאן שיניתי ל-recipe לפי מה שכתבת
-        });
+      // 🔹 1. עדכון כתובת אם קיימת
+      if (businessAddress?.id) {
+        const updateAddress = {};
+        if (businessAddress.name && typeof businessAddress.name === "string") {
+          updateAddress.name = businessAddress.name;
+        }
+        if (typeof businessAddress.lat === "number") {
+          updateAddress.lat = businessAddress.lat;
+        }
+        if (typeof businessAddress.lng === "number") {
+          updateAddress.lng = businessAddress.lng;
+        }
 
-        res.status(200).json({
-          success: true,
-          url: url
-        });
-      } catch (err) {
-        console.error("Update Error:", err);
-        res.status(500).json({ error: err.message });
+        if (Object.keys(updateAddress).length > 0) {
+          await db.collection("address").doc(businessAddress.id).update(updateAddress);
+        }
       }
-    });
 
-    busboy.end(req.rawBody);
+      // 🔹 2. בנייה של עדכון התרומה עם השדות שלא ריקים
+      const updateDonation = {};
+      if (businessName && typeof businessName === "string") {
+        updateDonation.businessName = businessName;
+      }
+      if (businessPhone && typeof businessPhone === "string") {
+        updateDonation.businessPhone = businessPhone;
+      }
+      if (businessId && typeof businessId === "string") {
+        updateDonation.crn = businessId;
+      }
+      if (contactName && typeof contactName === "string") {
+        updateDonation.contactName = contactName;
+      }
+      if (contactPhone && typeof contactPhone === "string") {
+        updateDonation.contactPhone = contactPhone;
+      }
+      if (Array.isArray(pickupTimes) && pickupTimes.length > 0) {
+        updateDonation.pickupTimes = pickupTimes;
+      }
+
+      // אם יש שדות לעדכון, עדכן את התרומה
+      if (Object.keys(updateDonation).length > 0) {
+        await db.collection("donation").doc(donationId).update(updateDonation);
+      }
+
+      // 🔹 3. עדכון פריטים בתרומה
+      if (Array.isArray(products)) {
+        const finalProductIds = [];
+
+        for (const item of products) {
+          if (item.id) {
+            // פריט קיים — עדכן כמות
+            const updateProduct = {};
+            if (typeof item.quantity === "number") {
+              updateProduct.quantity = item.quantity;
+            }
+            if (Object.keys(updateProduct).length > 0) {
+              await db.collection("product").doc(item.id).update(updateProduct);
+            }
+            // עדכן תיאור אם פריט מסוג "אחר"
+            if (item.productTypeId && item.name && item.name.startsWith("אחר: ")) {
+              const description = item.name.replace("אחר: ", "");
+              await db.collection("productType").doc(item.productTypeId).update({ description });
+            }
+            finalProductIds.push(item.id);
+          } else if (item.productTypeId) {
+            // פריט חדש רגיל — צור אותו
+            const newRef = await db.collection("product").add({
+              productType: item.productTypeId,
+              quantity: typeof item.quantity === "number" ? item.quantity : 1,
+            });
+            finalProductIds.push(newRef.id);
+          } else if (item.name && item.name.startsWith("אחר: ")) {
+            // פריט חדש מסוג "אחר" — צור productType ואז product
+            const description = item.name.replace("אחר: ", "");
+            const ptRef = await db.collection("productType").add({
+              name: "אחר",
+              description: description,
+            });
+            const newRef = await db.collection("product").add({
+              productType: ptRef.id,
+              quantity: typeof item.quantity === "number" ? item.quantity : 1,
+            });
+            finalProductIds.push(newRef.id);
+          }
+        }
+
+        // מחק מוצרים שהוסרו מהתרומה
+        const donationSnap = await db.collection("donation").doc(donationId).get();
+        const oldProductIds = donationSnap.data().products || [];
+        const removedIds = oldProductIds.filter((id) => !finalProductIds.includes(id));
+        for (const removedId of removedIds) {
+          const productSnap = await db.collection("product").doc(removedId).get();
+          if (productSnap.exists) {
+            const productTypeId = productSnap.data().productType;
+            if (productTypeId) {
+              const ptSnap = await db.collection("productType").doc(productTypeId).get();
+              if (ptSnap.exists && ptSnap.data().name === "אחר") {
+                await db.collection("productType").doc(productTypeId).delete();
+              }
+            }
+          }
+          await db.collection("product").doc(removedId).delete();
+        }
+
+        // עדכן את מערך המוצרים בתרומה
+        await db.collection("donation").doc(donationId).update({ products: finalProductIds });
+      }
+
+      return res.status(200).send({ status: "success" });
+
+    } catch (e) {
+      console.error("Update Error:", e);
+      return res.status(500).send({ error: e.message });
+    }
   });
-});
+};

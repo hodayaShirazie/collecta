@@ -26,8 +26,11 @@ class DonationEditHelper {
         initialQuantity: int.tryParse(item["quantity"]?.toString() ?? "1") ?? 1,
       );
       if (result != null) {
-        // donatedItems[index] = result;
-        donatedItems[index] = Map<String, dynamic>.from(result);
+        donatedItems[index] = {
+          ...Map<String, dynamic>.from(donatedItems[index]),
+          ...result,
+          "productTypeId": result["productTypeId"] ?? donatedItems[index]["productTypeId"],
+        };
         refresh();
       }
     } else {
@@ -37,13 +40,14 @@ class DonationEditHelper {
         context: context,
         productName: name,
         productId: item["productTypeId"],
-        // productId: item["id"],
         initialQuantity: currentQuantity,
       );
 
       if (result != null) {
-        // donatedItems[index] = result;
-        donatedItems[index] = Map<String, dynamic>.from(result);
+        donatedItems[index] = {
+          ...Map<String, dynamic>.from(donatedItems[index]),
+          ...result,
+        };
         refresh();
       }
     }

@@ -13,10 +13,13 @@ class DonorRepository {
   }
 
   Future<String> updateDonorProfile(DonorProfile donor) {
+    // Extract address ID, defaulting to empty string if null or empty
+    final addressId = donor.businessAddress?.id ?? '';
+
     return _source.updateDonorProfile(
       businessName: donor.businessName,
       businessPhone: donor.businessPhone,
-      businessAddress: donor.businessAddress.id,
+      businessAddress: addressId,
       contactName: donor.contactName,
       contactPhone: donor.contactPhone,
       crn: donor.crn,

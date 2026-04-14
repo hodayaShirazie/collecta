@@ -12,7 +12,7 @@ class DonationForm extends StatelessWidget {
   final TextEditingController businessName;
   final TextEditingController address;
   final TextEditingController businessPhone;
-  final TextEditingController businessId;
+  final TextEditingController crn;
   final TextEditingController contactName;
   final TextEditingController contactPhone;
 
@@ -29,7 +29,7 @@ class DonationForm extends StatelessWidget {
   final Function(int) onEditItem;
   final Function(int) onDeleteItem;
 
-  final VoidCallback onSubmit;
+  final VoidCallback? onSubmit;
   final String buttonText;
 
   final Function(double, double) onLocationSelected;
@@ -44,7 +44,7 @@ class DonationForm extends StatelessWidget {
     required this.businessName,
     required this.address,
     required this.businessPhone,
-    required this.businessId,
+    required this.crn,
     required this.contactName,
     required this.contactPhone,
     required this.timeSlots,
@@ -57,7 +57,7 @@ class DonationForm extends StatelessWidget {
     required this.isCategoryDisabled,
     required this.onEditItem,
     required this.onDeleteItem,
-    required this.onSubmit,
+    this.onSubmit,
     required this.buttonText,
     required this.onLocationSelected,
     this.onLocationCleared,
@@ -75,7 +75,7 @@ class DonationForm extends StatelessWidget {
             businessName: businessName,
             address: address,
             businessPhone: businessPhone,
-            businessId: businessId,
+            crn: crn,
             onLocationSelected: onLocationSelected,
             onLocationCleared: onLocationCleared,
             isAddressConfirmed: isAddressConfirmed,

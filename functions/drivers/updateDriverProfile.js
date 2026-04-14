@@ -27,8 +27,12 @@ module.exports = async (req, res) => {
 
       const updateData = {};
 
-      if (phone !== undefined) updateData.phone = phone;
-      if (area !== undefined) updateData.area = area;
+      if (phone !== undefined && phone !== '') updateData.phone = phone;
+      if (area !== undefined && area !== '') updateData.area = area;
+
+      if (Object.keys(updateData).length === 0) {
+        return res.status(400).send({ error: "No fields to update" });
+      }
 
       await db.collection("driver").doc(uid).update(updateData);
 
