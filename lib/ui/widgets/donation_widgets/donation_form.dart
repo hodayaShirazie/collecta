@@ -29,7 +29,7 @@ class DonationForm extends StatelessWidget {
   final Function(int) onEditItem;
   final Function(int) onDeleteItem;
 
-  final VoidCallback onSubmit;
+  final VoidCallback? onSubmit;
   final String buttonText;
 
   final Function(double, double) onLocationSelected;
@@ -57,7 +57,7 @@ class DonationForm extends StatelessWidget {
     required this.isCategoryDisabled,
     required this.onEditItem,
     required this.onDeleteItem,
-    required this.onSubmit,
+    this.onSubmit,
     required this.buttonText,
     required this.onLocationSelected,
     this.onLocationCleared,

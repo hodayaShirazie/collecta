@@ -46,6 +46,7 @@ class _ReportDonationState extends State<ReportDonation> {
 
   double? selectedLat;
   double? selectedLng;
+  bool _isSubmitting = false;
 
   DonorProfile? donor;
 
@@ -148,9 +149,12 @@ class _ReportDonationState extends State<ReportDonation> {
   }
 
   Future<bool> submit() async {
+    if (_isSubmitting) return false;
     if (!await _validateBeforeSubmit()) {
       return false;
     }
+
+    setState(() => _isSubmitting = true);
 
     try {
       await DonationFlowService().submitDonation(
@@ -183,10 +187,11 @@ class _ReportDonationState extends State<ReportDonation> {
 
     } catch (e) {
       if (!mounted) return false;
+      setState(() => _isSubmitting = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error: $e")),
       );
-      return false; 
+      return false;
     }
   }
 
@@ -239,7 +244,7 @@ class _ReportDonationState extends State<ReportDonation> {
                         donatedItems.removeAt(index);
                       });
                     },
-                    onSubmit: submit,
+                    onSubmit: _isSubmitting ? null : submit,
                     buttonText: "אשר תרומה",
                     isAddressConfirmed: selectedLat != null,
                     onLocationSelected: (lat, lng) {

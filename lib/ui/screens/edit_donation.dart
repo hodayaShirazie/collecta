@@ -48,6 +48,7 @@ class _EditDonationState extends State<EditDonation> {
   double? selectedLng;
 
   bool isLoading = true;
+  bool _isSubmitting = false;
 
   DonationModel? currentDonation;
 
@@ -177,6 +178,7 @@ class _EditDonationState extends State<EditDonation> {
 
   
   Future<void> submit() async {
+  if (_isSubmitting) return;
   if (!_formKey.currentState!.validate()) return;
 
   // בדיקת חלונות זמן
@@ -194,6 +196,8 @@ class _EditDonationState extends State<EditDonation> {
     );
     return;
   }
+
+  setState(() => _isSubmitting = true);
 
   try {
 
@@ -251,6 +255,7 @@ class _EditDonationState extends State<EditDonation> {
     Navigator.pop(context); // חזרה למסך הקודם
 
   } catch (e) {
+    setState(() => _isSubmitting = false);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("Error: $e")),
     );
@@ -300,7 +305,7 @@ class _EditDonationState extends State<EditDonation> {
                     donatedItems: donatedItems,
                     onEditItem: editItem,
                     onDeleteItem: deleteItem,
-                    onSubmit: submit,
+                    onSubmit: _isSubmitting ? null : submit,
                     buttonText: "שמור שינויים",
                     isAddressConfirmed: selectedLat != null,
                     onLocationSelected: onLocationSelected,
