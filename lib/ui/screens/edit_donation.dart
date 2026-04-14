@@ -277,52 +277,50 @@ class _EditDonationState extends State<EditDonation> {
           decoration: const BoxDecoration(
             gradient: HomepageTheme.pageGradient,
           ),
-          child: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
-              child: Column(
-                children: [
-                  const SizedBox(height: HomepageTheme.topPadding),
-                  const Text(
-                    "עריכת תרומה",
-                    style: ReportDonationTheme.headerStyle,
-                  ),
-                  const SizedBox(height: 35),
-                  DonationForm(
-                    formKey: _formKey,
-                    businessName: businessNameCtrl,
-                    address: addressCtrl,
-                    businessPhone: businessPhoneCtrl,
-                    crn: businessIdCtrl,
-                    contactName: contactNameCtrl,
-                    contactPhone: contactPhoneCtrl,
-                    timeSlots: DonationConstants.timeSlots,
-                    selectedTimeSlots: selectedTimeSlots,
-                    toggleTime: toggleTime,
-                    products: DonationConstants.products,
-                    selectedProducts: selectedProducts,
-                    toggleProduct: toggleProduct,
-                    donatedItems: donatedItems,
-                    onEditItem: editItem,
-                    onDeleteItem: deleteItem,
-                    onSubmit: _isSubmitting ? null : submit,
-                    buttonText: "שמור שינויים",
-                    isAddressConfirmed: selectedLat != null,
-                    onLocationSelected: onLocationSelected,
-                    onLocationCleared: () {
-                      setState(() {
-                        selectedLat = null;
-                        selectedLng = null;
-                      });
-                    },
-                    buttonStyle: ReportDonationTheme.simpleButton,
-                    isCategoryDisabled: (product) => DonationCategoryHelper.isCategoryDisabled(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25),
+            child: Column(
+              children: [
+                const SizedBox(height: HomepageTheme.topPadding),
+                const Text(
+                  "עריכת תרומה",
+                  style: ReportDonationTheme.headerStyle,
+                ),
+                const SizedBox(height: 35),
+                DonationForm(
+                  formKey: _formKey,
+                  businessName: businessNameCtrl,
+                  address: addressCtrl,
+                  businessPhone: businessPhoneCtrl,
+                  crn: businessIdCtrl,
+                  contactName: contactNameCtrl,
+                  contactPhone: contactPhoneCtrl,
+                  timeSlots: DonationConstants.timeSlots,
+                  selectedTimeSlots: selectedTimeSlots,
+                  toggleTime: toggleTime,
+                  products: DonationConstants.products,
+                  selectedProducts: selectedProducts,
+                  toggleProduct: toggleProduct,
+                  donatedItems: donatedItems,
+                  onEditItem: editItem,
+                  onDeleteItem: deleteItem,
+                  onSubmit: _isSubmitting ? null : submit,
+                  buttonText: "שמור שינויים",
+                  isAddressConfirmed: selectedLat != null,
+                  onLocationSelected: onLocationSelected,
+                  onLocationCleared: () {
+                    setState(() {
+                      selectedLat = null;
+                      selectedLng = null;
+                    });
+                  },
+                  buttonStyle: ReportDonationTheme.simpleButton,
+                  isCategoryDisabled: (product) => DonationCategoryHelper.isCategoryDisabled(
                     product: product,
                     donatedItems: donatedItems,
-                ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

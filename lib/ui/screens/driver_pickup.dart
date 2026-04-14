@@ -328,7 +328,8 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
 
   DonationModel? donation;
   bool isLoading = true;
-  
+  bool _isSubmitting = false;
+
   Map<String, int> collectedQuantities = {};
   Map<String, bool?> productStatus = {}; 
 
@@ -394,22 +395,24 @@ Future<void> _submitPickup() async {
     return;
   }
 
+  if (_isSubmitting) return;
+
+  setState(() => _isSubmitting = true);
+
   try {
-    setState(() => isLoading = true);
-
     List<Map<String, dynamic>> productsToUpdate = donation!.products.map((item) {
-    bool isOther = item.type.name == "אחר";
-    return {
-      "productId": item.id,
-      "productTypeId": item.type.id,
-      "isOther": isOther, // דגל שעוזר לשרת לדעת אם למחוק גם את ה-Type
-      "collectedQuantity": collectedQuantities[item.id],
-      "isPickedUp": productStatus[item.id], // true לאישור, false לביטול
-      "newDescription": isOther ? otherDescriptionControllers[item.id]?.text : null,
-    };
-  }).toList();
+      bool isOther = item.type.name == "אחר";
+      return {
+        "productId": item.id,
+        "productTypeId": item.type.id,
+        "isOther": isOther,
+        "collectedQuantity": collectedQuantities[item.id],
+        "isPickedUp": productStatus[item.id],
+        "newDescription": isOther ? otherDescriptionControllers[item.id]?.text : null,
+      };
+    }).toList();
 
-    print("🚀 Sending to Server: ${json.encode(productsToUpdate)}"); 
+    print("🚀 Sending to Server: ${json.encode(productsToUpdate)}");
 
     await _donationService.submitPickup(
       donationId: widget.donationId,
@@ -426,11 +429,12 @@ Future<void> _submitPickup() async {
         buttonText: "מעולה",
       ),
     );
+
+    if (!mounted) return;
     Navigator.pop(context, true);
   } catch (e) {
-    // גם כאן - בדיקה לפני setState
     if (mounted) {
-      setState(() => isLoading = false);
+      setState(() => _isSubmitting = false);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("שגיאה: $e")));
     }
   }
@@ -445,58 +449,56 @@ Future<void> _submitPickup() async {
       body: LayoutWrapper(
         child: Container(
           decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
-          child: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  const SizedBox(height: 20),
-                  const Center(child: Text("איסוף תרומה", style: ReportDonationTheme.headerStyle)),
-                  const Center(child: Text("פרטי התחנה לעדכון", style: TextStyle(color: HomepageTheme.latetBlue, fontSize: 18, fontWeight: FontWeight.w500))),
-                  const SizedBox(height: 25),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                const SizedBox(height: 20),
+                const Center(child: Text("איסוף תרומה", style: ReportDonationTheme.headerStyle)),
+                const Center(child: Text("פרטי התחנה לעדכון", style: TextStyle(color: HomepageTheme.latetBlue, fontSize: 18, fontWeight: FontWeight.w500))),
+                const SizedBox(height: 25),
 
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: ReportDonationTheme.cardDecoration,
-                    child: Column(
-                      children: [
-                        _buildReadOnlyField("שם העסק:", businessNameController),
-                        _buildReadOnlyField("פלאפון עסק:", businessPhoneController),
-                        _buildReadOnlyField("כתובת עסק:", businessAddressController),
-                        _buildReadOnlyField("ח\"פ / עוסק מורשה:", crnController),
-                      ],
-                    ),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: ReportDonationTheme.cardDecoration,
+                  child: Column(
+                    children: [
+                      _buildReadOnlyField("שם העסק:", businessNameController),
+                      _buildReadOnlyField("פלאפון עסק:", businessPhoneController),
+                      _buildReadOnlyField("כתובת עסק:", businessAddressController),
+                      _buildReadOnlyField("ח\"פ / עוסק מורשה:", crnController),
+                    ],
                   ),
+                ),
 
-                  const SizedBox(height: 25),
-                  const Text("עדכון כמויות שנאספו בפועל:", style: ReportDonationTheme.labelStyle),
-                  const SizedBox(height: 10),
-                  
-                  Container(
-                    padding: const EdgeInsets.all(15),
-                    decoration: ReportDonationTheme.cardDecoration,
-                    child: Column(
-                      children: donation!.products.map((product) {
-                        // מעבירים את כל אובייקט ה-Product כדי לבדוק אם הוא "אחר"
-                        return _buildProductRow(product);
-                      }).toList(),
-                    ),
+                const SizedBox(height: 25),
+                const Text("עדכון כמויות שנאספו בפועל:", style: ReportDonationTheme.labelStyle),
+                const SizedBox(height: 10),
+
+                Container(
+                  padding: const EdgeInsets.all(15),
+                  decoration: ReportDonationTheme.cardDecoration,
+                  child: Column(
+                    children: donation!.products.map((product) {
+                      // מעבירים את כל אובייקט ה-Product כדי לבדוק אם הוא "אחר"
+                      return _buildProductRow(product);
+                    }).toList(),
                   ),
+                ),
 
-                  const SizedBox(height: 35),
+                const SizedBox(height: 35),
 
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _submitPickup,
-                      style: ReportDonationTheme.simpleButton,
-                      child: const Text("אשר איסוף תרומה", style: TextStyle(fontSize: 20)),
-                    ),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _isSubmitting ? null : _submitPickup,
+                    style: ReportDonationTheme.simpleButton,
+                    child: const Text("אשר איסוף תרומה", style: TextStyle(fontSize: 20)),
                   ),
-                  const SizedBox(height: 30),
-                ],
-              ),
+                ),
+                const SizedBox(height: 30),
+              ],
             ),
           ),
         ),

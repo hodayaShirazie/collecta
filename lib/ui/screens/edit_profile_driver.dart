@@ -16,6 +16,9 @@ import '../widgets/personal_details/destination_card.dart';
 
 import '../theme/homepage_theme.dart';
 import '../theme/edit_profile_donor_theme.dart';
+import '../theme/report_donation_theme.dart';
+
+import '../widgets/custom_popup_dialog.dart';
 
 import 'package:collecta/app/routes.dart';
 
@@ -132,21 +135,30 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
 
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("הפרטים עודכנו")),
+      if (!mounted) return;
+
+      await showDialog(
+        context: context,
+        builder: (context) => const CustomPopupDialog(
+          title: "הפרטים נשמרו",
+          message: "פרטיך עודכנו בהצלחה",
+          buttonText: "סגור",
+        ),
       );
 
+      if (!mounted) return;
       Navigator.pushReplacementNamed(context, Routes.driver);
 
     } catch (e) {
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("שגיאה: $e")),
-      );
+      if (mounted) {
+        setState(() => isSaving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("שגיאה: $e")),
+        );
+      }
 
     }
-
-    setState(() => isSaving = false);
 
   }
 
@@ -169,84 +181,77 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
             gradient: HomepageTheme.pageGradient,
           ),
 
-          child: SafeArea(
+          child: Padding(
 
-            child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 25),
 
-              padding: const EdgeInsets.symmetric(horizontal: 25),
+            child: Column(
 
-              child: Column(
+              children: [
 
-                children: [
+                const SizedBox(height: HomepageTheme.topPadding),
 
-                  const SizedBox(height: HomepageTheme.topPadding),
+                const Text(
+                  "עריכת פרטי נהג",
+                  style: DonorEditProfileTheme.headerStyle,
+                ),
 
-                  const Text(
-                    "עריכת פרטי נהג",
-                    style: DonorEditProfileTheme.headerStyle,
-                  ),
+                const SizedBox(height: 35),
 
-                  const SizedBox(height: 35),
+                Form(
 
-                  Form(
+                  key: _formKey,
 
-                    key: _formKey,
+                  child: Column(
 
-                    child: Column(
+                    children: [
 
-                      children: [
+                      DriverDetailsCard(
+                        name: nameCtrl,
+                        phone: phoneCtrl,
+                        area: areaCtrl,
+                      ),
 
-                        DriverDetailsCard(
-                          name: nameCtrl,
-                          phone: phoneCtrl,
-                          area: areaCtrl,
+                      const SizedBox(height: 15),
+
+                      ...driver!.destinations.map((destination) {
+
+                        final id = destination.id;
+
+                        return DestinationCard(
+                          name: nameCtrls[id]!,
+                          day: dayCtrls[id]!,
+                          address: addressCtrls[id]!,
+                          onLocationSelected: (lat, lng) {
+
+                            selectedLatLng[id] =
+                                LatLngModel(lat: lat, lng: lng);
+
+                          },
+                        );
+
+                      }).toList(),
+
+                      const SizedBox(height: 30),
+
+                      SizedBox(
+                        width: 140,
+                        child: ElevatedButton(
+                          onPressed: isSaving ? null : _saveProfile,
+                          style: ReportDonationTheme.simpleButton,
+                          child: const Text("שמור"),
                         ),
+                      ),
 
-                        const SizedBox(height: 15),
+                      const SizedBox(height: 40),
 
-                        ...driver!.destinations.map((destination) {
-
-                          final id = destination.id;
-
-                          return DestinationCard(
-                            name: nameCtrls[id]!,
-                            day: dayCtrls[id]!,
-                            address: addressCtrls[id]!,
-                            onLocationSelected: (lat, lng) {
-
-                              selectedLatLng[id] =
-                                  LatLngModel(lat: lat, lng: lng);
-
-                            },
-                          );
-
-                        }).toList(),
-
-                        const SizedBox(height: 30),
-
-                        SizedBox(
-                          width: 160,
-                          child: ElevatedButton(
-                            onPressed: isSaving ? null : _saveProfile,
-                            style: DonorEditProfileTheme.saveButtonStyle,
-                            child: isSaving
-                                ? const CircularProgressIndicator(
-                                    color: Colors.white)
-                                : const Text("שמור"),
-                          ),
-                        ),
-
-                        const SizedBox(height: 40),
-
-                      ],
-
-                    ),
+                    ],
 
                   ),
 
-                ],
+                ),
 
-              ),
+              ],
 
             ),
 

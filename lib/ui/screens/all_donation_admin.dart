@@ -5,6 +5,7 @@ import '../../data/models/donation_model.dart';
 import '../../services/donation_service.dart';
 import '../utils/donation/donation_receipt_helper.dart';
 import '../widgets/donation_widgets/donation_receipt_button.dart';
+import '../widgets/custom_popup_dialog.dart';
 
 const String organizationId = 'xFKMWqidL2uZ5wnksdYX';
 
@@ -17,6 +18,7 @@ class AllDonationsAdmin extends StatefulWidget {
 
 class _AllDonationsAdminState extends State<AllDonationsAdmin> {
   final DonationService _service = DonationService();
+  late ValueNotifier<bool> _isCancellingNotifier;
 
   String selectedStatus = "הכל";
   DateTimeRange? selectedDateRange;
@@ -28,7 +30,14 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
   @override
   void initState() {
     super.initState();
+    _isCancellingNotifier = ValueNotifier(false);
     _loadDonations();
+  }
+
+  @override
+  void dispose() {
+    _isCancellingNotifier.dispose();
+    super.dispose();
   }
 
   Future<void> _loadDonations() async {
@@ -89,7 +98,7 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
       if (selectedStatus != "הכל") {
         final statusMap = {
           "ממתין": "pending",
-          "נאסף": "confirmed",
+          "נאסף": "collected",
           "בוטל": "cancelled",
         };
 
@@ -116,12 +125,40 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
     switch (status) {
       case "pending":
         return "ממתין";
-      case "confirmed":
+      case "collected":
         return "נאסף";
       case "cancelled":
         return "בוטל";
       default:
         return status;
+    }
+  }
+
+  Future<void> cancelDonation(String donationId) async {
+    _isCancellingNotifier.value = true;
+
+    try {
+      await _service.cancelDonation(donationId);
+
+      await _loadDonations();
+
+      if (!mounted) return;
+
+      Navigator.pop(context);
+
+      showDialog(
+        context: context,
+        builder: (context) => const CustomPopupDialog(
+          title: "התרומה בוטלה",
+          message: "התרומה בוטלה בהצלחה",
+        ),
+      );
+    } catch (e) {
+      _isCancellingNotifier.value = false;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("שגיאה: $e")),
+      );
     }
   }
 
@@ -294,8 +331,44 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
                                           style: const TextStyle(color: Colors.black),
                                         ),
                                       ),
+                                      if (donation.status == "pending") ...[
+                                        const SizedBox(height: 8),
+                                        ValueListenableBuilder<bool>(
+                                          valueListenable: _isCancellingNotifier,
+                                          builder: (context, isCancelling, _) {
+                                            return TextButton(
+                                              onPressed: isCancelling ? null : () {
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (context) => ValueListenableBuilder<bool>(
+                                                    valueListenable: _isCancellingNotifier,
+                                                    builder: (context, isCancellingInDialog, _) {
+                                                      return CustomPopupDialog(
+                                                        title: "ביטול תרומה",
+                                                        message: "האם אתה בטוח שברצונך לבטל את התרומה?",
+                                                        buttonText: "אישור",
+                                                        cancelText: "חזור",
+                                                        isLoading: isCancellingInDialog,
+                                                        onConfirm: () => cancelDonation(donation.id),
+                                                      );
+                                                    },
+                                                  ),
+                                                );
+                                              },
+                                              style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                                              child: const Text(
+                                                "בטל תרומה",
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.black54,
+                                                  decoration: TextDecoration.underline,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ],
                                       const SizedBox(height: 12),
-
 
                                       Row(
                                         crossAxisAlignment: CrossAxisAlignment.end,
@@ -319,8 +392,9 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
                                           DonationReceiptButton(
                                             donationId: donation.id,
                                             receiptUrl: donation.receipt,
-                                            isAdmin: true, 
-                                            onUploadSuccess: _loadDonations, 
+                                            isAdmin: true,
+                                            onUploadSuccess: _loadDonations,
+                                            enabled: donation.status == "collected",
                                           ),
                                         ],
                                       ),

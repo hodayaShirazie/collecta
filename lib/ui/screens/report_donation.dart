@@ -208,64 +208,62 @@ class _ReportDonationState extends State<ReportDonation> {
       body: LayoutWrapper(
         child: Container(
           decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
-          child: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
-              child: Column(
-                children: [
-                  const SizedBox(height: HomepageTheme.topPadding),
-                  const Text("דיווח תרומה", style: ReportDonationTheme.headerStyle),
-                  const SizedBox(height: 35),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25),
+            child: Column(
+              children: [
+                const SizedBox(height: HomepageTheme.topPadding),
+                const Text("דיווח תרומה", style: ReportDonationTheme.headerStyle),
+                const SizedBox(height: 35),
 
-                  // ===================== FORM =====================
+                // ===================== FORM =====================
 
-                  DonationForm(
-                    formKey: _formKey,
-                    businessName: businessName,
-                    address: address,
-                    businessPhone: businessPhone,
-                    crn: crn,
-                    contactName: contactName,
-                    contactPhone: contactPhone,
-                    timeSlots: timeSlots,
-                    selectedTimeSlots: selectedTimeSlots,
-                    toggleTime: toggleTime,
-                    products: products,
-                    selectedProducts: selectedProducts,
-                    toggleProduct: toggleProduct,
+                DonationForm(
+                  formKey: _formKey,
+                  businessName: businessName,
+                  address: address,
+                  businessPhone: businessPhone,
+                  crn: crn,
+                  contactName: contactName,
+                  contactPhone: contactPhone,
+                  timeSlots: timeSlots,
+                  selectedTimeSlots: selectedTimeSlots,
+                  toggleTime: toggleTime,
+                  products: products,
+                  selectedProducts: selectedProducts,
+                  toggleProduct: toggleProduct,
+                  donatedItems: donatedItems,
+                  isCategoryDisabled: (product) => DonationCategoryHelper.isCategoryDisabled(
+                    product: product,
                     donatedItems: donatedItems,
-                    isCategoryDisabled: (product) => DonationCategoryHelper.isCategoryDisabled(
-                      product: product,
-                      donatedItems: donatedItems,
-                    ),
-                    onEditItem: _editDonatedItem,
-                    onDeleteItem: (index) {
-                      setState(() {
-                        donatedItems.removeAt(index);
-                      });
-                    },
-                    onSubmit: _isSubmitting ? null : submit,
-                    buttonText: "אשר תרומה",
-                    isAddressConfirmed: selectedLat != null,
-                    onLocationSelected: (lat, lng) {
-                      setState(() {
-                        selectedLat = lat;
-                        selectedLng = lng;
-                      });
-                    },
-                    onLocationCleared: () {
-                      setState(() {
-                        selectedLat = null;
-                        selectedLng = null;
-                      });
-                    },
-                    buttonStyle: ReportDonationTheme.simpleButton,
                   ),
-    
-                 // END FORM
+                  onEditItem: _editDonatedItem,
+                  onDeleteItem: (index) {
+                    setState(() {
+                      donatedItems.removeAt(index);
+                    });
+                  },
+                  onSubmit: _isSubmitting ? null : submit,
+                  buttonText: "אשר תרומה",
+                  isAddressConfirmed: selectedLat != null,
+                  onLocationSelected: (lat, lng) {
+                    setState(() {
+                      selectedLat = lat;
+                      selectedLng = lng;
+                    });
+                  },
+                  onLocationCleared: () {
+                    setState(() {
+                      selectedLat = null;
+                      selectedLng = null;
+                    });
+                  },
+                  buttonStyle: ReportDonationTheme.simpleButton,
+                ),
 
-                ],
-              ),
+                // END FORM
+
+              ],
             ),
           ),
         ),

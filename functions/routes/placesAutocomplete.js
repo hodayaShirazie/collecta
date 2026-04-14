@@ -34,6 +34,8 @@ exports.placesAutocomplete = functions.https.onRequest((req, res) => {
             types: "address",
             language: "he",
             components: "country:il",
+            location: "32.0853,34.7818", 
+            radius: 120000, 
             key: GOOGLE_KEY,
           },
         }

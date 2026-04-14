@@ -20,7 +20,8 @@ class AdminHomepage extends StatefulWidget {
 class _AdminHomepageState extends State<AdminHomepage> {
   final DonationService _donationService = DonationService();
 
-  int confirmed = 0;
+  int totalDonations = 0;
+  int collected = 0;
   int pending = 0;
   int canceled = 0;
   int growth = 0;
@@ -35,22 +36,27 @@ class _AdminHomepageState extends State<AdminHomepage> {
 
   Future<void> _loadStats() async {
     try {
-      // 1) total donations
-      final confirmedCount =
-          await _donationService.getDonationsConfirmedCount(kOrganizationId);
-      print("CONFIRMED donations: $confirmedCount");
+      // 1) total donations (all, regardless of status)
+      final total =
+          await _donationService.getDonationsCount(kOrganizationId);
+      print("TOTAL donations: $total");
 
-      // 2) pending
+      // 2) collected donations
+      final collectedCount =
+          await _donationService.getDonationsConfirmedCount(kOrganizationId);
+      print("COLLECTED donations: $collectedCount");
+
+      // 3) pending
       final pendingCount =
           await _donationService.getDonationsPendingCount(kOrganizationId);
       print("PENDING donations: $pendingCount");
 
-      // 3) canceled
+      // 4) canceled
       final canceledCount =
           await _donationService.getDonationsCanceledCount(kOrganizationId);
       print("CANCELED donations: $canceledCount");
 
-      // 4) growth calculation 
+      // 5) growth calculation 
       final currentMonthTotal =
           await _donationService.getDonationsCountByMonth(
             organizationId: kOrganizationId,
@@ -73,7 +79,8 @@ class _AdminHomepageState extends State<AdminHomepage> {
       }
 
       setState(() {
-        confirmed = confirmedCount;
+        totalDonations = total;
+        collected = collectedCount;
         pending = pendingCount;
         canceled = canceledCount;
         growth = growthCalc.round();
@@ -163,8 +170,8 @@ class _AdminHomepageState extends State<AdminHomepage> {
                         children: [
                           _StatItem(
                             title: "התקבלו",
-                            // סך הכל = מאושרות + ממתינות + בוטלו
-                            value: (confirmed + pending + canceled).toString(),
+                            // סך הכל כל התרומות שדווחו אי פעם
+                            value: totalDonations.toString(),
                           ),
                           _StatItem(
                             title: "ממתינות",
@@ -184,7 +191,7 @@ class _AdminHomepageState extends State<AdminHomepage> {
                       const SizedBox(height: 60),
 
                       _DonutChart(
-                        confirmed: confirmed.toDouble(),
+                        collected: collected.toDouble(),
                         pending: pending.toDouble(),
                         canceled: canceled.toDouble(),
                       ),
@@ -235,12 +242,12 @@ class _StatItem extends StatelessWidget {
 
 
 class _DonutChart extends StatefulWidget {
-  final double confirmed;
+  final double collected;
   final double pending;
   final double canceled;
 
   const _DonutChart({
-    required this.confirmed,
+    required this.collected,
     required this.pending,
     required this.canceled,
   });
@@ -254,20 +261,20 @@ class _DonutChartState extends State<_DonutChart> {
 
   @override
   Widget build(BuildContext context) {
-    final total = widget.confirmed + widget.pending + widget.canceled;
+    final total = widget.collected + widget.pending + widget.canceled;
 
-    final confirmedPercent = total == 0 ? 0 : (widget.confirmed / total) * 100;
+    final collectedPercent = total == 0 ? 0 : (widget.collected / total) * 100;
     final pendingPercent = total == 0 ? 0 : (widget.pending / total) * 100;
     final canceledPercent = total == 0 ? 0 : (widget.canceled / total) * 100;
 
     final values = [
-      widget.confirmed,
+      widget.collected,
       widget.pending,
       widget.canceled,
     ];
 
     final labels = [
-      "אושרו",
+      "נאספו",
       "ממתינות",
       "בוטלו",
     ];

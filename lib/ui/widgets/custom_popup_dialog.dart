@@ -142,8 +142,8 @@ class CustomPopupDialog extends StatelessWidget {
   final String buttonText;
   final String? cancelText;
   final VoidCallback? onConfirm;
-
   final VoidCallback? onCancel;
+  final bool isLoading;
 
 
   const CustomPopupDialog({
@@ -155,6 +155,7 @@ class CustomPopupDialog extends StatelessWidget {
     this.cancelText,
     this.onConfirm,
     this.onCancel,
+    this.isLoading = false,
   });
 
   @override
@@ -188,14 +189,14 @@ class CustomPopupDialog extends StatelessWidget {
       actions: [
         if (cancelText != null)
           TextButton(
-            onPressed: () {
+            onPressed: isLoading ? null : () {
               Navigator.of(context).pop();
               if (onCancel != null) onCancel!();
             },
             child: Text(cancelText!),
           ),
           ElevatedButton(
-            onPressed: onConfirm ?? () => Navigator.of(context).pop(),
+            onPressed: isLoading ? null : (onConfirm ?? () => Navigator.of(context).pop()),
             child: Text(buttonText),
           ),
       ],
