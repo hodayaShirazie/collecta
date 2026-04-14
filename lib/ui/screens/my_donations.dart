@@ -18,6 +18,7 @@ class MyDonations extends StatefulWidget {
 
 class _MyDonationsState extends State<MyDonations> {
   final DonationService _service = DonationService();
+  late ValueNotifier<bool> _isCancellingNotifier;
 
   String selectedStatus = "הכל";
   DateTimeRange? selectedDateRange;
@@ -28,7 +29,14 @@ class _MyDonationsState extends State<MyDonations> {
   @override
   void initState() {
     super.initState();
+    _isCancellingNotifier = ValueNotifier(false);
     _loadDonations();
+  }
+
+  @override
+  void dispose() {
+    _isCancellingNotifier.dispose();
+    super.dispose();
   }
 
   Future<void> _loadDonations() async {
@@ -75,7 +83,7 @@ class _MyDonationsState extends State<MyDonations> {
       if (selectedStatus != "הכל") {
         final statusMap = {
           "ממתין": "pending",
-          "נאסף": "confirmed",
+          "נאסף": "collected",
           "בוטל": "cancelled",
         };
 
@@ -109,8 +117,6 @@ class _MyDonationsState extends State<MyDonations> {
     switch (status) {
       case "pending":
         return "ממתין";
-      case "confirmed":
-        return "נאסף";
       case "collected":
         return "נאסף";
       case "cancelled":
@@ -121,12 +127,16 @@ class _MyDonationsState extends State<MyDonations> {
   }
 
   Future<void> cancelDonation(String donationId) async {
+    _isCancellingNotifier.value = true;
+
     try {
       await _service.cancelDonation(donationId);
 
       await _loadDonations();
 
       if (!mounted) return;
+
+      Navigator.pop(context);
 
       showDialog(
         context: context,
@@ -136,6 +146,8 @@ class _MyDonationsState extends State<MyDonations> {
         ),
       );
     } catch (e) {
+      _isCancellingNotifier.value = false;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("שגיאה: $e")),
       );
@@ -322,28 +334,39 @@ class _MyDonationsState extends State<MyDonations> {
                                         ),
                                         if (donation.status == "pending") ...[
                                           const SizedBox(height: 8),
-                                          TextButton(
-                                            onPressed: () {
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) => CustomPopupDialog(
-                                                  title: "ביטול תרומה",
-                                                  message: "האם אתה בטוח שברצונך לבטל את התרומה?",
-                                                  buttonText: "אישור",
-                                                  cancelText: "חזור",
-                                                  onConfirm: () => cancelDonation(donation.id),
+                                          ValueListenableBuilder<bool>(
+                                            valueListenable: _isCancellingNotifier,
+                                            builder: (context, isCancelling, _) {
+                                              return TextButton(
+                                                onPressed: isCancelling ? null : () {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (context) => ValueListenableBuilder<bool>(
+                                                      valueListenable: _isCancellingNotifier,
+                                                      builder: (context, isCancellingInDialog, _) {
+                                                        return CustomPopupDialog(
+                                                          title: "ביטול תרומה",
+                                                          message: "האם אתה בטוח שברצונך לבטל את התרומה?",
+                                                          buttonText: "אישור",
+                                                          cancelText: "חזור",
+                                                          isLoading: isCancellingInDialog,
+                                                          onConfirm: () => cancelDonation(donation.id),
+                                                        );
+                                                      },
+                                                    ),
+                                                  );
+                                                },
+                                                style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                                                child: const Text(
+                                                  "בטל תרומה",
+                                                  style: TextStyle(
+                                                    fontSize: 13,
+                                                    color: Colors.black54,
+                                                    decoration: TextDecoration.underline,
+                                                  ),
                                                 ),
                                               );
                                             },
-                                            style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                                            child: const Text(
-                                              "בטל תרומה",
-                                              style: TextStyle(
-                                                fontSize: 13,
-                                                color: Colors.black54,
-                                                decoration: TextDecoration.underline,
-                                              ),
-                                            ),
                                           ),
                                         ],
                                       ],

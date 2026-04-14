@@ -96,8 +96,6 @@ class MyDonationsTheme {
     switch (status) {
       case "pending":
         return const Color(0xFFFFF9C4);
-      case "confirmed":
-        return Colors.green;
       case "collected":
         return Colors.green;
       case "cancelled":
