@@ -46,7 +46,7 @@ class DonationToggleProductHelper {
       donatedItems.add({
         ...result,
         "id": "",
-        "productTypeId": "",
+        "productTypeId": null,
       });
     }
   } else {

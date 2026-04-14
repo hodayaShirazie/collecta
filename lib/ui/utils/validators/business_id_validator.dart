@@ -1,4 +1,4 @@
-String? validateBusinessId(String? value) {
+String? validatecrn(String? value) {
   if (value == null || value.isEmpty) {
     return "שדה חובה";
   }

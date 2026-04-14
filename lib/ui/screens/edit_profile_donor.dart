@@ -211,7 +211,7 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
                           businessName: businessNameCtrl,
                           address: businessAddressCtrl,
                           businessPhone: businessPhoneCtrl,
-                          businessId: crnCtrl,
+                          crn: crnCtrl,
                           isAddressConfirmed: selectedLat != null,
                           onLocationSelected: (lat, lng) {
                             setState(() {
