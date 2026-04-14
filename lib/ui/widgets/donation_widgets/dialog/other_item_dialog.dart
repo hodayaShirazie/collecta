@@ -96,7 +96,7 @@ Future<Map<String, dynamic>?> showOtherItemDialog({
                   Navigator.pop(context, {
                     "name": "אחר: ${otherController.text}",
                     "productTypeId": null,
-                    "quantity": quantity,
+                    "quantity": quantity.toString(),
                     "unit": 'ק"ג/יחידות',
                   });
                 } else {

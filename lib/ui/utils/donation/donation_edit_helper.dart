@@ -29,6 +29,7 @@ class DonationEditHelper {
         donatedItems[index] = {
           ...Map<String, dynamic>.from(donatedItems[index]),
           ...result,
+          "productTypeId": result["productTypeId"] ?? donatedItems[index]["productTypeId"],
         };
         refresh();
       }
