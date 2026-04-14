@@ -8,9 +8,11 @@ import '../../data/models/donor_model.dart';
 
 import '../theme/homepage_theme.dart';
 import '../theme/edit_profile_donor_theme.dart';
+import '../theme/report_donation_theme.dart';
 
 import '../widgets/layout_wrapper.dart';
 import '../widgets/loading_indicator.dart';
+import '../widgets/custom_popup_dialog.dart';
 
 import '../widgets/personal_details/business_details_card.dart';
 import '../widgets/personal_details/contact_details_card.dart';
@@ -38,6 +40,7 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
 
   DonorProfile? donor;
+  bool _isSaving = false;
 
   double? selectedLat;
   double? selectedLng;
@@ -83,15 +86,16 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
   }
 
   Future<void> _saveProfile() async {
-
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
     if (donor == null) return;
+    if (_isSaving) return;
+
+    setState(() => _isSaving = true);
 
     try {
-
       /// update user
       await _userService.updateUserProfile(
         name: nameCtrl.text,
@@ -107,7 +111,6 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
 
       /// אם אין כתובת → צור חדשה
       if (!hasAddress) {
-
         addressId = await _addressService.createAddress(
           name: businessAddressCtrl.text,
           lat: selectedLat!,
@@ -120,9 +123,7 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
           lat: selectedLat!,
           lng: selectedLng!,
         );
-
       } else {
-
         /// אם יש כתובת → עדכן
         final updatedAddress = address.copyWith(
           name: businessAddressCtrl.text,
@@ -146,18 +147,27 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
 
       await _donorService.updateDonorProfile(updatedDonor);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("הפרטים נשמרו")),
+      if (!mounted) return;
+
+      await showDialog(
+        context: context,
+        builder: (context) => const CustomPopupDialog(
+          title: "הפרטים נשמרו",
+          message: "פרטיך עודכנו בהצלחה",
+          buttonText: "סגור",
+        ),
       );
 
+      if (!mounted) return;
       Navigator.pushReplacementNamed(context, Routes.donor);
 
     } catch (e) {
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("שגיאה: $e")),
-      );
-
+      if (mounted) {
+        setState(() => _isSaving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("שגיאה: $e")),
+        );
+      }
     }
   }
 
@@ -177,79 +187,77 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
           decoration: const BoxDecoration(
             gradient: HomepageTheme.pageGradient,
           ),
-          child: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
-              child: Column(
-                children: [
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25),
+            child: Column(
+              children: [
 
-                  const SizedBox(height: HomepageTheme.topPadding),
+                const SizedBox(height: HomepageTheme.topPadding),
 
-                  const Text(
-                    "עריכת פרטי תורם",
-                    style: DonorEditProfileTheme.headerStyle,
+                const Text(
+                  "עריכת פרטי תורם",
+                  style: DonorEditProfileTheme.headerStyle,
+                ),
+
+                const SizedBox(height: 35),
+
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+
+                      DonorDetailsCard(
+                        donorName: nameCtrl,
+                      ),
+
+                      // InputFieldWidget(
+                      //   controller: nameCtrl,
+                      //   hint: "שם בעל העסק",
+                      // ),
+                      // const SizedBox(height: 20),
+
+                      BusinessDetailsCard(
+                        businessName: businessNameCtrl,
+                        address: businessAddressCtrl,
+                        businessPhone: businessPhoneCtrl,
+                        crn: crnCtrl,
+                        isAddressConfirmed: selectedLat != null,
+                        onLocationSelected: (lat, lng) {
+                          setState(() {
+                            selectedLat = lat;
+                            selectedLng = lng;
+                          });
+                        },
+                        onLocationCleared: () {
+                          setState(() {
+                            selectedLat = null;
+                            selectedLng = null;
+                          });
+                        },
+                      ),
+
+                      ContactDetailsCard(
+                        contactName: contactNameCtrl,
+                        contactPhone: contactPhoneCtrl,
+                      ),
+
+                      const SizedBox(height: 30),
+
+                      SizedBox(
+                        width: 140,
+                        child: ElevatedButton(
+                          onPressed: _isSaving ? null : _saveProfile,
+                          style: ReportDonationTheme.simpleButton,
+                          child: const Text("שמור"),
+                        ),
+                      ),
+
+                      const SizedBox(height: 40),
+
+                    ],
                   ),
-
-                  const SizedBox(height: 35),
-
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-
-                        DonorDetailsCard(
-                          donorName: nameCtrl,
-                        ),
-
-                        // InputFieldWidget(
-                        //   controller: nameCtrl,
-                        //   hint: "שם בעל העסק",
-                        // ),
-                        // const SizedBox(height: 20),
-
-                        BusinessDetailsCard(
-                          businessName: businessNameCtrl,
-                          address: businessAddressCtrl,
-                          businessPhone: businessPhoneCtrl,
-                          crn: crnCtrl,
-                          isAddressConfirmed: selectedLat != null,
-                          onLocationSelected: (lat, lng) {
-                            setState(() {
-                              selectedLat = lat;
-                              selectedLng = lng;
-                            });
-                          },
-                          onLocationCleared: () {
-                            setState(() {
-                              selectedLat = null;
-                              selectedLng = null;
-                            });
-                          },
-                        ),
-
-                        ContactDetailsCard(
-                          contactName: contactNameCtrl,
-                          contactPhone: contactPhoneCtrl,
-                        ),
-
-                        const SizedBox(height: 30),
-
-                        SizedBox(
-                          width: 160,
-                          child: ElevatedButton(
-                            onPressed: _saveProfile,
-                            style: DonorEditProfileTheme.saveButtonStyle,
-                            child: const Text("שמור"),
-                          ),
-                        ),
-
-                        const SizedBox(height: 40),
-
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

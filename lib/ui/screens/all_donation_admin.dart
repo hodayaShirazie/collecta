@@ -118,6 +118,8 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
         return "ממתין";
       case "confirmed":
         return "נאסף";
+      case "collected":
+        return "נאסף";
       case "cancelled":
         return "בוטל";
       default:
@@ -319,8 +321,9 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
                                           DonationReceiptButton(
                                             donationId: donation.id,
                                             receiptUrl: donation.receipt,
-                                            isAdmin: true, 
-                                            onUploadSuccess: _loadDonations, 
+                                            isAdmin: true,
+                                            onUploadSuccess: _loadDonations,
+                                            enabled: donation.status == "collected" || donation.status == "confirmed",
                                           ),
                                         ],
                                       ),
