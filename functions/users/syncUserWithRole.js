@@ -41,7 +41,11 @@ module.exports = async(req, res) => {
           });
         }
 
-        // User exists and has the correct role → success
+        // User exists and has the correct role → update last_login
+        await userCollection.doc(userDocId).update({
+          last_login: admin.firestore.FieldValue.serverTimestamp(),
+        });
+
         return res.status(200).send({ status: "success" });
 
       } else {
