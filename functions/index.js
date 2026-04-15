@@ -175,3 +175,15 @@ exports.getDonorProfileById = functions.https.onRequest(
 exports.submitPickup = functions.https.onRequest(
   require("./donations/submitPickup")
 );
+
+exports.createActivityZone = functions.https.onRequest(
+  require("./activityZones/createActivityZone")
+);
+
+exports.updateActivityZone = functions.https.onRequest(
+  require("./activityZones/updateActivityZone")
+);
+
+exports.getActivityZones = functions.https.onRequest(
+  require("./activityZones/getActivityZones")
+);
