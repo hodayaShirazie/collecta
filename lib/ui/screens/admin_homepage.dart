@@ -162,6 +162,16 @@ class _AdminHomepageState extends State<AdminHomepage> {
                           Navigator.pushNamed(context, Routes.allDonationAdmin);
                         },
                       ),
+                      const SizedBox(height: HomepageTheme.betweenButtons + 20),
+
+                      HomepageButton(
+                        title: 'אזורי פעילות',
+                        flipIcon: true,
+                        icon: Icons.location_on_outlined,
+                        onPressed: () {
+                          Navigator.pushNamed(context, Routes.activityZones);
+                        },
+                      ),
 
                       const SizedBox(height: 60),
 
