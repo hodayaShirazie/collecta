@@ -6,9 +6,8 @@ import '../widgets/layout_wrapper.dart';
 import 'all_donation_admin.dart';
 import 'all_driver_admin.dart';
 import '../../services/donation_service.dart';
+import '../../services/org_manager.dart';
 import 'package:collecta/app/routes.dart';
-
-const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
 
 class AdminHomepage extends StatefulWidget {
   const AdminHomepage({super.key});
@@ -38,34 +37,34 @@ class _AdminHomepageState extends State<AdminHomepage> {
     try {
       // 1) total donations (all, regardless of status)
       final total =
-          await _donationService.getDonationsCount(kOrganizationId);
+          await _donationService.getDonationsCount(OrgManager.orgId ?? '');
       print("TOTAL donations: $total");
 
       // 2) collected donations
       final collectedCount =
-          await _donationService.getDonationsConfirmedCount(kOrganizationId);
+          await _donationService.getDonationsConfirmedCount(OrgManager.orgId ?? '');
       print("COLLECTED donations: $collectedCount");
 
       // 3) pending
       final pendingCount =
-          await _donationService.getDonationsPendingCount(kOrganizationId);
+          await _donationService.getDonationsPendingCount(OrgManager.orgId ?? '');
       print("PENDING donations: $pendingCount");
 
       // 4) canceled
       final canceledCount =
-          await _donationService.getDonationsCanceledCount(kOrganizationId);
+          await _donationService.getDonationsCanceledCount(OrgManager.orgId ?? '');
       print("CANCELED donations: $canceledCount");
 
       // 5) growth calculation 
       final currentMonthTotal =
           await _donationService.getDonationsCountByMonth(
-            organizationId: kOrganizationId,
+            organizationId: OrgManager.orgId ?? '',
             monthOffset: 0,
           );
 
       final lastMonthTotal =
           await _donationService.getDonationsCountByMonth(
-            organizationId: kOrganizationId,
+            organizationId: OrgManager.orgId ?? '',
             monthOffset: 1,
           );
 
@@ -147,7 +146,7 @@ class _AdminHomepageState extends State<AdminHomepage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  AllDriverAdmin(organizationId: kOrganizationId),
+                                  AllDriverAdmin(organizationId: OrgManager.orgId ?? ''),
                             ),
                           );
                         },

@@ -3,11 +3,10 @@ import '../theme/homepage_theme.dart';
 import '../theme/my_donations_theme.dart';
 import '../../data/models/donation_model.dart';
 import '../../services/donation_service.dart';
+import '../../services/org_manager.dart';
 import '../utils/donation/donation_receipt_helper.dart';
 import '../widgets/donation_widgets/donation_receipt_button.dart';
 import '../widgets/custom_popup_dialog.dart';
-
-const String organizationId = 'xFKMWqidL2uZ5wnksdYX';
 
 class AllDonationsAdmin extends StatefulWidget {
   const AllDonationsAdmin({super.key});
@@ -42,7 +41,7 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
 
   Future<void> _loadDonations() async {
     try {
-        final result = await _service.getDonationsByOrganization(organizationId); // 🔍 For testing, we can use the same endpoint since it returns all donations for admins
+        final result = await _service.getDonationsByOrganization(OrgManager.orgId ?? ''); // 🔍 For testing, we can use the same endpoint since it returns all donations for admins
       setState(() {
         donations = result;
         isLoading = false;

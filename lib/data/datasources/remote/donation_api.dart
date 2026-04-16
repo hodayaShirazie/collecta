@@ -5,6 +5,7 @@ import '../../../config/api_config.dart';
 import 'api_source.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:dio/dio.dart';
+import '../../../services/org_manager.dart';
 
 
 class DonationApi extends ApiSource {
@@ -28,11 +29,11 @@ class DonationApi extends ApiSource {
     }
 
     Future<List<dynamic>> getMyDonations() async {
-        // final headers = await AuthHeaders.build();
+        final orgId = OrgManager.orgId;
+        if (orgId == null) throw Exception("Organization ID not found");
 
         final response = await http.get(
-            Uri.parse('${ApiConfig.baseUrl}/getMyDonations'),
-            // headers: headers,
+            Uri.parse('${ApiConfig.baseUrl}/getMyDonations?organizationId=$orgId'),
             headers: await headers(),
         );
 

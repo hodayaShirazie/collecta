@@ -55,11 +55,12 @@
     <p id="redirect-subtitle" style="color:#555; margin:0 0 28px; font-size:15px; line-height:1.5;"></p>
 
     <!-- Normal "Open in App" button (for Safari / WhatsApp / Android) -->
-    <a id="open-app-btn" href="#"
+    <button id="open-app-btn"
       style="display:none; background:#1a73e8; color:#fff; padding:14px 36px; border-radius:25px;
-        text-decoration:none; font-size:16px; font-weight:600; margin-bottom:16px;">
+        border:none; font-size:16px; font-weight:600; margin-bottom:16px; cursor:pointer;"
+      onclick="openNativeApp()">
       פתח באפליקציה
-    </a>
+    </button>
 
     <!-- Gmail on iOS: instructions to open in Safari -->
     <div id="safari-instructions" style="display:none; text-align:right; direction:rtl;">
@@ -121,18 +122,18 @@
         // Safari / Android / WhatsApp — direct deep link works
         document.getElementById('redirect-subtitle').textContent =
           'לחצי לפתיחת האפליקציה';
-        var btn = document.getElementById('open-app-btn');
-        btn.href = deepLink;
-        btn.style.display = 'inline-block';
+        document.getElementById('open-app-btn').style.display = 'inline-block';
 
         if (isAndroid) {
           // On Android, also try auto-open after short delay
-          setTimeout(function() {
-            window.location.href = deepLink;
-          }, 400);
+          setTimeout(function() { window.location.href = deepLink; }, 400);
         }
       }
     })();
+
+    function openNativeApp() {
+      window.location.href = window._deepLink;
+    }
 
     function copyLink() {
       navigator.clipboard.writeText(window._pageUrl).then(function() {

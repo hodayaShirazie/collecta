@@ -28,10 +28,14 @@ module.exports = async (req, res) => {
         name,
         addressId,
         range,
-        organizationId,
       };
 
       const docRef = await db.collection("activityZone").add(zoneData);
+
+      // Add the new zone ID to the organization's activityZoneIds array
+      await db.collection("organization").doc(organizationId).update({
+        activityZoneIds: admin.firestore.FieldValue.arrayUnion(docRef.id),
+      });
 
       return res.status(200).send({
         status: "success",

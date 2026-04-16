@@ -109,9 +109,16 @@ module.exports = async (req, res) => {
     if (!firebaseUser) return;
 
     try {
+      const organizationId = req.query.organizationId;
+
+      if (!organizationId) {
+        return res.status(400).send({ error: "Missing organizationId" });
+      }
+
       const snapshot = await db
         .collection("donation")
         .where("donor_id", "==", firebaseUser.uid)
+        .where("organization_id", "==", organizationId)
         .orderBy("created_at", "desc")
         .get();
 
