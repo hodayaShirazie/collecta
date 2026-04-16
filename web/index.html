@@ -45,6 +45,85 @@
 
 
 <body>
-  <script src="flutter_bootstrap.js" async></script>
+  <!-- Redirect overlay for native app opening (hidden by default) -->
+  <div id="app-redirect" style="display:none; position:fixed; inset:0; background:#fff;
+    font-family:sans-serif; direction:rtl; text-align:center;
+    flex-direction:column; align-items:center; justify-content:center; z-index:9999;">
+    <img src="icons/Icon-192.png" style="width:80px;border-radius:18px;margin-bottom:20px;" />
+    <h2 style="margin:0 0 8px; font-size:22px; color:#1a1a1a;">Collecta</h2>
+    <p style="color:#555; margin:0 0 28px; font-size:15px;">פתח באפליקציה לחוויה מלאה</p>
+    <a id="open-app-btn" href="#"
+      style="background:#1a73e8; color:#fff; padding:14px 36px; border-radius:25px;
+        text-decoration:none; font-size:16px; font-weight:600; margin-bottom:16px;">
+      פתח באפליקציה
+    </a>
+    <br/>
+    <button onclick="continueInBrowser()"
+      style="background:none; border:none; color:#888; font-size:14px;
+        cursor:pointer; margin-top:8px; text-decoration:underline;">
+      המשך בדפדפן
+    </button>
+  </div>
+
+  <script>
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      var orgId = params.get('orgId');
+      var isOnMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+      if (!orgId || !isOnMobile) return; // desktop or no orgId — load Flutter normally
+
+      var deepLink = 'collecta://start?orgId=' + encodeURIComponent(orgId);
+      var redirectEl = document.getElementById('app-redirect');
+      var openBtn = document.getElementById('open-app-btn');
+
+      openBtn.href = deepLink;
+      redirectEl.style.display = 'flex';
+
+      // Auto-attempt open (works on Android and some in-app browsers)
+      var iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = deepLink;
+      document.body.appendChild(iframe);
+
+      // Also try direct navigation after short delay (helps Android)
+      var timer = setTimeout(function() {
+        window.location.href = deepLink;
+      }, 300);
+
+      // If after 1.8s the page is still visible, the app didn't open
+      // Show the overlay with the "Open in App" button (already visible)
+      // so the user can tap it manually (required on iOS with in-app browsers)
+      setTimeout(function() {
+        clearTimeout(timer);
+      }, 1800);
+    })();
+
+    function continueInBrowser() {
+      document.getElementById('app-redirect').style.display = 'none';
+      loadFlutter();
+    }
+
+    function loadFlutter() {
+      var s = document.createElement('script');
+      s.src = 'flutter_bootstrap.js';
+      document.body.appendChild(s);
+    }
+  </script>
+
+  <!-- Load Flutter only if NOT mobile with orgId (handled above), otherwise loaded by loadFlutter() -->
+  <script>
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      var orgId = params.get('orgId');
+      var isOnMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      if (!orgId || !isOnMobile) {
+        // Desktop or no orgId — load Flutter directly
+        var s = document.createElement('script');
+        s.src = 'flutter_bootstrap.js';
+        document.body.appendChild(s);
+      }
+    })();
+  </script>
 </body>
 </html>
