@@ -5,14 +5,14 @@ import 'donation_model.dart';
 class DriverProfile {
   final UserModel user;
   final String phone;
-  final String area;
+  final List<String> areas;
   final List<DestinationModel> destinations;
   final List<DonationModel> stops;
 
   DriverProfile({
     required this.user,
     required this.phone,
-    required this.area,
+    required this.areas,
     required this.destinations,
     required this.stops,
   });
@@ -22,7 +22,9 @@ class DriverProfile {
     return DriverProfile(
       user: UserModel.fromMap(json['user']),
       phone: role['phone'] ?? '',
-      area: role['area'] ?? '',
+      areas: (role['areas'] as List<dynamic>? ?? [])
+          .map((e) => e.toString())
+          .toList(),
       destinations: (json['destinations'] as List<dynamic>? ?? [])
           .map((e) => DestinationModel.fromApi(e))
           .toList(),
@@ -31,33 +33,33 @@ class DriverProfile {
           .toList(),
     );
   }
-   Map<String, dynamic> toJson() {
+
+  Map<String, dynamic> toJson() {
     return {
       "phone": phone,
-      "area": area,
+      "areas": areas,
     };
   }
 
-  /// 🔹 עדכון שדות
   List<String> missingFields() {
     final missing = <String>[];
     if (user.name.isEmpty) missing.add("name");
     if (phone.isEmpty) missing.add("phone");
-    if (area.isEmpty) missing.add("area");
+    if (areas.isEmpty) missing.add("area");
     return missing;
   }
 
   DriverProfile copyWith({
     UserModel? user,
     String? phone,
-    String? area,
+    List<String>? areas,
     List<DestinationModel>? destinations,
     List<DonationModel>? stops,
   }) {
     return DriverProfile(
       user: user ?? this.user,
       phone: phone ?? this.phone,
-      area: area ?? this.area,
+      areas: areas ?? this.areas,
       destinations: destinations ?? this.destinations,
       stops: stops ?? this.stops,
     );

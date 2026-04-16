@@ -16,19 +16,20 @@ module.exports = async (req, res) => {
 
       const uid = firebaseUser.uid;
 
-      const { phone, area } = req.body;
+      const { phone, areas } = req.body;
 
-      if (
-        (phone !== undefined && !isValidString(phone)) ||
-        (area !== undefined && !isValidString(area))
-      ) {
+      if (phone !== undefined && !isValidString(phone)) {
         return res.status(400).send({ error: "Invalid input parameters" });
+      }
+
+      if (areas !== undefined && !Array.isArray(areas)) {
+        return res.status(400).send({ error: "areas must be an array" });
       }
 
       const updateData = {};
 
       if (phone !== undefined && phone !== '') updateData.phone = phone;
-      if (area !== undefined && area !== '') updateData.area = area;
+      if (areas !== undefined) updateData.areas = areas;
 
       if (Object.keys(updateData).length === 0) {
         return res.status(400).send({ error: "No fields to update" });

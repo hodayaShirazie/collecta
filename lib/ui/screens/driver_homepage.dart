@@ -140,8 +140,10 @@ import 'package:flutter/material.dart';
 import '../../services/organization_service.dart';
 import '../../services/driver_service.dart';
 import '../../services/user_service.dart';
+import '../../services/activity_zone_service.dart';
 import '../../data/models/organization_model.dart';
 import '../../data/models/driver_model.dart';
+import '../../data/models/activity_zone_model.dart';
 import '../theme/homepage_theme.dart';
 import '../widgets/homepage_button.dart';
 import '../widgets/sign_out.dart';
@@ -170,6 +172,7 @@ class DriverHomepage extends StatefulWidget {
 class _DriverHomepageState extends State<DriverHomepage> {
   final DriverService _driverService = DriverService();
   final UserService _userService = UserService();
+  final ActivityZoneService _activityZoneService = ActivityZoneService();
 
   bool _didCheckMissing = false;
 
@@ -180,14 +183,36 @@ class _DriverHomepageState extends State<DriverHomepage> {
     DriverHomepage._pendingMissingFieldsCheck = false;
     if (missing.isEmpty) return;
     _didCheckMissing = true;
+
+    final regularFields = missing.where((f) => f != 'area').toList();
+    final hasAreaMissing = missing.contains('area');
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ProfileCompletionFlow.show(
-        context: context,
-        fields: missing,
-        contentBuilder: _buildFieldContent,
-        onSave: _saveField,
-      );
+      if (regularFields.isNotEmpty) {
+        ProfileCompletionFlow.show(
+          context: context,
+          fields: regularFields,
+          contentBuilder: _buildFieldContent,
+          onSave: _saveField,
+          onComplete: hasAreaMissing ? () => _showAreaSelectionDialog(driver) : null,
+        );
+      } else if (hasAreaMissing) {
+        _showAreaSelectionDialog(driver);
+      }
     });
+  }
+
+  void _showAreaSelectionDialog(DriverProfile driver) {
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => _AreaSelectionDialog(
+        driver: driver,
+        activityZoneService: _activityZoneService,
+        driverService: _driverService,
+      ),
+    );
   }
 
   String _getLabel(String field) {
@@ -196,8 +221,6 @@ class _DriverHomepageState extends State<DriverHomepage> {
         return "שם";
       case "phone":
         return "טלפון";
-      case "area":
-        return "אזור";
       default:
         return field;
     }
@@ -222,7 +245,6 @@ class _DriverHomepageState extends State<DriverHomepage> {
     final driver = await _driverService.getMyDriverProfile();
     final updated = driver.copyWith(
       phone: field == "phone" ? value : null,
-      area: field == "area" ? value : null,
     );
     await _driverService.updateDriverProfile(updated);
   }
@@ -356,6 +378,125 @@ class _DriverHomepageState extends State<DriverHomepage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ─── דיאלוג בחירת אזורי פעילות (נפתח מיד, טוען בפנים) ────────────────────
+class _AreaSelectionDialog extends StatefulWidget {
+  final DriverProfile driver;
+  final ActivityZoneService activityZoneService;
+  final DriverService driverService;
+
+  const _AreaSelectionDialog({
+    required this.driver,
+    required this.activityZoneService,
+    required this.driverService,
+  });
+
+  @override
+  State<_AreaSelectionDialog> createState() => _AreaSelectionDialogState();
+}
+
+class _AreaSelectionDialogState extends State<_AreaSelectionDialog> {
+  List<ActivityZoneModel>? zones;
+  final List<String> selectedIds = [];
+  bool isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadZones();
+  }
+
+  Future<void> _loadZones() async {
+    try {
+      final result = await widget.activityZoneService
+          .getActivityZones(widget.driver.user.organizationId);
+      if (mounted) setState(() => zones = result);
+    } catch (_) {
+      if (mounted) setState(() => zones = []);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        title: const Text(
+          "השלמת פרטים",
+          textAlign: TextAlign.center,
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        ),
+        content: zones == null
+            ? const SizedBox(
+                height: 80,
+                child: Center(child: CircularProgressIndicator()),
+              )
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "בחר אזורי פעילות",
+                    style: TextStyle(fontSize: 15, color: Colors.black87),
+                  ),
+                  const SizedBox(height: 8),
+                  if (zones!.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: Text("לא נמצאו אזורים",
+                          style: TextStyle(color: Colors.grey)),
+                    )
+                  else
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 260),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: zones!.map((zone) {
+                            return CheckboxListTile(
+                              value: selectedIds.contains(zone.id),
+                              title: Text(zone.name),
+                              onChanged: (val) {
+                                setState(() {
+                                  if (val == true) {
+                                    selectedIds.add(zone.id);
+                                  } else {
+                                    selectedIds.remove(zone.id);
+                                  }
+                                });
+                              },
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          TextButton(
+            onPressed: isSaving ? null : () => Navigator.pop(context),
+            child: const Text("דלג"),
+          ),
+          ElevatedButton(
+            onPressed: isSaving
+                ? null
+                : () async {
+                    setState(() => isSaving = true);
+                    if (selectedIds.isNotEmpty) {
+                      final updated =
+                          widget.driver.copyWith(areas: selectedIds);
+                      await widget.driverService.updateDriverProfile(updated);
+                    }
+                    if (mounted) Navigator.pop(context);
+                  },
+            child: const Text("שמור"),
+          ),
+        ],
       ),
     );
   }

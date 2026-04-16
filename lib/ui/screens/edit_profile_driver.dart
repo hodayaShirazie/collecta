@@ -4,15 +4,19 @@ import '../../services/driver_service.dart';
 import '../../services/user_service.dart';
 import '../../services/destination_service.dart';
 import '../../services/address_service.dart';
+import '../../services/activity_zone_service.dart';
 
 import '../../data/models/driver_model.dart';
 import '../../data/models/lat_lng_model.dart';
+import '../../data/models/activity_zone_model.dart';
 
 import '../widgets/layout_wrapper.dart';
 import '../widgets/loading_indicator.dart';
 
 import '../widgets/personal_details/driver_details_card.dart';
 import '../widgets/personal_details/destination_card.dart';
+import '../widgets/donation_widgets/card.dart';
+import '../widgets/donation_widgets/section_title.dart';
 
 import '../theme/homepage_theme.dart';
 import '../theme/edit_profile_donor_theme.dart';
@@ -21,6 +25,8 @@ import '../theme/report_donation_theme.dart';
 import '../widgets/custom_popup_dialog.dart';
 
 import 'package:collecta/app/routes.dart';
+
+const String _kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
 
 class DriverEditProfileScreen extends StatefulWidget {
   const DriverEditProfileScreen({super.key});
@@ -35,14 +41,16 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
   final UserService _userService = UserService();
   final DestinationService _destinationService = DestinationService();
   final AddressService _addressService = AddressService();
+  final ActivityZoneService _activityZoneService = ActivityZoneService();
 
   final _formKey = GlobalKey<FormState>();
 
   DriverProfile? driver;
+  List<ActivityZoneModel> _allZones = [];
+  List<String> _selectedAreaIds = [];
 
   final nameCtrl = TextEditingController();
   final phoneCtrl = TextEditingController();
-  final areaCtrl = TextEditingController();
 
   final Map<String, TextEditingController> nameCtrls = {};
   final Map<String, TextEditingController> dayCtrls = {};
@@ -62,11 +70,17 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
 
     try {
 
-      driver = await _driverService.getMyDriverProfile();
+      final results = await Future.wait([
+        _driverService.getMyDriverProfile(),
+        _activityZoneService.getActivityZones(_kOrganizationId),
+      ]);
+
+      driver = results[0] as DriverProfile;
+      _allZones = results[1] as List<ActivityZoneModel>;
+      _selectedAreaIds = List<String>.from(driver!.areas);
 
       nameCtrl.text = driver!.user.name;
       phoneCtrl.text = driver!.phone;
-      areaCtrl.text = driver!.area;
 
       for (var d in driver!.destinations) {
 
@@ -108,7 +122,7 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
 
       final updatedDriver = driver!.copyWith(
         phone: phoneCtrl.text,
-        area: areaCtrl.text,
+        areas: _selectedAreaIds,
       );
 
       await _driverService.updateDriverProfile(updatedDriver);
@@ -162,6 +176,126 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
 
   }
 
+  void _showAddAreaDialog() {
+    final remaining = _allZones
+        .where((z) => !_selectedAreaIds.contains(z.id))
+        .toList();
+
+    if (remaining.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("כל האזורים כבר נבחרו")),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (ctx) => Directionality(
+        textDirection: TextDirection.rtl,
+        child: AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          title: const Text(
+            "בחר אזור פעילות",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: remaining.length,
+              itemBuilder: (_, i) {
+                final zone = remaining[i];
+                return ListTile(
+                  title: Text(zone.name),
+                  onTap: () {
+                    setState(() {
+                      _selectedAreaIds.add(zone.id);
+                    });
+                    Navigator.pop(ctx);
+                  },
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text("ביטול"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAreasSection() {
+    return CardWidget(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+
+          const SectionTitleWidget(text: "אזורי פעילות"),
+
+          if (_selectedAreaIds.isEmpty)
+            const Padding(
+              padding: EdgeInsets.only(bottom: 8),
+              child: Text(
+                "לא נבחרו אזורים",
+                style: TextStyle(color: Colors.grey, fontSize: 14),
+              ),
+            )
+          else
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              children: _selectedAreaIds.map((id) {
+                final zone = _allZones.firstWhere(
+                  (z) => z.id == id,
+                  orElse: () => ActivityZoneModel(
+                    id: id,
+                    name: id,
+                    addressId: '',
+                    range: 0,
+                    organizationId: '',
+                  ),
+                );
+                return Chip(
+                  label: Text(zone.name),
+                  deleteIcon: const Icon(Icons.close, size: 16),
+                  onDeleted: () {
+                    setState(() {
+                      _selectedAreaIds.remove(id);
+                    });
+                  },
+                  backgroundColor: const Color(0xFFE8EDF6),
+                  labelStyle: const TextStyle(
+                    color: Color(0xFF2C5AA0),
+                    fontWeight: FontWeight.w500,
+                  ),
+                );
+              }).toList(),
+            ),
+
+          const SizedBox(height: 8),
+
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              onPressed: _showAddAreaDialog,
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text("הוסף אזור"),
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF2C5AA0),
+              ),
+            ),
+          ),
+
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -209,10 +343,9 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
                       DriverDetailsCard(
                         name: nameCtrl,
                         phone: phoneCtrl,
-                        area: areaCtrl,
                       ),
 
-                      const SizedBox(height: 15),
+                      _buildAreasSection(),
 
                       ...driver!.destinations.map((destination) {
 
