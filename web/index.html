@@ -45,59 +45,109 @@
 
 
 <body>
-  <!-- Redirect overlay for native app opening (hidden by default) -->
+  <!-- Redirect overlay for native app opening -->
   <div id="app-redirect" style="display:none; position:fixed; inset:0; background:#fff;
-    font-family:sans-serif; direction:rtl; text-align:center;
-    flex-direction:column; align-items:center; justify-content:center; z-index:9999;">
+    font-family:-apple-system,BlinkMacSystemFont,sans-serif; direction:rtl; text-align:center;
+    flex-direction:column; align-items:center; justify-content:center; z-index:9999; padding:32px;">
+
     <img src="icons/Icon-192.png" style="width:80px;border-radius:18px;margin-bottom:20px;" />
-    <h2 style="margin:0 0 8px; font-size:22px; color:#1a1a1a;">Collecta</h2>
-    <p style="color:#555; margin:0 0 28px; font-size:15px;">פתח באפליקציה לחוויה מלאה</p>
+    <h2 id="redirect-title" style="margin:0 0 8px; font-size:22px; color:#1a1a1a;">Collecta</h2>
+    <p id="redirect-subtitle" style="color:#555; margin:0 0 28px; font-size:15px; line-height:1.5;"></p>
+
+    <!-- Normal "Open in App" button (for Safari / WhatsApp / Android) -->
     <a id="open-app-btn" href="#"
-      style="background:#1a73e8; color:#fff; padding:14px 36px; border-radius:25px;
+      style="display:none; background:#1a73e8; color:#fff; padding:14px 36px; border-radius:25px;
         text-decoration:none; font-size:16px; font-weight:600; margin-bottom:16px;">
       פתח באפליקציה
     </a>
-    <br/>
+
+    <!-- Gmail on iOS: instructions to open in Safari -->
+    <div id="safari-instructions" style="display:none; text-align:right; direction:rtl;">
+      <p style="font-size:15px; color:#333; margin:0 0 16px;">
+        Gmail חוסמת פתיחת אפליקציות ישירות.<br/>
+        כדי לפתוח את האפליקציה:
+      </p>
+      <ol style="text-align:right; font-size:15px; color:#333; margin:0 0 24px; padding-right:20px; line-height:2;">
+        <li>לחצי על <strong>⋯</strong> (שלוש נקודות) למעלה בדפדפן</li>
+        <li>בחרי <strong>"פתח ב-Safari"</strong></li>
+        <li>ב-Safari יופיע חלון — לחצי <strong>"פתח"</strong></li>
+      </ol>
+      <button onclick="copyLink()"
+        style="background:#34a853; color:#fff; border:none; padding:12px 28px;
+          border-radius:20px; font-size:15px; cursor:pointer; margin-bottom:10px; width:100%;">
+        העתק קישור לדפדפן
+      </button>
+      <p id="copy-confirm" style="color:#34a853; font-size:13px; display:none;">הקישור הועתק!</p>
+    </div>
+
     <button onclick="continueInBrowser()"
-      style="background:none; border:none; color:#888; font-size:14px;
-        cursor:pointer; margin-top:8px; text-decoration:underline;">
+      style="background:none; border:none; color:#aaa; font-size:13px;
+        cursor:pointer; margin-top:12px; text-decoration:underline;">
       המשך בדפדפן
     </button>
   </div>
 
   <script>
     (function() {
-      var params = new URLSearchParams(window.location.search);
-      var orgId = params.get('orgId');
-      var isOnMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      var params   = new URLSearchParams(window.location.search);
+      var orgId    = params.get('orgId');
+      var ua       = navigator.userAgent;
+      var isIOS    = /iPhone|iPad|iPod/i.test(ua);
+      var isAndroid = /Android/i.test(ua);
+      var isMobile = isIOS || isAndroid;
 
-      if (!orgId || !isOnMobile) return; // desktop or no orgId — load Flutter normally
+      // In-app browser detection
+      var isGmail     = /GSA\//.test(ua);                         // Gmail iOS
+      var isInAppBrowser = isGmail
+                        || /FBAN|FBAV/.test(ua)                  // Facebook
+                        || (isIOS && /.*AppleWebKit(?!.*Safari)/.test(ua) && !/Chrome/.test(ua)); // generic WKWebView
 
-      var deepLink = 'collecta://start?orgId=' + encodeURIComponent(orgId);
-      var redirectEl = document.getElementById('app-redirect');
-      var openBtn = document.getElementById('open-app-btn');
+      if (!orgId || !isMobile) return; // desktop or no orgId — load Flutter normally
 
-      openBtn.href = deepLink;
-      redirectEl.style.display = 'flex';
+      var pageUrl  = window.location.href;
+      var deepLink = 'collecta://start?orgId=' + orgId;
+      var el       = document.getElementById('app-redirect');
 
-      // Auto-attempt open (works on Android and some in-app browsers)
-      var iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
-      iframe.src = deepLink;
-      document.body.appendChild(iframe);
+      el.style.display = 'flex';
+      window._deepLink = deepLink;
+      window._pageUrl  = pageUrl;
 
-      // Also try direct navigation after short delay (helps Android)
-      var timer = setTimeout(function() {
-        window.location.href = deepLink;
-      }, 300);
+      if (isIOS && isInAppBrowser) {
+        // Can't open custom URL schemes from Gmail/Facebook WebViews on iOS
+        document.getElementById('redirect-subtitle').textContent =
+          'כדי לפתוח את האפליקציה עקבי אחרי ההוראות:';
+        document.getElementById('safari-instructions').style.display = 'block';
+      } else {
+        // Safari / Android / WhatsApp — direct deep link works
+        document.getElementById('redirect-subtitle').textContent =
+          'לחצי לפתיחת האפליקציה';
+        var btn = document.getElementById('open-app-btn');
+        btn.href = deepLink;
+        btn.style.display = 'inline-block';
 
-      // If after 1.8s the page is still visible, the app didn't open
-      // Show the overlay with the "Open in App" button (already visible)
-      // so the user can tap it manually (required on iOS with in-app browsers)
-      setTimeout(function() {
-        clearTimeout(timer);
-      }, 1800);
+        if (isAndroid) {
+          // On Android, also try auto-open after short delay
+          setTimeout(function() {
+            window.location.href = deepLink;
+          }, 400);
+        }
+      }
     })();
+
+    function copyLink() {
+      navigator.clipboard.writeText(window._pageUrl).then(function() {
+        document.getElementById('copy-confirm').style.display = 'block';
+      }).catch(function() {
+        // Fallback for older browsers
+        var ta = document.createElement('textarea');
+        ta.value = window._pageUrl;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        document.getElementById('copy-confirm').style.display = 'block';
+      });
+    }
 
     function continueInBrowser() {
       document.getElementById('app-redirect').style.display = 'none';
@@ -111,14 +161,13 @@
     }
   </script>
 
-  <!-- Load Flutter only if NOT mobile with orgId (handled above), otherwise loaded by loadFlutter() -->
+  <!-- Load Flutter only if NOT mobile with orgId -->
   <script>
     (function() {
-      var params = new URLSearchParams(window.location.search);
-      var orgId = params.get('orgId');
-      var isOnMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-      if (!orgId || !isOnMobile) {
-        // Desktop or no orgId — load Flutter directly
+      var params    = new URLSearchParams(window.location.search);
+      var orgId     = params.get('orgId');
+      var isMobile  = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      if (!orgId || !isMobile) {
         var s = document.createElement('script');
         s.src = 'flutter_bootstrap.js';
         document.body.appendChild(s);
