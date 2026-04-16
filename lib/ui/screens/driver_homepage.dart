@@ -404,6 +404,8 @@ class _AreaSelectionDialogState extends State<_AreaSelectionDialog> {
   final List<String> selectedIds = [];
   bool isSaving = false;
 
+  final GlobalKey _addBtnKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
@@ -420,8 +422,43 @@ class _AreaSelectionDialogState extends State<_AreaSelectionDialog> {
     }
   }
 
+  void _showDropdown() {
+    final remaining =
+        (zones ?? []).where((z) => !selectedIds.contains(z.id)).toList();
+    if (remaining.isEmpty) return;
+
+    final renderBox =
+        _addBtnKey.currentContext!.findRenderObject() as RenderBox;
+    final overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+
+    final position = RelativeRect.fromRect(
+      Rect.fromPoints(
+        renderBox.localToGlobal(Offset.zero, ancestor: overlay),
+        renderBox.localToGlobal(
+            renderBox.size.bottomRight(Offset.zero),
+            ancestor: overlay),
+      ),
+      Offset.zero & overlay.size,
+    );
+
+    showMenu<String>(
+      context: context,
+      position: position,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      items: remaining
+          .map((z) => PopupMenuItem<String>(value: z.id, child: Text(z.name)))
+          .toList(),
+    ).then((id) {
+      if (id != null) setState(() => selectedIds.add(id));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final allSelected =
+        zones != null && zones!.isNotEmpty && selectedIds.length >= zones!.length;
+
     return Directionality(
       textDirection: TextDirection.rtl,
       child: AlertDialog(
@@ -444,36 +481,52 @@ class _AreaSelectionDialogState extends State<_AreaSelectionDialog> {
                     "בחר אזורי פעילות",
                     style: TextStyle(fontSize: 15, color: Colors.black87),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                   if (zones!.isEmpty)
                     const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 12),
+                      padding: EdgeInsets.symmetric(vertical: 8),
                       child: Text("לא נמצאו אזורים",
                           style: TextStyle(color: Colors.grey)),
                     )
-                  else
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(maxHeight: 260),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: zones!.map((zone) {
-                            return CheckboxListTile(
-                              value: selectedIds.contains(zone.id),
-                              title: Text(zone.name),
-                              onChanged: (val) {
-                                setState(() {
-                                  if (val == true) {
-                                    selectedIds.add(zone.id);
-                                  } else {
-                                    selectedIds.remove(zone.id);
-                                  }
-                                });
-                              },
-                            );
-                          }).toList(),
-                        ),
+                  else ...[
+                    if (selectedIds.isNotEmpty)
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 4,
+                        children: selectedIds.map((id) {
+                          final zone = zones!.firstWhere((z) => z.id == id,
+                              orElse: () => ActivityZoneModel(
+                                  id: id,
+                                  name: id,
+                                  addressId: '',
+                                  range: 0,
+                                  organizationId: ''));
+                          return Chip(
+                            label: Text(zone.name,
+                                style: const TextStyle(
+                                    color: Color(0xFF2C5AA0),
+                                    fontWeight: FontWeight.w500)),
+                            deleteIcon:
+                                const Icon(Icons.close, size: 15),
+                            onDeleted: () =>
+                                setState(() => selectedIds.remove(id)),
+                            backgroundColor: const Color(0xFFE8EDF6),
+                          );
+                        }).toList(),
+                      ),
+                    const SizedBox(height: 6),
+                    TextButton.icon(
+                      key: _addBtnKey,
+                      onPressed: allSelected ? null : _showDropdown,
+                      icon: const Icon(Icons.arrow_drop_down, size: 20),
+                      label: const Text("הוסף אזור"),
+                      style: TextButton.styleFrom(
+                        foregroundColor: allSelected
+                            ? Colors.grey
+                            : const Color(0xFF2C5AA0),
                       ),
                     ),
+                  ],
                 ],
               ),
         actionsAlignment: MainAxisAlignment.center,

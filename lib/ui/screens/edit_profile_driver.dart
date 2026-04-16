@@ -60,6 +60,8 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
 
   bool isSaving = false;
 
+  final GlobalKey _addAreaButtonKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
@@ -176,57 +178,45 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
 
   }
 
-  void _showAddAreaDialog() {
+  void _showAddAreaDropdown() {
     final remaining = _allZones
         .where((z) => !_selectedAreaIds.contains(z.id))
         .toList();
 
-    if (remaining.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("כל האזורים כבר נבחרו")),
-      );
-      return;
-    }
+    if (remaining.isEmpty) return;
 
-    showDialog(
-      context: context,
-      builder: (ctx) => Directionality(
-        textDirection: TextDirection.rtl,
-        child: AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-          title: const Text(
-            "בחר אזור פעילות",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: remaining.length,
-              itemBuilder: (_, i) {
-                final zone = remaining[i];
-                return ListTile(
-                  title: Text(zone.name),
-                  onTap: () {
-                    setState(() {
-                      _selectedAreaIds.add(zone.id);
-                    });
-                    Navigator.pop(ctx);
-                  },
-                );
-              },
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text("ביטול"),
-            ),
-          ],
-        ),
+    final renderBox =
+        _addAreaButtonKey.currentContext!.findRenderObject() as RenderBox;
+    final overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+
+    final position = RelativeRect.fromRect(
+      Rect.fromPoints(
+        renderBox.localToGlobal(Offset.zero, ancestor: overlay),
+        renderBox.localToGlobal(
+            renderBox.size.bottomRight(Offset.zero),
+            ancestor: overlay),
       ),
+      Offset.zero & overlay.size,
     );
+
+    showMenu<String>(
+      context: context,
+      position: position,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      items: remaining
+          .map((zone) => PopupMenuItem<String>(
+                value: zone.id,
+                child: Text(zone.name),
+              ))
+          .toList(),
+    ).then((selectedId) {
+      if (selectedId != null) {
+        setState(() {
+          _selectedAreaIds.add(selectedId);
+        });
+      }
+    });
   }
 
   Widget _buildAreasSection() {
@@ -279,17 +269,23 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
 
           const SizedBox(height: 8),
 
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton.icon(
-              onPressed: _showAddAreaDialog,
-              icon: const Icon(Icons.add, size: 18),
-              label: const Text("הוסף אזור"),
-              style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFF2C5AA0),
+          Builder(builder: (ctx) {
+            final allSelected = _allZones.isNotEmpty &&
+                _selectedAreaIds.length >= _allZones.length;
+            return Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                key: _addAreaButtonKey,
+                onPressed: allSelected ? null : _showAddAreaDropdown,
+                icon: const Icon(Icons.arrow_drop_down, size: 20),
+                label: const Text("הוסף אזור"),
+                style: TextButton.styleFrom(
+                  foregroundColor:
+                      allSelected ? Colors.grey : const Color(0xFF2C5AA0),
+                ),
               ),
-            ),
-          ),
+            );
+          }),
 
         ],
       ),
