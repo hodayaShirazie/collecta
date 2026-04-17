@@ -250,6 +250,7 @@ Future<List<dynamic>> getDriverDonationsById() async {
 
 Future<String> submitPickup({
   required String donationId,
+  required String donorId,
   required List<Map<String, dynamic>> products,
 }) async {
   final response = await http.post(
@@ -257,6 +258,7 @@ Future<String> submitPickup({
     headers: await headers(),
     body: json.encode({
       "donationId": donationId,
+      "donorId": donorId,
       "products": products,
     }),
   );
