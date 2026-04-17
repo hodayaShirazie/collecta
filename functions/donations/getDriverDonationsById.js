@@ -1,19 +1,19 @@
 // functions/donations/getDriverDonations.js
 const admin = require("firebase-admin");
 const corsHandler = require("../utils/cors");
-const verifyFirebaseToken = require("../utils/verifyToken");
+const resolveUid = require("../utils/resolveUid");
 
 const db = admin.firestore();
 
 module.exports = async (req, res) => {
   corsHandler(req, res, async () => {
     try {
-      const firebaseUser = await verifyFirebaseToken(req, res);
-      if (!firebaseUser) return;
+      const uid = await resolveUid(req, res);
+      if (!uid) return;
 
       const snapshot = await db
         .collection("donation")
-        .where("driver_id", "==", firebaseUser.uid)
+        .where("driver_id", "==", uid)
         .where("status", "==", "pending")
         .orderBy("created_at", "desc")
         .get();
