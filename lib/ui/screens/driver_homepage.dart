@@ -154,8 +154,13 @@ const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
 
 class DriverHomepage extends StatefulWidget {
   final DriverProfile? driver; // for admin view
+  final bool isAdminImpersonating;
 
-  const DriverHomepage({super.key, this.driver});
+  const DriverHomepage({
+    super.key,
+    this.driver,
+    this.isAdminImpersonating = false,
+  });
 
   static bool _pendingMissingFieldsCheck = false;
 
@@ -307,9 +312,43 @@ class _DriverHomepageState extends State<DriverHomepage> {
                   const SizedBox(height: HomepageTheme.topPadding),
                   Align(
                     alignment: Alignment.topRight,
-                    child: LogoutButton(parentContext: context),
+                    child: widget.isAdminImpersonating
+                        ? IconButton(
+                            icon: const Icon(Icons.arrow_back, color: Colors.white),
+                            tooltip: "חזרה לניהול",
+                            onPressed: () => Navigator.pop(context),
+                          )
+                        : LogoutButton(parentContext: context),
                   ),
-                  const SizedBox(height: 50),
+                  if (widget.isAdminImpersonating) ...[
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.shade700,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.admin_panel_settings, color: Colors.white, size: 18),
+                          const SizedBox(width: 8),
+                          Flexible(
+                            child: Text(
+                              'מצב מנהל — צופה בנהג: ${driver.user.name}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 16),
                   Text(
                     'היי, ${driver.user.name}',
                     style: HomepageTheme.welcomeTextStyle,

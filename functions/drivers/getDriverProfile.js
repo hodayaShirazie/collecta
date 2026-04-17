@@ -1,17 +1,15 @@
 const admin = require("firebase-admin");
 const corsHandler = require("../utils/cors");
-const verifyFirebaseToken = require("../utils/verifyToken");
+const resolveUid = require("../utils/resolveUid");
 
 const db = admin.firestore();
 
 module.exports = async (req, res) => {
   corsHandler(req, res, async () => {
-    const firebaseUser = await verifyFirebaseToken(req, res);
-    if (!firebaseUser) return;
+    const uid = await resolveUid(req, res);
+    if (!uid) return;
 
     try {
-
-      const uid = firebaseUser.uid;
 
       /// 1️⃣ user
       const userSnap = await db.collection("user").doc(uid).get();

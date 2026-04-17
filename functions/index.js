@@ -187,3 +187,7 @@ exports.updateActivityZone = functions.https.onRequest(
 exports.getActivityZones = functions.https.onRequest(
   require("./activityZones/getActivityZones")
 );
+
+exports.addDriverByAdmin = functions.https.onRequest(
+  require("./drivers/addDriverByAdmin")
+);
