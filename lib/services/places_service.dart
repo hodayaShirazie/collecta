@@ -12,5 +12,9 @@ class PlacesService {
   Future<LatLngModel> getPlaceDetails(String placeId) {
     return _repo.getDetails(placeId);
   }
+
+  Future<LatLngModel> geocodeByText(String address) {
+    return _repo.geocodeByText(address);
+  }
 }
 

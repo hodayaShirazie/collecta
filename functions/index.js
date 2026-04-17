@@ -191,3 +191,9 @@ exports.getActivityZones = functions.https.onRequest(
 exports.addDriverByAdmin = functions.https.onRequest(
   require("./drivers/addDriverByAdmin")
 );
+
+const geocodeAddress = require("./routes/geocodeAddress").geocodeAddress;
+
+exports.geocodeAddress = functions.https.onRequest(
+  (req, res) => geocodeAddress(req, res)
+);

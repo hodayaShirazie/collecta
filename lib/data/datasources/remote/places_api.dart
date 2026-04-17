@@ -22,16 +22,31 @@ class PlacesApi extends ApiSource {
     }
 
     Future<Map<String, dynamic>> placeDetails(String placeId) async {
-        // final headers = await AuthHeaders.build();
-
         final response = await http.get(
             Uri.parse('${ApiConfig.baseUrl}/placeDetails?placeId=$placeId'),
-            // headers: headers,
             headers: await headers(),
         );
 
         if (response.statusCode != 200) {
             throw Exception('Failed to fetch details');
+        }
+
+        return json.decode(response.body);
+    }
+
+    Future<Map<String, dynamic>> geocodeAddress(String address) async {
+        final encoded = Uri.encodeComponent(address);
+        final response = await http.get(
+            Uri.parse('${ApiConfig.baseUrl}/geocodeAddress?address=$encoded'),
+            headers: await headers(),
+        );
+
+        if (response.statusCode == 404) {
+            throw Exception('Address not found');
+        }
+
+        if (response.statusCode != 200) {
+            throw Exception('Failed to geocode address');
         }
 
         return json.decode(response.body);

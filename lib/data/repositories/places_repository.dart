@@ -16,5 +16,10 @@ class PlacesRepository {
     final data = await _api.placeDetails(placeId);
     return LatLngModel.fromJson(data);
   }
+
+  Future<LatLngModel> geocodeByText(String address) async {
+    final data = await _api.geocodeAddress(address);
+    return LatLngModel.fromJson(data);
+  }
 }
 
