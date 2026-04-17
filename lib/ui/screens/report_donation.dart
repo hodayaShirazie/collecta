@@ -208,7 +208,8 @@ class _ReportDonationState extends State<ReportDonation> {
       body: LayoutWrapper(
         child: Container(
           decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
-          child: Padding(
+          child: SingleChildScrollView(
+            child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25),
             child: Column(
               children: [
@@ -265,6 +266,7 @@ class _ReportDonationState extends State<ReportDonation> {
 
               ],
             ),
+          ),
           ),
         ),
       ),

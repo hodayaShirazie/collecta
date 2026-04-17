@@ -15,14 +15,29 @@ module.exports = async (req, res) => {
         return res.status(400).send({ error: "organizationId required" });
       }
 
-      const zonesSnap = await db
-        .collection("activityZone")
-        .where("organizationId", "==", organizationId)
-        .get();
+      // Fetch the organization document to get its activityZoneIds array
+      const orgDoc = await db.collection("organization").doc(organizationId).get();
+      if (!orgDoc.exists) {
+        return res.status(404).send({ error: "Organization not found" });
+      }
+
+      const activityZoneIds = orgDoc.data().activityZoneIds || [];
+      if (activityZoneIds.length === 0) {
+        return res.status(200).send([]);
+      }
+
+      // Fetch all activity zone documents by ID in parallel
+      const zoneDocs = await Promise.all(
+        activityZoneIds.map((zoneId) =>
+          db.collection("activityZone").doc(zoneId).get()
+        )
+      );
+
+      const existingZones = zoneDocs.filter((doc) => doc.exists);
 
       // Collect unique addressIds to fetch in batch
       const addressIds = [
-        ...new Set(zonesSnap.docs.map((doc) => doc.data().addressId)),
+        ...new Set(existingZones.map((doc) => doc.data().addressId)),
       ];
 
       // Fetch all addresses in parallel
@@ -36,14 +51,13 @@ module.exports = async (req, res) => {
         })
       );
 
-      const result = zonesSnap.docs.map((doc) => {
+      const result = existingZones.map((doc) => {
         const data = doc.data();
         return {
           id: doc.id,
           name: data.name,
           addressId: data.addressId,
           range: data.range,
-          organizationId: data.organizationId,
           address: addressMap[data.addressId] || null,
         };
       });
