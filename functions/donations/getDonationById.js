@@ -28,37 +28,40 @@ module.exports = async (req, res) => {
 
       const normalize = (ts) => ts?.toDate ? ts.toDate().toISOString() : ts;
 
-      // 🔹 שלוף כתובת מלאה במקום רק ID
-      let addressData = null;
-      if (donationData.businessAddress) {
-        const addressSnap = await db.collection("address").doc(donationData.businessAddress).get();
-        if (addressSnap.exists) addressData = { id: addressSnap.id, ...addressSnap.data() };
-      }
+      // שלוף כתובת + כל המוצרים במקביל
+      const [addressSnap, ...productSnaps] = await Promise.all([
+        donationData.businessAddress
+          ? db.collection("address").doc(donationData.businessAddress).get()
+          : Promise.resolve(null),
+        ...(donationData.products || []).map(id =>
+          db.collection("product").doc(id).get()
+        )
+      ]);
 
-      // 🔹 שלוף את כל המוצרים עם סוג המוצר מלא
-      let productsData = [];
-      if (donationData.products && donationData.products.length > 0) {
-        for (let productId of donationData.products) {
-          const prodSnap = await db.collection("product").doc(productId).get();
-          if (!prodSnap.exists) continue;
+      const addressData = addressSnap && addressSnap.exists
+        ? { id: addressSnap.id, ...addressSnap.data() }
+        : null;
 
-          const prod = prodSnap.data();
+      // שלוף product types של כל המוצרים במקביל
+      const productsData = await Promise.all(
+        productSnaps
+          .filter(snap => snap.exists)
+          .map(async (prodSnap) => {
+            const prod = prodSnap.data();
+            const typeSnap = prod.productType
+              ? await db.collection("productType").doc(prod.productType).get()
+              : null;
+            const productTypeData = typeSnap && typeSnap.exists
+              ? { id: typeSnap.id, ...typeSnap.data() }
+              : null;
 
-          // סוג מוצר מלא
-          let productTypeData = null;
-          if (prod.productType) {
-            const typeSnap = await db.collection("productType").doc(prod.productType).get();
-            if (typeSnap.exists) productTypeData = { id: typeSnap.id, ...typeSnap.data() };
-          }
-
-          productsData.push({
-            id: prodSnap.id,
-            quantity: prod.quantity,
-            type: productTypeData,  // 🔹 כאן השתנה מ-ID לאובייקט מלא
-            productTypeData,        // אפשר להשאיר או למחוק, זה אותו הדבר
-          });
-        }
-      }
+            return {
+              id: prodSnap.id,
+              quantity: prod.quantity,
+              type: productTypeData,
+            };
+          })
+      );
 
       // 🔹 החזר JSON מותאם למודל Dart
       return res.status(200).send({
