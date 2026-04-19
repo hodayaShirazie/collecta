@@ -300,10 +300,8 @@ import '../theme/report_donation_theme.dart';
 import '../widgets/layout_wrapper.dart';
 import '../widgets/loading_indicator.dart';
 import '../widgets/custom_popup_dialog.dart';
-import '../../data/models/donation_model.dart'; 
-import '../../data/models/donor_model.dart';
+import '../../data/models/donation_model.dart';
 import '../../services/donation_service.dart';
-import '../../services/donor_service.dart';
 import '../../data/models/product_model.dart';
 
 class DriverPickupPage extends StatefulWidget {
@@ -316,7 +314,6 @@ class DriverPickupPage extends StatefulWidget {
 
 class _DriverPickupPageState extends State<DriverPickupPage> {
   final DonationService _donationService = DonationService();
-  final DonorService _donorService = DonorService();
   
   final businessNameController = TextEditingController();
   final businessPhoneController = TextEditingController();
@@ -354,14 +351,12 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
       
       if (results.isNotEmpty) {
         final currentDonation = results.firstWhere((d) => d.id == widget.donationId);
-        final DonorProfile donorProfile = await _donorService.getDonorProfileById(currentDonation.donorId);
-
         setState(() {
           donation = currentDonation;
-          businessNameController.text = donorProfile.businessName;
-          businessPhoneController.text = donorProfile.businessPhone;
-          businessAddressController.text = donorProfile.businessAddress.name;
-          crnController.text = donorProfile.crn;
+          businessNameController.text = currentDonation.businessName;
+          businessPhoneController.text = currentDonation.businessPhone;
+          businessAddressController.text = currentDonation.businessAddress.name;
+          crnController.text = currentDonation.crn;
 
           for (var item in donation!.products) {
             collectedQuantities[item.id] = item.quantity;
@@ -416,6 +411,7 @@ Future<void> _submitPickup() async {
 
     await _donationService.submitPickup(
       donationId: widget.donationId,
+      donorId: donation!.donorId,
       products: productsToUpdate,
     );
 

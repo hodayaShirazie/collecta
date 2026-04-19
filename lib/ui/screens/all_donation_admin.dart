@@ -139,7 +139,12 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
     try {
       await _service.cancelDonation(donationId);
 
-      await _loadDonations();
+      setState(() {
+        final index = donations.indexWhere((d) => d.id == donationId);
+        if (index != -1) {
+          donations[index] = donations[index].copyWith(status: 'cancelled');
+        }
+      });
 
       if (!mounted) return;
 

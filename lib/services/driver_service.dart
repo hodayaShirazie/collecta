@@ -4,16 +4,37 @@ import '../data/models/driver_model.dart';
 class DriverService {
   final DriverRepository _repo = DriverRepository();
 
+  // Cache: פרופיל נהג
+  static DriverProfile? _cachedProfile;
+  static DateTime? _profileCacheTime;
+  static const _profileTTL = Duration(minutes: 5);
+
+  static void invalidateProfileCache() {
+    _cachedProfile = null;
+    _profileCacheTime = null;
+  }
+
   Future<List<DriverProfile>> fetchDriversByOrganization(String organizationId) {
     return _repo.getDriversByOrganization(organizationId);
   }
 
-  Future<DriverProfile> getMyDriverProfile() {
-    return _repo.getDriverProfile();
+  Future<DriverProfile> getMyDriverProfile() async {
+    final now = DateTime.now();
+    if (_cachedProfile != null &&
+        _profileCacheTime != null &&
+        now.difference(_profileCacheTime!) < _profileTTL) {
+      return _cachedProfile!;
+    }
+    final result = await _repo.getDriverProfile();
+    _cachedProfile = result;
+    _profileCacheTime = now;
+    return result;
   }
 
-  Future<String> updateDriverProfile(DriverProfile driver) {
-    return _repo.updateDriverProfile(driver);
+  Future<String> updateDriverProfile(DriverProfile driver) async {
+    final result = await _repo.updateDriverProfile(driver);
+    invalidateProfileCache();
+    return result;
   }
 
   Future<String> addDriverByAdmin({

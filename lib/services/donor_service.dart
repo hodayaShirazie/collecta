@@ -5,12 +5,33 @@ import '../data/models/donor_model.dart';
 class DonorService {
   final DonorRepository _repo = DonorRepository();
 
-  Future<DonorProfile> getMyDonorProfile() {
-    return _repo.getDonorProfile();
+  // Cache: פרופיל תורם
+  static DonorProfile? _cachedProfile;
+  static DateTime? _profileCacheTime;
+  static const _profileTTL = Duration(minutes: 5);
+
+  static void invalidateProfileCache() {
+    _cachedProfile = null;
+    _profileCacheTime = null;
   }
 
-    Future<String> updateDonorProfile(DonorProfile donor) {
-    return _repo.updateDonorProfile(donor);
+  Future<DonorProfile> getMyDonorProfile() async {
+    final now = DateTime.now();
+    if (_cachedProfile != null &&
+        _profileCacheTime != null &&
+        now.difference(_profileCacheTime!) < _profileTTL) {
+      return _cachedProfile!;
+    }
+    final result = await _repo.getDonorProfile();
+    _cachedProfile = result;
+    _profileCacheTime = now;
+    return result;
+  }
+
+  Future<String> updateDonorProfile(DonorProfile donor) async {
+    final result = await _repo.updateDonorProfile(donor);
+    invalidateProfileCache();
+    return result;
   }
 
   Future<DonorProfile> getDonorProfileById(String donorId) {

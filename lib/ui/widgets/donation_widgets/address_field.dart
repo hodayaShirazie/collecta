@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../services/places_service.dart';
 import '../../../data/models/place_prediction.dart';
+import '../../../data/models/lat_lng_model.dart';
 import '../../theme/report_donation_theme.dart';
 
 class AddressFieldWidget extends StatefulWidget {
@@ -24,6 +25,8 @@ class AddressFieldWidget extends StatefulWidget {
 
 class _AddressFieldWidgetState extends State<AddressFieldWidget> {
   bool _isConfirmed = false;
+  bool _isGeocoding = false;
+  String? _geocodeError;
 
   @override
   void initState() {
@@ -39,22 +42,56 @@ class _AddressFieldWidgetState extends State<AddressFieldWidget> {
         textDirection: TextDirection.rtl,
         child: Autocomplete<PlacePrediction>(
           optionsBuilder: (TextEditingValue value) async {
-            if (value.text.isEmpty) return const [];
+            if (value.text.length < 3) return const [];
 
             final service = PlacesService();
-            return await service.autocomplete(value.text);
+            final results = await service.autocomplete(value.text);
+
+            // אם גוגל לא מצא כלום — מציעים למשתמש להשתמש בטקסט שהוא הקליד
+            if (results.isEmpty) {
+              return [
+                PlacePrediction(
+                  description: value.text.trim(),
+                  placeId: '',
+                  isManual: true,
+                ),
+              ];
+            }
+
+            return results;
           },
 
           displayStringForOption: (option) => option.description,
 
           onSelected: (selection) async {
             widget.controller.text = selection.description;
-            setState(() => _isConfirmed = true);
+            setState(() {
+              _isGeocoding = true;
+              _geocodeError = null;
+              _isConfirmed = false;
+            });
 
-            final service = PlacesService();
-            final coords = await service.getPlaceDetails(selection.placeId);
+            try {
+              final service = PlacesService();
+              final LatLngModel coords;
 
-            widget.onLocationSelected(coords.lat, coords.lng);
+              if (selection.isManual) {
+                coords = await service.geocodeByText(selection.description);
+              } else {
+                coords = await service.getPlaceDetails(selection.placeId);
+              }
+
+              setState(() {
+                _isConfirmed = true;
+                _isGeocoding = false;
+              });
+              widget.onLocationSelected(coords.lat, coords.lng);
+            } catch (_) {
+              setState(() {
+                _isGeocoding = false;
+                _geocodeError = "לא ניתן לאמת את הכתובת, נסה לנסח מחדש";
+              });
+            }
           },
 
           fieldViewBuilder: (context, fieldController, focusNode, onEditingComplete) {
@@ -66,15 +103,28 @@ class _AddressFieldWidgetState extends State<AddressFieldWidget> {
               focusNode: focusNode,
               validator: (value) {
                 if (value == null || value.isEmpty) return "שדה חובה";
-                if (!_isConfirmed) return "יש לבחור כתובת מהרשימה";
+                if (_isGeocoding) return "ממתין לאימות כתובת...";
+                if (_geocodeError != null) return _geocodeError;
+                if (!_isConfirmed) return "יש לבחור כתובת מהרשימה או ללחוץ על האפשרות המוצעת";
                 return null;
               },
-              decoration: ReportDonationTheme.inputDecoration("כתובת העסק"),
+              decoration: ReportDonationTheme.inputDecoration("כתובת העסק").copyWith(
+                errorMaxLines: 2,
+                suffixIcon: _isGeocoding
+                    ? const Padding(
+                        padding: EdgeInsets.all(12),
+                        child: SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
+                      )
+                    : null,
+              ),
               textAlign: TextAlign.right,
               onChanged: (value) {
                 widget.controller.text = value;
-                if (_isConfirmed) {
-                  setState(() => _isConfirmed = false);
+                if (_isConfirmed || _geocodeError != null) {
+                  setState(() {
+                    _isConfirmed = false;
+                    _geocodeError = null;
+                  });
                   widget.onLocationCleared?.call();
                 }
               },

@@ -34,39 +34,19 @@ class _AdminHomepageState extends State<AdminHomepage> {
 
 
   Future<void> _loadStats() async {
+    final orgId = OrgManager.orgId ?? '';
     try {
-      // 1) total donations (all, regardless of status)
-      final total =
-          await _donationService.getDonationsCount(OrgManager.orgId ?? '');
-      print("TOTAL donations: $total");
+      final results = await Future.wait([
+        _donationService.getDonationsCount(orgId),
+        _donationService.getDonationsConfirmedCount(orgId),
+        _donationService.getDonationsPendingCount(orgId),
+        _donationService.getDonationsCanceledCount(orgId),
+        _donationService.getDonationsCountByMonth(organizationId: orgId, monthOffset: 0),
+        _donationService.getDonationsCountByMonth(organizationId: orgId, monthOffset: 1),
+      ]);
 
-      // 2) collected donations
-      final collectedCount =
-          await _donationService.getDonationsConfirmedCount(OrgManager.orgId ?? '');
-      print("COLLECTED donations: $collectedCount");
-
-      // 3) pending
-      final pendingCount =
-          await _donationService.getDonationsPendingCount(OrgManager.orgId ?? '');
-      print("PENDING donations: $pendingCount");
-
-      // 4) canceled
-      final canceledCount =
-          await _donationService.getDonationsCanceledCount(OrgManager.orgId ?? '');
-      print("CANCELED donations: $canceledCount");
-
-      // 5) growth calculation 
-      final currentMonthTotal =
-          await _donationService.getDonationsCountByMonth(
-            organizationId: OrgManager.orgId ?? '',
-            monthOffset: 0,
-          );
-
-      final lastMonthTotal =
-          await _donationService.getDonationsCountByMonth(
-            organizationId: OrgManager.orgId ?? '',
-            monthOffset: 1,
-          );
+      final currentMonthTotal = results[4];
+      final lastMonthTotal = results[5];
 
       double growthCalc;
       if (lastMonthTotal == 0 && currentMonthTotal == 0) {
@@ -78,10 +58,10 @@ class _AdminHomepageState extends State<AdminHomepage> {
       }
 
       setState(() {
-        totalDonations = total;
-        collected = collectedCount;
-        pending = pendingCount;
-        canceled = canceledCount;
+        totalDonations = results[0];
+        collected = results[1];
+        pending = results[2];
+        canceled = results[3];
         growth = growthCalc.round();
         loading = false;
       });

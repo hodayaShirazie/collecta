@@ -75,14 +75,18 @@ module.exports = async (req, res) => {
                 return res.status(400).send({ error: "Invalid input parameters" });
             }
 
+            const { donorId } = req.body;
+
             const batch = db.batch();
+
+            let totalCoins = 0;
 
             for (const item of products) {
                 const productRef = db.collection("product").doc(item.productId);
 
                 if (item.isPickedUp === false) {
                     // --- לוגיקת מחיקה במידה ובוטל ---
-                    
+
                     // 1. מחיקה מטבלת product
                     batch.delete(productRef);
 
@@ -94,7 +98,7 @@ module.exports = async (req, res) => {
                     }
                 } else {
                     // --- לוגיקת עדכון רגילה במידה ואושר ---
-                    
+
                     batch.update(productRef, {
                         quantity: item.collectedQuantity
                     });
@@ -105,6 +109,9 @@ module.exports = async (req, res) => {
                             description: item.newDescription
                         }, { merge: true });
                     }
+
+                    // 5 מטבעות לכל יחידה שאושרה
+                    totalCoins += (item.collectedQuantity || 0) * 5;
                 }
             }
 
@@ -114,6 +121,14 @@ module.exports = async (req, res) => {
                 status: "collected",
                 collected_at: admin.firestore.FieldValue.serverTimestamp()
             });
+
+            // עדכון מטבעות אצל התורם
+            if (donorId && totalCoins > 0) {
+                const donorRef = db.collection("donor").doc(donorId);
+                batch.update(donorRef, {
+                    coins: admin.firestore.FieldValue.increment(totalCoins)
+                });
+            }
 
             await batch.commit();
             return res.status(200).send({ status: "success" });
