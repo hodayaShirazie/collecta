@@ -58,6 +58,7 @@ module.exports = async (req, res) => {
           name: data.name,
           addressId: data.addressId,
           range: data.range,
+          organizationId: organizationId,
           address: addressMap[data.addressId] || null,
         };
       });

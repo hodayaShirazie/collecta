@@ -75,7 +75,7 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
 
       final results = await Future.wait([
         _driverService.getMyDriverProfile(),
-        _activityZoneService.getActivityZones(_kOrganizationId),
+        _activityZoneService.getActivityZones(_kOrganizationId).catchError((_) => <ActivityZoneModel>[]),
       ]);
 
       driver = results[0] as DriverProfile;
