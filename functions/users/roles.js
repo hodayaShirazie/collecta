@@ -5,14 +5,14 @@ const { createAdmin } = require("./utils");
 const admin = require("firebase-admin");
 const db = admin.firestore();
 
-async function createRoleObject(uid, role) {
+async function createRoleObject(uid, role, organizationId = "") {
 
   if (role === "admin"){
     await createAdmin(uid, role);
   }
 
   else if (role === "driver"){
-    await createDriver(uid, role);
+    await createDriver(uid, role, organizationId);
   }
 
   else if (role === "donor"){

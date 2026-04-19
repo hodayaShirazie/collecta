@@ -37,6 +37,8 @@ class DriverService {
     return result;
   }
 
+  /// Creates the driver account. The backend automatically creates 5 empty
+  /// destinations (one per weekday: ראשון–חמישי) linked to the new driver.
   Future<String> addDriverByAdmin({
     required String name,
     required String email,

@@ -20,11 +20,8 @@ module.exports = async (req, res) => {
         return res.status(400).send({ error: "Destination id required" });
       }
 
-      if (
-        !isValidString(id) ||
-        (name !== undefined && !isValidString(name)) ||
-        (addressId !== undefined && !isValidString(addressId))
-      ) {
+      // name and addressId are optional and may be empty strings
+      if (!isValidString(id)) {
         return res.status(400).send({ error: "Invalid input parameters" });
       }
 

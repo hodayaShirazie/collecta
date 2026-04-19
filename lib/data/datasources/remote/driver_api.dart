@@ -70,7 +70,7 @@ class DriverApi extends ApiSource {
             throw Exception(data['error']);
         }
 
-        return data['status'];
+        return data['status'] as String;
     }
 
     Future<List<Map<String, dynamic>>> getDriversByOrganization(String organizationId) async {

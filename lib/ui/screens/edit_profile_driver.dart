@@ -7,6 +7,8 @@ import '../../services/address_service.dart';
 import '../../services/activity_zone_service.dart';
 
 import '../../data/models/driver_model.dart';
+import '../../data/models/destination_model.dart';
+import '../../data/models/address_model.dart';
 import '../../data/models/lat_lng_model.dart';
 import '../../data/models/activity_zone_model.dart';
 
@@ -29,6 +31,15 @@ import '../../services/impersonation_manager.dart';
 
 const String _kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
 
+/// Weekdays in display order (Sunday → Thursday).
+const List<String> _kDayOrder = [
+  'ראשון',
+  'שני',
+  'שלישי',
+  'רביעי',
+  'חמישי',
+];
+
 class DriverEditProfileScreen extends StatefulWidget {
   const DriverEditProfileScreen({super.key});
 
@@ -50,11 +61,13 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
   List<ActivityZoneModel> _allZones = [];
   List<String> _selectedAreaIds = [];
 
+  /// Destinations sorted by day (ראשון first).
+  List<DestinationModel> _sortedDestinations = [];
+
   final nameCtrl = TextEditingController();
   final phoneCtrl = TextEditingController();
 
   final Map<String, TextEditingController> nameCtrls = {};
-  final Map<String, TextEditingController> dayCtrls = {};
   final Map<String, TextEditingController> addressCtrls = {};
 
   final Map<String, LatLngModel?> selectedLatLng = {};
@@ -85,14 +98,19 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
       nameCtrl.text = driver!.user.name;
       phoneCtrl.text = driver!.phone;
 
-      for (var d in driver!.destinations) {
+      // Sort destinations by weekday order
+      _sortedDestinations = List<DestinationModel>.from(driver!.destinations)
+        ..sort((a, b) {
+          final ai = _kDayOrder.indexOf(a.day);
+          final bi = _kDayOrder.indexOf(b.day);
+          // Unknown days go to the end
+          return (ai == -1 ? 999 : ai).compareTo(bi == -1 ? 999 : bi);
+        });
 
+      for (var d in _sortedDestinations) {
         nameCtrls[d.id] = TextEditingController(text: d.name);
-        dayCtrls[d.id] = TextEditingController(text: d.day);
         addressCtrls[d.id] = TextEditingController(text: d.address.name);
-
         selectedLatLng[d.id] = null;
-
       }
 
       setState(() {});
@@ -130,22 +148,47 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
 
       await _driverService.updateDriverProfile(updatedDriver);
 
-      for (var destination in driver!.destinations) {
+      for (var destination in _sortedDestinations) {
 
         final id = destination.id;
+        final newName = nameCtrls[id]!.text.trim();
+        final newAddressName = addressCtrls[id]!.text.trim();
+        final newLatLng = selectedLatLng[id];
 
-        final updatedAddress = destination.address.copyWith(
-          name: addressCtrls[id]!.text,
-          lat: selectedLatLng[id]?.lat ?? destination.address.lat,
-          lng: selectedLatLng[id]?.lng ?? destination.address.lng,
-        );
+        // User selected a location from autocomplete
+        final hasNewLocation = newLatLng != null;
 
-        await _addressService.updateAddress(updatedAddress);
+        AddressModel finalAddress = destination.address;
+
+        if (hasNewLocation) {
+          if (destination.address.id.isEmpty) {
+            // No address exists yet → create one
+            final newAddressId = await _addressService.createAddress(
+              name: newAddressName,
+              lat: newLatLng.lat,
+              lng: newLatLng.lng,
+            );
+            finalAddress = AddressModel(
+              id: newAddressId,
+              name: newAddressName,
+              lat: newLatLng.lat,
+              lng: newLatLng.lng,
+            );
+          } else {
+            // Address already exists → update it
+            final updatedAddress = destination.address.copyWith(
+              name: newAddressName,
+              lat: newLatLng.lat,
+              lng: newLatLng.lng,
+            );
+            await _addressService.updateAddress(updatedAddress);
+            finalAddress = updatedAddress;
+          }
+        }
 
         final updatedDestination = destination.copyWith(
-          name: nameCtrls[id]!.text,
-          day: dayCtrls[id]!.text,
-          address: updatedAddress,
+          name: newName,
+          address: finalAddress,
         );
 
         await _destinationService.updateDestination(updatedDestination);
@@ -164,8 +207,6 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
       );
 
       if (!mounted) return;
-      // When an admin is impersonating, go back to the driver homepage
-      // instead of navigating to the regular driver route.
       if (ImpersonationManager.instance.isImpersonating) {
         Navigator.pop(context);
       } else {
@@ -309,21 +350,16 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
     }
 
     return Scaffold(
-
-      body: LayoutWrapper(
-
-        child: Container(
-
-          decoration: const BoxDecoration(
-            gradient: HomepageTheme.pageGradient,
-          ),
-
-          child: Padding(
-
+      body: Container(
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: HomepageTheme.pageGradient,
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 25),
-
             child: Column(
-
+              mainAxisSize: MainAxisSize.min,
               children: [
 
                 const SizedBox(height: HomepageTheme.topPadding),
@@ -336,11 +372,9 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
                 const SizedBox(height: 35),
 
                 Form(
-
                   key: _formKey,
-
                   child: Column(
-
+                    mainAxisSize: MainAxisSize.min,
                     children: [
 
                       DriverDetailsCard(
@@ -350,23 +384,17 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
 
                       _buildAreasSection(),
 
-                      ...driver!.destinations.map((destination) {
-
+                      ..._sortedDestinations.map((destination) {
                         final id = destination.id;
-
                         return DestinationCard(
+                          dayLabel: destination.day,
                           name: nameCtrls[id]!,
-                          day: dayCtrls[id]!,
                           address: addressCtrls[id]!,
                           onLocationSelected: (lat, lng) {
-
-                            selectedLatLng[id] =
-                                LatLngModel(lat: lat, lng: lng);
-
+                            selectedLatLng[id] = LatLngModel(lat: lat, lng: lng);
                           },
                         );
-
-                      }).toList(),
+                      }),
 
                       const SizedBox(height: 30),
 
@@ -382,21 +410,14 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
                       const SizedBox(height: 40),
 
                     ],
-
                   ),
-
                 ),
 
               ],
-
             ),
-
           ),
-
         ),
-
       ),
-
     );
 
   }
