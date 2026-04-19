@@ -1,6 +1,7 @@
 // functions/drivers/updateDriverProfile.js
 const admin = require("firebase-admin");
 const corsHandler = require("../utils/cors");
+// const resolveUid = require("../utils/resolveUid");
 const verifyFirebaseToken = require("../utils/verifyToken");
 const { isValidString } = require("../utils/validate");
 

@@ -47,6 +47,32 @@ class DriverApi extends ApiSource {
         return data['status'];
     }
 
+    Future<String> addDriverByAdmin({
+        required String name,
+        required String email,
+        required String phone,
+        required String organizationId,
+    }) async {
+        final response = await http.post(
+            Uri.parse('${ApiConfig.baseUrl}/addDriverByAdmin'),
+            headers: await headers(),
+            body: json.encode({
+                'name': name,
+                'email': email,
+                'phone': phone,
+                'organizationId': organizationId,
+            }),
+        );
+
+        final data = json.decode(response.body);
+
+        if (response.statusCode != 200) {
+            throw Exception(data['error']);
+        }
+
+        return data['status'];
+    }
+
     Future<List<Map<String, dynamic>>> getDriversByOrganization(String organizationId) async {
         // final headers = await AuthHeaders.build();
         final url = '${ApiConfig.baseUrl}/getDriversByOrganization?organizationId=$organizationId';

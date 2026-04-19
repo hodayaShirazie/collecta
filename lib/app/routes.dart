@@ -17,8 +17,7 @@ import 'package:collecta/ui/screens/donor_profile_completion.dart';
 import 'package:collecta/data/models/donor_model.dart';
 import 'package:collecta/ui/screens/daily_route_driver.dart';
 import 'package:collecta/ui/screens/activity_zones_admin.dart';
-
-const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
+import 'package:collecta/services/org_manager.dart';
 
 
 class Routes {
@@ -55,7 +54,7 @@ class Routes {
     final donor = ModalRoute.of(context)!.settings.arguments as DonorProfile;
     return AuthGuard(child: DonorProfileCompletionScreen(donor: donor));    },    dailyRoutDriver: (context) => const AuthGuard(child: DailyRouteDriverPage()),
     activityZones: (context) => AuthGuard(
-          child: ActivityZonesAdmin(organizationId: kOrganizationId),
+          child: ActivityZonesAdmin(organizationId: OrgManager.orgId ?? ''),
         ),
   };
 

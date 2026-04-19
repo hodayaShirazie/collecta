@@ -31,7 +31,6 @@
 // //   response.send("Hello from Firebase!");
 // // });
 
-const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const { onRequest } = require("firebase-functions/v2/https");
 const { defineJsonSecret } = require("firebase-functions/params");
@@ -40,101 +39,99 @@ const config = defineJsonSecret("FUNCTIONS_CONFIG_EXPORT");
 
 admin.initializeApp();
 
-exports.getUsers = functions.https.onRequest(
+exports.getUsers = onRequest(
   require("./users/getUsers")
 );
 
-exports.getOrganizations = functions.https.onRequest(
+exports.getOrganizations = onRequest(
   require("./organizations/getOrganizations")
 );
 
-exports.syncUserWithRole = functions.https.onRequest(
+exports.syncUserWithRole = onRequest(
   require("./users/syncUserWithRole")
 );
 
-exports.getMyProfile = functions.https.onRequest(
+exports.getMyProfile = onRequest(
   require("./users/getMyProfile")
 );
 
-exports.getDonorProfile = functions.https.onRequest(
+exports.getDonorProfile = onRequest(
   require("./donors/getDonorProfile")
 );
 
-exports.getDriverProfile = functions.https.onRequest(
+exports.getDriverProfile = onRequest(
   require("./drivers/getDriverProfile")
 );
 
-exports.updateDonorProfile = functions.https.onRequest(
+exports.updateDonorProfile = onRequest(
   require("./donors/updateDonorProfile")
 );
 
-exports.updateDriverProfile = functions.https.onRequest(
+exports.updateDriverProfile = onRequest(
   require("./drivers/updateDriverProfile")
 );
 
-exports.updateAddress  = functions.https.onRequest(
+exports.updateAddress = onRequest(
   require("./address/updateAddress")
 );
 
-exports.updateDestination = functions.https.onRequest(
+exports.updateDestination = onRequest(
   require("./destinations/updateDestination")
 );
 
-exports.reportDonation = functions.https.onRequest(
+exports.reportDonation = onRequest(
   require("./donations/reportDonation")
 );
 
-exports.updateUserProfile = functions.https.onRequest(
+exports.updateUserProfile = onRequest(
   require("./users/updateUserProfile")
 );
 
-exports.createAddress = functions.https.onRequest(
+exports.createAddress = onRequest(
   require("./address/createAddress")
 );
 
-exports.createProductType = functions.https.onRequest(
+exports.createProductType = onRequest(
   require("./product/productType/createProductType")
 );
 
-exports.createProduct = functions.https.onRequest(
+exports.createProduct = onRequest(
   require("./product/createProduct")
 );
 
 exports.getMyDonations = onRequest(
   require("./donations/getMyDonations")
-);  
+);
 
 exports.getDonationById = onRequest(
   require("./donations/getDonationById")
-); 
+);
 
-exports.getAllDonationsByOrganization = functions.https.onRequest(
+exports.getAllDonationsByOrganization = onRequest(
   require("./donations/getAllDonationByOrganization")
 );
 
-exports.getDriversByOrganization = functions.https.onRequest(
+exports.getDriversByOrganization = onRequest(
   require("./drivers/getDriversByOrganization")
 );
 
-
-exports.getDonationsCount = functions.https.onRequest(
+exports.getDonationsCount = onRequest(
   require("./donations/stats/getDonationsCount")
 );
 
-exports.getDonationsPendingCount = functions.https.onRequest(
+exports.getDonationsPendingCount = onRequest(
   require("./donations/stats/getDonationsPendingCount")
 );
 
-exports.getDonationsCountByMonth = functions.https.onRequest(
+exports.getDonationsCountByMonth = onRequest(
   require("./donations/stats/getDonationsCountByMonth")
 );
 
-exports.getDonationsCanceledCount = functions.https.onRequest(
+exports.getDonationsCanceledCount = onRequest(
   require("./donations/stats/getDonationsCanceledCount")
-);  
+);
 
-
-exports.getDonationsConfirmedCount = functions.https.onRequest(
+exports.getDonationsConfirmedCount = onRequest(
   require("./donations/stats/getDonationsConfirmedCount")
 );
 
@@ -145,20 +142,18 @@ exports.placesAutocomplete = onRequest(
   (req, res) => placesAutocomplete(req, res)
 );
 
-
 const placeDetails = require("./routes/placeDetails");
-const e = require("cors");
 
 exports.placeDetails = onRequest(
   { secrets: [config] },
   (req, res) => placeDetails(req, res)
 );
 
-exports.updateDonation = functions.https.onRequest(
+exports.updateDonation = onRequest(
   require("./donations/updateDonation")
 );
 
-exports.cancelDonation = functions.https.onRequest(
+exports.cancelDonation = onRequest(
   require("./donations/cancelDonation")
 );
 
@@ -168,22 +163,32 @@ exports.getDriverDonationsById = onRequest(
   require("./donations/getDriverDonationsById")
 );
 
-exports.getDonorProfileById = functions.https.onRequest(
+exports.getDonorProfileById = onRequest(
   require("./donors/getDonorProfileById")
 );
 
-exports.submitPickup = functions.https.onRequest(
+exports.submitPickup = onRequest(
   require("./donations/submitPickup")
 );
 
-exports.createActivityZone = functions.https.onRequest(
+exports.createActivityZone = onRequest(
   require("./activityZones/createActivityZone")
 );
 
-exports.updateActivityZone = functions.https.onRequest(
+exports.updateActivityZone = onRequest(
   require("./activityZones/updateActivityZone")
 );
 
-exports.getActivityZones = functions.https.onRequest(
+exports.getActivityZones = onRequest(
   require("./activityZones/getActivityZones")
+);
+
+exports.addDriverByAdmin = onRequest(
+  require("./drivers/addDriverByAdmin")
+);
+
+const geocodeAddress = require("./routes/geocodeAddress").geocodeAddress;
+
+exports.geocodeAddress = onRequest(
+  (req, res) => geocodeAddress(req, res)
 );

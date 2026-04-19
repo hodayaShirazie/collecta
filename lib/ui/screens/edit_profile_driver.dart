@@ -25,6 +25,7 @@ import '../theme/report_donation_theme.dart';
 import '../widgets/custom_popup_dialog.dart';
 
 import 'package:collecta/app/routes.dart';
+import '../../services/impersonation_manager.dart';
 
 const String _kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
 
@@ -163,7 +164,13 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
       );
 
       if (!mounted) return;
-      Navigator.pushReplacementNamed(context, Routes.driver);
+      // When an admin is impersonating, go back to the driver homepage
+      // instead of navigating to the regular driver route.
+      if (ImpersonationManager.instance.isImpersonating) {
+        Navigator.pop(context);
+      } else {
+        Navigator.pushReplacementNamed(context, Routes.driver);
+      }
 
     } catch (e) {
 

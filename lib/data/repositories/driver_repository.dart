@@ -24,4 +24,18 @@ class DriverRepository {
     );
 
   }
+
+  Future<String> addDriverByAdmin({
+    required String name,
+    required String email,
+    required String phone,
+    required String organizationId,
+  }) {
+    return _source.addDriverByAdmin(
+      name: name,
+      email: email,
+      phone: phone,
+      organizationId: organizationId,
+    );
+  }
 }

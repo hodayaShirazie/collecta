@@ -95,9 +95,10 @@ class DonationRepository {
 
   Future<String> submitPickup({
     required String donationId,
+    required String donorId,
     required List<Map<String, dynamic>> products,
   }) {
-    return _source.submitPickup(donationId: donationId, products: products);
+    return _source.submitPickup(donationId: donationId, donorId: donorId, products: products);
   }
 
   

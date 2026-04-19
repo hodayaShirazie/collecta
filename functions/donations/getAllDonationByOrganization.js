@@ -27,51 +27,49 @@ module.exports = async (req, res) => {
         .orderBy("created_at", "desc")
         .get();
 
-      const donations = [];
-
-      for (const doc of snapshot.docs) {
+      const donations = await Promise.all(snapshot.docs.map(async (doc) => {
         const donationData = doc.data();
 
-        // JOIN ADDRESS
-        const addressDoc = await db
-          .collection("address")
-          .doc(donationData.businessAddress)
-          .get();
+        // JOIN ADDRESS + כל המוצרים במקביל
+        const [addressDoc, ...productDocs] = await Promise.all([
+          db.collection("address").doc(donationData.businessAddress).get(),
+          ...(donationData.products || []).map(id =>
+            db.collection("product").doc(id).get()
+          )
+        ]);
 
         const addressData = addressDoc.exists
           ? addressDoc.data()
           : { lat: 0, lng: 0, name: "לא ידוע" };
 
-        // JOIN PRODUCTS
-        const productsDetailed = [];
+        // JOIN PRODUCT TYPES במקביל
+        const productsDetailed = await Promise.all(
+          productDocs
+            .filter(productDoc => productDoc.exists)
+            .map(async (productDoc) => {
+              const productData = productDoc.data();
+              const productTypeDoc = await db
+                .collection("productType")
+                .doc(productData.productType)
+                .get();
 
-        for (const productId of donationData.products || []) {
-          const productDoc = await db.collection("product").doc(productId).get();
-          if (!productDoc.exists) continue;
+              const productTypeData = productTypeDoc.exists
+                ? productTypeDoc.data()
+                : { name: "לא ידוע", description: "" };
 
-          const productData = productDoc.data();
+              return {
+                id: productDoc.id,
+                quantity: productData.quantity,
+                type: {
+                  id: productData.productType,
+                  name: productTypeData.name,
+                  description: productTypeData.description || ""
+                }
+              };
+            })
+        );
 
-          const productTypeDoc = await db
-            .collection("productType")
-            .doc(productData.productType)
-            .get();
-
-          const productTypeData = productTypeDoc.exists
-            ? productTypeDoc.data()
-            : { name: "לא ידוע", description: "" };
-
-          productsDetailed.push({
-            id: productDoc.id,
-            quantity: productData.quantity,
-            type: {
-              id: productData.productType,
-              name: productTypeData.name,
-              description: productTypeData.description || ""
-            }
-          });
-        }
-
-        donations.push({
+        return {
           id: doc.id,
           status: donationData.status,
           receipt: donationData.receipt || donationData.recipe || "",
@@ -90,8 +88,8 @@ module.exports = async (req, res) => {
           },
           pickupTimes: donationData.pickupTimes || [],
           products: productsDetailed
-        });
-      }
+        };
+      }));
 
       return res.status(200).send(donations);
 

@@ -23,13 +23,22 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   StreamSubscription<Uri>? _linkSubscription;
 
+  // Prevents the cold-start link (already handled in main.dart) from
+  // triggering a navigation while the widget tree is still being built.
+  bool _readyForLinkNavigation = false;
+
   @override
   void initState() {
     super.initState();
-    // Listen for deep links while the app is already running (mobile only).
-    // Cold-start links are handled in main() before runApp.
     if (!kIsWeb) {
       _initLinkStream();
+      // Mark ready only after the first frame AND a short buffer,
+      // so any stream emission that duplicates the cold-start link is ignored.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Future.delayed(const Duration(milliseconds: 800), () {
+          if (mounted) _readyForLinkNavigation = true;
+        });
+      });
     }
   }
 
@@ -39,11 +48,15 @@ class _MyAppState extends State<MyApp> {
       final orgId = uri.queryParameters['orgId'];
       if (orgId != null && orgId.isNotEmpty) {
         await OrgManager.saveOrgId(orgId);
-        // Navigate to entering screen so it reloads with the new org
-        navigatorKey.currentState?.pushNamedAndRemoveUntil(
-          Routes.entering,
-          (_) => false,
-        );
+        // Only navigate if the app is past its initial startup.
+        // Cold-start links are already handled by _handleInitialDeepLink()
+        // in main.dart before runApp(), so no navigation is needed there.
+        if (_readyForLinkNavigation) {
+          navigatorKey.currentState?.pushNamedAndRemoveUntil(
+            Routes.entering,
+            (_) => false,
+          );
+        }
       }
     });
   }

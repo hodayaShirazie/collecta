@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.example.collecta",
+      "sha256_cert_fingerprints": [
+        "F7:0C:D2:0D:EC:0D:ED:FB:9C:40:18:74:0A:B8:8B:F3:B8:A9:51:7C:72:C5:41:4F:B5:71:E9:43:04:BD:91:B6"
+      ]
+    }
+  }
+]
