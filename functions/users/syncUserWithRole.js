@@ -52,7 +52,7 @@ module.exports = async(req, res) => {
         // User does not exist → create user and role
         const uid = await createUser(firebaseUser, name, img, organizationId);
 
-        await createRoleObject(uid, role);
+        await createRoleObject(uid, role, organizationId);
 
         return res.status(200).send({ status: "success" });
       }

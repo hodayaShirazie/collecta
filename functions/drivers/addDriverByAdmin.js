@@ -53,15 +53,15 @@ module.exports = async (req, res) => {
         last_login: admin.firestore.FieldValue.serverTimestamp(),
       });
 
-      // Create driver doc in Firestore
-      await createDriver(uid, "driver");
+      // Create driver doc + 5 empty weekday destinations
+      await createDriver(uid, "driver", organizationId);
 
       // Update phone if provided
       if (phone && phone.trim().length > 0) {
         await db.collection("driver").doc(uid).update({ phone: phone.trim() });
       }
 
-      return res.status(200).send({ status: "success", uid });
+      return res.status(200).send({ status: "success" });
 
     } catch (error) {
       return res.status(500).send({ error: error.message });

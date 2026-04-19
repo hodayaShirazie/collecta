@@ -10,6 +10,8 @@ class AddressFieldWidget extends StatefulWidget {
   final void Function(double lat, double lng) onLocationSelected;
   final VoidCallback? onLocationCleared;
   final bool initialIsConfirmed;
+  /// When false, an empty address is accepted without validation errors.
+  final bool isRequired;
 
   const AddressFieldWidget({
     super.key,
@@ -17,6 +19,7 @@ class AddressFieldWidget extends StatefulWidget {
     required this.onLocationSelected,
     this.onLocationCleared,
     this.initialIsConfirmed = false,
+    this.isRequired = true,
   });
 
   @override
@@ -102,7 +105,8 @@ class _AddressFieldWidgetState extends State<AddressFieldWidget> {
               controller: fieldController,
               focusNode: focusNode,
               validator: (value) {
-                if (value == null || value.isEmpty) return "שדה חובה";
+                final isEmpty = value == null || value.isEmpty;
+                if (isEmpty) return widget.isRequired ? "שדה חובה" : null;
                 if (_isGeocoding) return "ממתין לאימות כתובת...";
                 if (_geocodeError != null) return _geocodeError;
                 if (!_isConfirmed) return "יש לבחור כתובת מהרשימה או ללחוץ על האפשרות המוצעת";

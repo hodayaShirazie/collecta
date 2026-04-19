@@ -37,18 +37,19 @@ module.exports = async (req, res) => {
 
         const destData = destSnap.data();
 
-        /// 4️⃣ bring address
-        const addressId = destSnap.id;
-
-        const addressSnap = await db.collection("address").doc(addressId).get();
+        /// 4️⃣ bring address (only when an addressId exists)
+        const addressId = destData.addressId;
 
         let addressData = null;
 
-        if (addressSnap.exists) {
-          addressData = {
-            id: addressSnap.id,
-            ...addressSnap.data(),
-          };
+        if (addressId) {
+          const addressSnap = await db.collection("address").doc(addressId).get();
+          if (addressSnap.exists) {
+            addressData = {
+              id: addressSnap.id,
+              ...addressSnap.data(),
+            };
+          }
         }
 
         destinations.push({
