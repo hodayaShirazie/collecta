@@ -1,7 +1,8 @@
 // functions/drivers/updateDriverProfile.js
 const admin = require("firebase-admin");
 const corsHandler = require("../utils/cors");
-const resolveUid = require("../utils/resolveUid");
+// const resolveUid = require("../utils/resolveUid");
+const verifyFirebaseToken = require("../utils/verifyToken");
 const { isValidString } = require("../utils/validate");
 
 const db = admin.firestore();
@@ -9,24 +10,27 @@ const db = admin.firestore();
 module.exports = async (req, res) => {
   corsHandler(req, res, async () => {
 
-    const uid = await resolveUid(req, res);
-    if (!uid) return;
+    const firebaseUser = await verifyFirebaseToken(req, res);
+    if (!firebaseUser) return;
 
     try {
 
-      const { phone, area } = req.body;
+      const uid = firebaseUser.uid;
 
-      if (
-        (phone !== undefined && !isValidString(phone)) ||
-        (area !== undefined && !isValidString(area))
-      ) {
+      const { phone, areas } = req.body;
+
+      if (phone !== undefined && !isValidString(phone)) {
         return res.status(400).send({ error: "Invalid input parameters" });
+      }
+
+      if (areas !== undefined && !Array.isArray(areas)) {
+        return res.status(400).send({ error: "areas must be an array" });
       }
 
       const updateData = {};
 
       if (phone !== undefined && phone !== '') updateData.phone = phone;
-      if (area !== undefined && area !== '') updateData.area = area;
+      if (areas !== undefined) updateData.areas = areas;
 
       if (Object.keys(updateData).length === 0) {
         return res.status(400).send({ error: "No fields to update" });

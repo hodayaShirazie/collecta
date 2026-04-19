@@ -20,7 +20,7 @@ class DriverRepository {
 
     return _source.updateDriverProfile(
       phone: driver.phone,
-      area: driver.area,
+      areas: driver.areas,
     );
 
   }

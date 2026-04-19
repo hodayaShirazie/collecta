@@ -10,8 +10,12 @@ class ProfileCompletionFlow {
     required Widget Function(String field, TextEditingController controller)
         contentBuilder,
     required Future<void> Function(String field, String value) onSave,
+    VoidCallback? onComplete,
   }) {
-    if (fields.isEmpty) return;
+    if (fields.isEmpty) {
+      onComplete?.call();
+      return;
+    }
 
     int index = 0;
     final controller = TextEditingController();
@@ -37,6 +41,8 @@ class ProfileCompletionFlow {
                   if (index < fields.length - 1) {
                     index++;
                     showNext();
+                  } else {
+                    onComplete?.call();
                   }
                 },
                 onConfirm: () async {
@@ -52,6 +58,7 @@ class ProfileCompletionFlow {
                       showNext();
                     } else {
                       Navigator.pop(ctx);
+                      onComplete?.call();
                     }
                   }
                 },

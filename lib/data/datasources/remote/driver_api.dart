@@ -23,7 +23,7 @@ class DriverApi extends ApiSource {
 
     Future<String> updateDriverProfile({
         required String phone,
-        required String area,
+        required List<String> areas,
     }) async {
 
         // final headers = await AuthHeaders.build();
@@ -34,7 +34,7 @@ class DriverApi extends ApiSource {
             headers: await headers(),
             body: json.encode({
                 if (phone.isNotEmpty) 'phone': phone,
-                if (area.isNotEmpty) 'area': area,
+                'areas': areas,
             }),
         );
 

@@ -22,6 +22,7 @@ class _ActivityZonesAdminState extends State<ActivityZonesAdmin> {
   List<ActivityZoneModel> _zones = [];
   bool _isLoading = true;
   String _searchQuery = '';
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -30,14 +31,24 @@ class _ActivityZonesAdminState extends State<ActivityZonesAdmin> {
   }
 
   Future<void> _loadZones() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
     try {
+      if (widget.organizationId.isEmpty) {
+        throw Exception('מזהה הארגון חסר — נסי להיכנס מחדש דרך הקישור');
+      }
       final result = await _service.getActivityZones(widget.organizationId);
       setState(() {
         _zones = result;
         _isLoading = false;
       });
     } catch (e) {
-      setState(() => _isLoading = false);
+      setState(() {
+        _isLoading = false;
+        _errorMessage = e.toString();
+      });
     }
   }
 
@@ -134,7 +145,18 @@ class _ActivityZonesAdminState extends State<ActivityZonesAdmin> {
                     Expanded(
                       child: _isLoading
                           ? const Center(child: CircularProgressIndicator())
-                          : _filteredZones.isEmpty
+                          : _errorMessage != null
+                              ? Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Text(
+                                      'שגיאה בטעינת אזורים:\n$_errorMessage',
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(color: Colors.redAccent),
+                                    ),
+                                  ),
+                                )
+                              : _filteredZones.isEmpty
                               ? const Center(
                                   child: Text('אין אזורי פעילות להצגה'))
                               : ListView.separated(
