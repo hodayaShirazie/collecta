@@ -48,7 +48,7 @@ class BusinessDetailsCard extends StatelessWidget {
             keyboardType: TextInputType.phone,
           ),
           InputFieldWidget(
-            hint: "CRN",
+            hint: "ח.פ",
             controller: crn,
             validator: validatecrn,
             keyboardType: TextInputType.number,
