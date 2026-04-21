@@ -6,21 +6,19 @@ import 'api_source.dart';
 class RouteOptimizationApi extends ApiSource {
   /// שולח רשימת נקודות לפונקציה שמפעילה את שרת LGCN.
   /// מחזיר רשימת אינדקסים לפי הסדר האופטימלי.
-  Future<List<int>> computeOptimalRoute(List<List<double>> nodes) async {
+  Future<List<int>> computeOptimalRoute(List<List<double>> points) async {
     final response = await http
         .post(
           Uri.parse('${ApiConfig.baseUrl}/computeRoutes'),
           headers: await headers(),
           body: jsonEncode({
-            'nodes': nodes,
-            'num_drivers': 1,
-            'driver_starts': [0],
+            'points': points,
           }),
         )
         .timeout(const Duration(seconds: 30));
 
     if (response.statusCode != 200) {
-      throw Exception('שגיאה בחישוב המסלול (${response.statusCode})');
+      throw Exception('שגיאה בחישוב המסלול (${response.statusCode}): ${response.body}');
     }
 
     final data = jsonDecode(response.body);
