@@ -1,11 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import '../../services/donation_service.dart';
 import '../../services/donor_service.dart';
+import '../../services/driver_service.dart';
 import '../../services/route_optimization_service.dart';
 import '../../data/models/donation_model.dart';
+import '../../data/models/destination_model.dart';
+import '../../data/models/driver_model.dart';
 import '../theme/homepage_theme.dart';
 import '../widgets/loading_indicator.dart';
 import 'driver_pickup.dart';
+
+/// מיפוי מ-DateTime.weekday (1=ב', 7=א') לשם היום בעברית
+const Map<int, String> _weekdayToHebrew = {
+  7: 'ראשון',
+  1: 'שני',
+  2: 'שלישי',
+  3: 'רביעי',
+  4: 'חמישי',
+};
 
 class DailyRouteDriverPage extends StatefulWidget {
   const DailyRouteDriverPage({super.key});
@@ -17,10 +30,13 @@ class DailyRouteDriverPage extends StatefulWidget {
 class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
   final DonationService _donationService = DonationService();
   final DonorService _donorService = DonorService();
+  final DriverService _driverService = DriverService();
   final RouteOptimizationService _optimizationService = RouteOptimizationService();
 
   List<DonationModel> donations = [];
   Map<String, String> donorNames = {};
+  DestinationModel? _todayDestination;
+
   bool isLoading = true;
   bool isOptimizing = false;
   bool isOptimized = false;
@@ -35,15 +51,31 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
     try {
       setState(() => isLoading = true);
 
-      final List<DonationModel> fetchedDonations =
-          await _donationService.getDriverDonationsById();
+      final results = await Future.wait([
+        _donationService.getDriverDonationsById(),
+        _driverService.getMyDriverProfile(),
+      ]);
+
+      final fetchedDonations = results[0] as List<DonationModel>;
+      final driverProfile = results[1] as DriverProfile;
+
+      // מצא את יעד היום לפי היום בשבוע
+      final todayHebrew = _weekdayToHebrew[DateTime.now().weekday];
+      final todayDest = todayHebrew != null
+          ? driverProfile.destinations
+              .cast<DestinationModel?>()
+              .firstWhere(
+                (d) => d?.day == todayHebrew,
+                orElse: () => null,
+              )
+          : null;
 
       for (var donation in fetchedDonations) {
         if (!donorNames.containsKey(donation.donorId)) {
           try {
-            final profile = await _donorService.getMyDonorProfile();
+            final profile = await _donorService.getDonorProfileById(donation.donorId);
             donorNames[donation.donorId] = profile.businessName;
-          } catch (e) {
+          } catch (_) {
             donorNames[donation.donorId] = "עסק לא ידוע";
           }
         }
@@ -51,6 +83,7 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
 
       setState(() {
         donations = fetchedDonations;
+        _todayDestination = todayDest;
         isLoading = false;
         isOptimized = false;
       });
@@ -66,7 +99,29 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
     setState(() => isOptimizing = true);
 
     try {
-      final optimized = await _optimizationService.optimizeDonationRoute(donations);
+      // בקש הרשאת מיקום
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.deniedForever ||
+          permission == LocationPermission.denied) {
+        _showError('לא ניתן לגשת למיקום — אנא אשר הרשאה בהגדרות');
+        return;
+      }
+
+      final position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
+      );
+
+      final optimized = await _optimizationService.optimizeDonationRoute(
+        donations,
+        startLat: position.latitude,
+        startLng: position.longitude,
+      );
+
       setState(() {
         donations = optimized;
         isOptimized = true;
@@ -88,6 +143,10 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
       ),
     );
   }
+
+  // מספר הפריטים ברשימה: תרומות + יעד סיום (אם קיים ומסלול מוטב)
+  int get _itemCount =>
+      donations.length + (isOptimized && _todayDestination != null ? 1 : 0);
 
   @override
   Widget build(BuildContext context) {
@@ -153,8 +212,18 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
                         ? const Center(child: Text("אין תרומות במסלול היום"))
                         : ListView.builder(
                             padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
-                            itemCount: donations.length,
+                            itemCount: _itemCount,
                             itemBuilder: (context, index) {
+                              // פריט אחרון — יעד סיום
+                              final isDestinationItem = isOptimized &&
+                                  _todayDestination != null &&
+                                  index == donations.length;
+
+                              if (isDestinationItem) {
+                                return _buildDestinationItem(_todayDestination!);
+                              }
+
+                              // פריט רגיל — תרומה
                               final donation = donations[index];
                               final businessName =
                                   donorNames[donation.donorId] ?? "טוען...";
@@ -216,6 +285,52 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
                   ),
                 ],
               ),
+      ),
+    );
+  }
+
+  Widget _buildDestinationItem(DestinationModel destination) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 15),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+        decoration: BoxDecoration(
+          color: const Color(0xFFE8F5E9),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Colors.green.shade400, width: 1.5),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.green.withOpacity(0.15),
+              blurRadius: 6,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.flag, color: Colors.green, size: 22),
+            const Spacer(),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  "יעד סיום: ${destination.name.isNotEmpty ? destination.name : 'יעד ${destination.day}'}",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Colors.green,
+                  ),
+                ),
+                Text(
+                  destination.address.name,
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+              ],
+            ),
+            const SizedBox(width: 15),
+            const Icon(Icons.location_on, color: Colors.green),
+          ],
+        ),
       ),
     );
   }
