@@ -12,6 +12,7 @@ class DestinationCard extends StatelessWidget {
   final TextEditingController address;
 
   final Function(double, double) onLocationSelected;
+  final VoidCallback? onLocationCleared;
 
   const DestinationCard({
     super.key,
@@ -19,6 +20,7 @@ class DestinationCard extends StatelessWidget {
     required this.name,
     required this.address,
     required this.onLocationSelected,
+    this.onLocationCleared,
   });
 
   @override
@@ -60,6 +62,7 @@ class DestinationCard extends StatelessWidget {
           AddressFieldWidget(
             controller: address,
             onLocationSelected: onLocationSelected,
+            onLocationCleared: onLocationCleared,
             isRequired: false,
           ),
 

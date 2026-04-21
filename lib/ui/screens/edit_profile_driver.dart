@@ -393,6 +393,9 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
                           onLocationSelected: (lat, lng) {
                             selectedLatLng[id] = LatLngModel(lat: lat, lng: lng);
                           },
+                          onLocationCleared: () {
+                            selectedLatLng[id] = null;
+                          },
                         );
                       }),
 
