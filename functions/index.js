@@ -192,3 +192,7 @@ const geocodeAddress = require("./routes/geocodeAddress").geocodeAddress;
 exports.geocodeAddress = onRequest(
   (req, res) => geocodeAddress(req, res)
 );
+
+exports.computeRoutes = onRequest(
+  require("./routes/computeRoutes")
+);

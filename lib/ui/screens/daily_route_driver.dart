@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import '../../services/donation_service.dart';
 import '../../services/donor_service.dart';
+import '../../services/route_optimization_service.dart';
 import '../../data/models/donation_model.dart';
 import '../theme/homepage_theme.dart';
 import '../widgets/loading_indicator.dart';
@@ -18,8 +17,7 @@ class DailyRouteDriverPage extends StatefulWidget {
 class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
   final DonationService _donationService = DonationService();
   final DonorService _donorService = DonorService();
-
-  static const String _lgcnServerUrl = 'http://46.224.67.125:8000';
+  final RouteOptimizationService _optimizationService = RouteOptimizationService();
 
   List<DonationModel> donations = [];
   Map<String, String> donorNames = {};
@@ -68,52 +66,14 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
     setState(() => isOptimizing = true);
 
     try {
-      final List<List<double>> nodes = donations
-          .map((d) => [d.businessAddress.lat, d.businessAddress.lng])
-          .toList();
-
-      final response = await http
-          .post(
-            Uri.parse('$_lgcnServerUrl/compute-routes'),
-            headers: {'Content-Type': 'application/json'},
-            body: jsonEncode({
-              'nodes': nodes,
-              'num_drivers': 1,
-              'driver_starts': [0],
-            }),
-          )
-          .timeout(const Duration(seconds: 30));
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-
-        if (data['status'] == 'success') {
-          final rawRoute = (data['routes']['0'] as List).cast<int>();
-
-          // Remove duplicate depot at end if present
-          List<int> route = rawRoute;
-          if (route.length > 1 && route.first == route.last) {
-            route = route.sublist(0, route.length - 1);
-          }
-
-          final reordered = route
-              .where((i) => i < donations.length)
-              .map((i) => donations[i])
-              .toList();
-
-          setState(() {
-            donations = reordered;
-            isOptimized = true;
-          });
-        } else {
-          _showError('שגיאה מהשרת: ${data['message'] ?? 'שגיאה לא ידועה'}');
-        }
-      } else {
-        _showError('שגיאה בחישוב המסלול (${response.statusCode})');
-      }
+      final optimized = await _optimizationService.optimizeDonationRoute(donations);
+      setState(() {
+        donations = optimized;
+        isOptimized = true;
+      });
     } catch (e) {
       debugPrint("🔴 Error optimizing route: $e");
-      _showError('לא ניתן להתחבר לשרת האלגוריתם');
+      _showError(e.toString().replaceFirst('Exception: ', ''));
     } finally {
       setState(() => isOptimizing = false);
     }
@@ -190,11 +150,9 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
                   // ── רשימת התחנות ──
                   Expanded(
                     child: donations.isEmpty
-                        ? const Center(
-                            child: Text("אין תרומות במסלול היום"))
+                        ? const Center(child: Text("אין תרומות במסלול היום"))
                         : ListView.builder(
-                            padding:
-                                const EdgeInsets.fromLTRB(20, 8, 20, 20),
+                            padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
                             itemCount: donations.length,
                             itemBuilder: (context, index) {
                               final donation = donations[index];
@@ -206,8 +164,7 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.white,
-                                    foregroundColor:
-                                        HomepageTheme.latetBlue,
+                                    foregroundColor: HomepageTheme.latetBlue,
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 20, horizontal: 15),
                                     shape: RoundedRectangleBorder(
