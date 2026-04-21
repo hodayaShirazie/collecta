@@ -78,7 +78,6 @@ class DonationFlowService {
       "organization_id": kOrganizationId,
       "products": productIds,
       "pickupTimes": pickupTimes,
-      "driver_id": "",
       "canceling_reason": "",
       "recipe": "",
     };
