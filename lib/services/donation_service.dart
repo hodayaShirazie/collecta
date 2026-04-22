@@ -130,6 +130,18 @@ class DonationService {
     return result;
   }
 
+  Future<String> assignDriverToDonation({
+    required String donationId,
+    required String driverId,
+  }) async {
+    final result = await _repo.assignDriverToDonation(
+      donationId: donationId,
+      driverId: driverId,
+    );
+    _invalidateDonationCaches();
+    return result;
+  }
+
   Future<String> submitPickup({
     required String donationId,
     required String donorId,

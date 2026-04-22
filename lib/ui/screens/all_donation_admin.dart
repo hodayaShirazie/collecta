@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import '../theme/homepage_theme.dart';
 import '../theme/my_donations_theme.dart';
 import '../../data/models/donation_model.dart';
+import '../../data/models/driver_model.dart';
 import '../../services/donation_service.dart';
+import '../../services/driver_service.dart';
 import '../../services/org_manager.dart';
-import '../utils/donation/donation_receipt_helper.dart';
 import '../widgets/donation_widgets/donation_receipt_button.dart';
 import '../widgets/custom_popup_dialog.dart';
 
@@ -17,6 +18,7 @@ class AllDonationsAdmin extends StatefulWidget {
 
 class _AllDonationsAdminState extends State<AllDonationsAdmin> {
   final DonationService _service = DonationService();
+  final DriverService _driverService = DriverService();
   late ValueNotifier<bool> _isCancellingNotifier;
 
   String selectedStatus = "הכל";
@@ -24,13 +26,14 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
   String searchQuery = "";
 
   List<DonationModel> donations = [];
+  List<DriverProfile> drivers = [];
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _isCancellingNotifier = ValueNotifier(false);
-    _loadDonations();
+    _loadData();
   }
 
   @override
@@ -39,15 +42,20 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
     super.dispose();
   }
 
-  Future<void> _loadDonations() async {
+  Future<void> _loadData() async {
     try {
-        final result = await _service.getDonationsByOrganization(OrgManager.orgId ?? ''); // 🔍 For testing, we can use the same endpoint since it returns all donations for admins
+      final orgId = OrgManager.orgId ?? '';
+      final results = await Future.wait([
+        _service.getDonationsByOrganization(orgId),
+        _driverService.fetchDriversByOrganization(orgId),
+      ]);
       setState(() {
-        donations = result;
+        donations = results[0] as List<DonationModel>;
+        drivers = results[1] as List<DriverProfile>;
         isLoading = false;
       });
     } catch (e) {
-      print("🔴 error loading donations: $e");
+      print("🔴 error loading data: $e");
       setState(() {
         isLoading = false;
       });
@@ -133,6 +141,16 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
     }
   }
 
+  String _driverName(String driverId) {
+    if (driverId.isEmpty) return "לא שויך";
+    try {
+      final driver = drivers.firstWhere((d) => d.user.id == driverId);
+      return driver.user.name.isNotEmpty ? driver.user.name : "נהג ללא שם";
+    } catch (_) {
+      return "לא שויך";
+    }
+  }
+
   Future<void> cancelDonation(String donationId) async {
     _isCancellingNotifier.value = true;
 
@@ -164,6 +182,108 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
         SnackBar(content: Text("שגיאה: $e")),
       );
     }
+  }
+
+  void _showDriverPicker(DonationModel donation) {
+    DriverProfile? selected;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => Directionality(
+        textDirection: TextDirection.rtl,
+        child: StatefulBuilder(
+          builder: (ctx, setDialogState) {
+            return AlertDialog(
+              title: const Text("שיוך נהג לתרומה"),
+              content: drivers.isEmpty
+                  ? const Text("אין נהגים בארגון")
+                  : SizedBox(
+                      width: double.maxFinite,
+                      child: ListView(
+                        shrinkWrap: true,
+                        children: drivers.map((driver) {
+                          final isCurrentDriver =
+                              driver.user.id == donation.driverId;
+                          return RadioListTile<DriverProfile>(
+                            title: Text(driver.user.name.isNotEmpty
+                                ? driver.user.name
+                                : "נהג ללא שם"),
+                            subtitle: isCurrentDriver
+                                ? const Text("נהג נוכחי",
+                                    style: TextStyle(
+                                        fontSize: 12, color: Colors.green))
+                                : null,
+                            value: driver,
+                            groupValue: selected ??
+                                drivers.firstWhere(
+                                  (d) => d.user.id == donation.driverId,
+                                  orElse: () => driver,
+                                ),
+                            onChanged: (val) {
+                              setDialogState(() => selected = val);
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: const Text("ביטול"),
+                ),
+                if (drivers.isNotEmpty)
+                  ElevatedButton(
+                    onPressed: () async {
+                      final chosenDriver = selected ??
+                          drivers.firstWhere(
+                            (d) => d.user.id == donation.driverId,
+                            orElse: () => drivers.first,
+                          );
+
+                      if (chosenDriver.user.id == donation.driverId) {
+                        Navigator.pop(ctx);
+                        return;
+                      }
+
+                      Navigator.pop(ctx);
+
+                      try {
+                        await _service.assignDriverToDonation(
+                          donationId: donation.id,
+                          driverId: chosenDriver.user.id,
+                        );
+
+                        setState(() {
+                          final index =
+                              donations.indexWhere((d) => d.id == donation.id);
+                          if (index != -1) {
+                            donations[index] = donations[index]
+                                .copyWith(driverId: chosenDriver.user.id);
+                          }
+                        });
+
+                        if (!mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                "הנהג שויך בהצלחה: ${chosenDriver.user.name}"),
+                          ),
+                        );
+                      } catch (e) {
+                        if (!mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("שגיאה בשיוך נהג: $e")),
+                        );
+                      }
+                    },
+                    child: const Text("שמור"),
+                  ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
   }
 
   @override
@@ -297,10 +417,8 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
                                   const EdgeInsets.symmetric(horizontal: 20),
                               itemCount: filteredDonations.length,
                               itemBuilder: (context, index) {
-                                
-                                final donation =
-                                    filteredDonations[index];
- 
+                                final donation = filteredDonations[index];
+
                                 return Container(
                                   margin: const EdgeInsets.only(bottom: 16),
                                   padding: const EdgeInsets.all(16),
@@ -324,19 +442,62 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
                                         ],
                                       ),
                                       const SizedBox(height: 10),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-                                        decoration: BoxDecoration(
-                                          color: MyDonationsTheme.statusColor(donation.status),
-                                          borderRadius: BorderRadius.circular(12),
-                                        ),
-                                        child: Text(
-                                          _statusText(donation.status),
-                                          style: const TextStyle(color: Colors.black),
-                                        ),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                                            decoration: BoxDecoration(
+                                              color: MyDonationsTheme.statusColor(donation.status),
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                            child: Text(
+                                              _statusText(donation.status),
+                                              style: const TextStyle(color: Colors.black),
+                                            ),
+                                          ),
+                                        ],
                                       ),
+
+                                      // Driver row
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.local_shipping_outlined,
+                                              size: 16, color: Colors.black54),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            "נהג: ${_driverName(donation.driverId)}",
+                                            style: const TextStyle(
+                                              fontSize: 13,
+                                              color: Colors.black54,
+                                            ),
+                                          ),
+                                          const Spacer(),
+                                          if (donation.status == "pending")
+                                            GestureDetector(
+                                              onTap: () => _showDriverPicker(donation),
+                                              child: const Row(
+                                                children: [
+                                                  Icon(Icons.edit_outlined,
+                                                      size: 14,
+                                                      color: Colors.blueGrey),
+                                                  SizedBox(width: 3),
+                                                  Text(
+                                                    "שנה נהג",
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: Colors.blueGrey,
+                                                      decoration: TextDecoration.underline,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+
                                       if (donation.status == "pending") ...[
-                                        const SizedBox(height: 8),
+                                        const SizedBox(height: 4),
                                         ValueListenableBuilder<bool>(
                                           valueListenable: _isCancellingNotifier,
                                           builder: (context, isCancelling, _) {
@@ -377,7 +538,6 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
                                       Row(
                                         crossAxisAlignment: CrossAxisAlignment.end,
                                         children: [
-                                          // רשימת המוצרים תופסת את כל המקום הפנוי
                                           Expanded(
                                             child: Column(
                                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -397,7 +557,7 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
                                             donationId: donation.id,
                                             receiptUrl: donation.receipt,
                                             isAdmin: true,
-                                            onUploadSuccess: _loadDonations,
+                                            onUploadSuccess: _loadData,
                                             enabled: donation.status == "collected",
                                           ),
                                         ],
@@ -415,5 +575,4 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
       ),
     );
   }
-
 }
