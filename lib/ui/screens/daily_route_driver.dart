@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../services/donation_service.dart';
 import '../../services/donor_service.dart';
 import '../../services/driver_service.dart';
@@ -134,6 +135,84 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
     }
   }
 
+  Future<void> _navigateWithWaze(double lat, double lng) async {
+    final wazeUri = Uri.parse('waze://?ll=$lat,$lng&navigate=yes');
+    final fallbackUri = Uri.parse('https://waze.com/ul?ll=$lat,$lng&navigate=yes');
+
+    if (await canLaunchUrl(wazeUri)) {
+      await launchUrl(wazeUri);
+    } else {
+      await launchUrl(fallbackUri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  void _showStopOptions(BuildContext context, DonationModel donation, String businessName) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          businessName,
+          textAlign: TextAlign.right,
+          style: const TextStyle(fontFamily: 'Assistant', fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          donation.businessAddress.name,
+          textAlign: TextAlign.right,
+          style: const TextStyle(fontFamily: 'Assistant', color: Colors.grey),
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: HomepageTheme.latetBlue,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                icon: const Icon(Icons.volunteer_activism),
+                label: const Text('איסוף תרומה',
+                    style: TextStyle(fontFamily: 'Assistant', fontSize: 16)),
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => DriverPickupPage(donationId: donation.id),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF00B4D8),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                icon: const Icon(Icons.navigation),
+                label: const Text('נווט לבית העסק',
+                    style: TextStyle(fontFamily: 'Assistant', fontSize: 16)),
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  _navigateWithWaze(
+                    donation.businessAddress.lat,
+                    donation.businessAddress.lng,
+                  );
+                },
+              ),
+              const SizedBox(height: 4),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showError(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -241,15 +320,11 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
                                             BorderRadius.circular(15)),
                                     elevation: 3,
                                   ),
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => DriverPickupPage(
-                                            donationId: donation.id),
-                                      ),
-                                    );
-                                  },
+                                  onPressed: () => _showStopOptions(
+                                    context,
+                                    donation,
+                                    businessName,
+                                  ),
                                   child: Row(
                                     children: [
                                       const Icon(Icons.arrow_back_ios,
