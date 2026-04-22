@@ -6,6 +6,7 @@ import 'package:collecta/app/routes.dart';
 import 'package:collecta/app/theme.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:collecta/ui/screens/edit_donation.dart';
+import 'package:collecta/ui/screens/entering.dart';
 import 'package:collecta/ui/guards/auth_guard.dart';
 import '../services/org_manager.dart';
 
@@ -85,6 +86,10 @@ class _MyAppState extends State<MyApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      onUnknownRoute: (settings) => MaterialPageRoute(
+        builder: (context) => const EnteringScreen(),
+        settings: settings,
+      ),
       onGenerateRoute: (settings) {
         final uri = Uri.parse(settings.name!);
 
