@@ -248,6 +248,28 @@ Future<List<dynamic>> getDriverDonationsById() async {
 }
 
 
+Future<String> assignDriverToDonation({
+  required String donationId,
+  required String driverId,
+}) async {
+  final response = await http.post(
+    Uri.parse('${ApiConfig.baseUrl}/assignDriverToDonation'),
+    headers: await headers(),
+    body: json.encode({
+      "donationId": donationId,
+      "driverId": driverId,
+    }),
+  );
+
+  final data = json.decode(response.body);
+
+  if (response.statusCode != 200) {
+    throw Exception(data['error']);
+  }
+
+  return data['status'];
+}
+
 Future<String> submitPickup({
   required String donationId,
   required String donorId,

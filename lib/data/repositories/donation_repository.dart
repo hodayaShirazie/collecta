@@ -93,6 +93,16 @@ class DonationRepository {
   }
 
 
+  Future<String> assignDriverToDonation({
+    required String donationId,
+    required String driverId,
+  }) {
+    return _source.assignDriverToDonation(
+      donationId: donationId,
+      driverId: driverId,
+    );
+  }
+
   Future<String> submitPickup({
     required String donationId,
     required String donorId,

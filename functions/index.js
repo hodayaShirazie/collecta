@@ -196,3 +196,7 @@ exports.geocodeAddress = onRequest(
 exports.computeRoutes = onRequest(
   require("./routes/computeRoutes")
 );
+
+exports.assignDriverToDonation = onRequest(
+  require("./donations/assignDriverToDonation")
+);
