@@ -58,6 +58,7 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
 
   DriverProfile? driver;
+  String _currentDriverId = "";
   List<ActivityZoneModel> _allZones = [];
   List<String> _selectedAreaIds = [];
 
@@ -93,6 +94,7 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
 
       driver = results[0] as DriverProfile;
       _allZones = results[1] as List<ActivityZoneModel>;
+      _currentDriverId = driver!.user.id;
       _selectedAreaIds = List<String>.from(driver!.areas);
 
       nameCtrl.text = driver!.user.name;
@@ -227,11 +229,33 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
   }
 
   void _showAddAreaDropdown() {
+    if (_allZones.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (_) => const CustomPopupDialog(
+          title: "אין אזורי פעילות",
+          message: "לא הוגדרו אזורי פעילות בארגון. פנה למנהל.",
+        ),
+      );
+      return;
+    }
+
     final remaining = _allZones
-        .where((z) => !_selectedAreaIds.contains(z.id))
+        .where((z) =>
+            !_selectedAreaIds.contains(z.id) &&
+            (z.driverId.isEmpty || z.driverId == _currentDriverId))
         .toList();
 
-    if (remaining.isEmpty) return;
+    if (remaining.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (_) => const CustomPopupDialog(
+          title: "אין אזורים פנויים",
+          message: "כל אזורי הפעילות תפוסים כרגע. פנה למנהל.",
+        ),
+      );
+      return;
+    }
 
     final renderBox =
         _addAreaButtonKey.currentContext!.findRenderObject() as RenderBox;
@@ -318,18 +342,21 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
           const SizedBox(height: 8),
 
           Builder(builder: (ctx) {
-            final allSelected = _allZones.isNotEmpty &&
-                _selectedAreaIds.length >= _allZones.length;
+            final availableZones = _allZones
+                .where((z) => z.driverId.isEmpty || z.driverId == _currentDriverId)
+                .toList();
+            final allAvailableSelected = availableZones.isNotEmpty &&
+                _selectedAreaIds.length >= availableZones.length;
             return Align(
               alignment: Alignment.centerRight,
               child: TextButton.icon(
                 key: _addAreaButtonKey,
-                onPressed: allSelected ? null : _showAddAreaDropdown,
+                onPressed: allAvailableSelected ? null : _showAddAreaDropdown,
                 icon: const Icon(Icons.arrow_drop_down, size: 20),
                 label: const Text("הוסף אזור"),
                 style: TextButton.styleFrom(
                   foregroundColor:
-                      allSelected ? Colors.grey : const Color(0xFF2C5AA0),
+                      allAvailableSelected ? Colors.grey : const Color(0xFF2C5AA0),
                 ),
               ),
             );

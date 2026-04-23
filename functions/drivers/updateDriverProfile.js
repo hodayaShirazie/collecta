@@ -36,7 +36,40 @@ module.exports = async (req, res) => {
         return res.status(400).send({ error: "No fields to update" });
       }
 
-      await db.collection("driver").doc(uid).update(updateData);
+      if (areas !== undefined) {
+        // Validate that none of the new zones are already assigned to another driver
+        const zoneChecks = await Promise.all(
+          areas.map((zoneId) => db.collection("activityZone").doc(zoneId).get())
+        );
+        for (const zoneDoc of zoneChecks) {
+          if (!zoneDoc.exists) continue;
+          const existingDriverId = zoneDoc.data().driverId ?? "";
+          if (existingDriverId !== "" && existingDriverId !== uid) {
+            return res.status(409).send({ error: `אזור ${zoneDoc.data().name} כבר משויך לנהג אחר` });
+          }
+        }
+
+        // Get current driver areas to find what changed
+        const driverDoc = await db.collection("driver").doc(uid).get();
+        const oldAreas = driverDoc.exists ? (driverDoc.data().areas ?? []) : [];
+
+        const removedZones = oldAreas.filter((id) => !areas.includes(id));
+        const addedZones = areas.filter((id) => !oldAreas.includes(id));
+
+        const batch = db.batch();
+
+        for (const zoneId of removedZones) {
+          batch.update(db.collection("activityZone").doc(zoneId), { driverId: "" });
+        }
+        for (const zoneId of addedZones) {
+          batch.update(db.collection("activityZone").doc(zoneId), { driverId: uid });
+        }
+
+        batch.update(db.collection("driver").doc(uid), updateData);
+        await batch.commit();
+      } else {
+        await db.collection("driver").doc(uid).update(updateData);
+      }
 
       return res.status(200).send({ status: "success" });
 

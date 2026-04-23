@@ -6,6 +6,7 @@ class ActivityZoneModel {
   final String addressId;
   final double range;
   final String organizationId;
+  final String driverId;
   final AddressModel? address;
 
   ActivityZoneModel({
@@ -14,6 +15,7 @@ class ActivityZoneModel {
     required this.addressId,
     required this.range,
     required this.organizationId,
+    this.driverId = "",
     this.address,
   });
 
@@ -24,6 +26,7 @@ class ActivityZoneModel {
       addressId: json['addressId'] as String,
       range: (json['range'] as num).toDouble(),
       organizationId: json['organizationId'] as String,
+      driverId: json['driverId'] as String? ?? "",
       address: json['address'] != null
           ? AddressModel.fromApi(json['address'] as Map<String, dynamic>)
           : null,
@@ -37,6 +40,7 @@ class ActivityZoneModel {
       'addressId': addressId,
       'range': range,
       'organizationId': organizationId,
+      'driverId': driverId,
     };
   }
 
@@ -46,6 +50,7 @@ class ActivityZoneModel {
     String? addressId,
     double? range,
     String? organizationId,
+    String? driverId,
     AddressModel? address,
   }) {
     return ActivityZoneModel(
@@ -54,6 +59,7 @@ class ActivityZoneModel {
       addressId: addressId ?? this.addressId,
       range: range ?? this.range,
       organizationId: organizationId ?? this.organizationId,
+      driverId: driverId ?? this.driverId,
       address: address ?? this.address,
     );
   }
