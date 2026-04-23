@@ -36,24 +36,39 @@
       ]
     }
   ],
-  "hosting": {
-    "public": "build/web",
-    "headers": [
-      {
-        "source": "/.well-known/apple-app-site-association",
-        "headers": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ]
-      }
-    ],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
-    ]
-  }
+  "hosting": [
+    {
+      "target": "app",
+      "public": "build/web_app",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "headers": [
+        {
+          "source": "/.well-known/apple-app-site-association",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        }
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    {
+      "target": "admin",
+      "public": "build/web_admin",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    }
+  ]
 }
