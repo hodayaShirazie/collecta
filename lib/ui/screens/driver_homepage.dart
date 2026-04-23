@@ -200,20 +200,20 @@ class _DriverHomepageState extends State<DriverHomepage> {
           fields: regularFields,
           contentBuilder: _buildFieldContent,
           onSave: _saveField,
-          onComplete: hasAreaMissing ? () => _showAreaSelectionDialog(driver) : null,
+          onComplete: hasAreaMissing ? () => _showactivityZoneelectionDialog(driver) : null,
         );
       } else if (hasAreaMissing) {
-        _showAreaSelectionDialog(driver);
+        _showactivityZoneelectionDialog(driver);
       }
     });
   }
 
-  void _showAreaSelectionDialog(DriverProfile driver) {
+  void _showactivityZoneelectionDialog(DriverProfile driver) {
     if (!mounted) return;
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => _AreaSelectionDialog(
+      builder: (_) => _activityZoneelectionDialog(
         driver: driver,
         activityZoneService: _activityZoneService,
         driverService: _driverService,
@@ -424,22 +424,22 @@ class _DriverHomepageState extends State<DriverHomepage> {
 }
 
 // ─── דיאלוג בחירת אזורי פעילות (נפתח מיד, טוען בפנים) ────────────────────
-class _AreaSelectionDialog extends StatefulWidget {
+class _activityZoneelectionDialog extends StatefulWidget {
   final DriverProfile driver;
   final ActivityZoneService activityZoneService;
   final DriverService driverService;
 
-  const _AreaSelectionDialog({
+  const _activityZoneelectionDialog({
     required this.driver,
     required this.activityZoneService,
     required this.driverService,
   });
 
   @override
-  State<_AreaSelectionDialog> createState() => _AreaSelectionDialogState();
+  State<_activityZoneelectionDialog> createState() => _activityZoneelectionDialogState();
 }
 
-class _AreaSelectionDialogState extends State<_AreaSelectionDialog> {
+class _activityZoneelectionDialogState extends State<_activityZoneelectionDialog> {
   List<ActivityZoneModel>? zones;
   final List<String> selectedIds = [];
   bool isSaving = false;
@@ -605,7 +605,7 @@ class _AreaSelectionDialogState extends State<_AreaSelectionDialog> {
                     setState(() => isSaving = true);
                     if (selectedIds.isNotEmpty) {
                       final updated =
-                          widget.driver.copyWith(areas: selectedIds);
+                          widget.driver.copyWith(activityZone: selectedIds);
                       await widget.driverService.updateDriverProfile(updated);
                     }
                     if (mounted) Navigator.pop(context);

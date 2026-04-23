@@ -31,12 +31,13 @@ class DonationForm extends StatelessWidget {
 
   final VoidCallback? onSubmit;
   final String buttonText;
+  final bool isLoading;
 
   final Function(double, double) onLocationSelected;
   final VoidCallback? onLocationCleared;
   final bool isAddressConfirmed;
   final ButtonStyle buttonStyle;
-  
+
 
   const DonationForm({
     super.key,
@@ -59,6 +60,7 @@ class DonationForm extends StatelessWidget {
     required this.onDeleteItem,
     this.onSubmit,
     required this.buttonText,
+    this.isLoading = false,
     required this.onLocationSelected,
     this.onLocationCleared,
     this.isAddressConfirmed = false,
@@ -108,7 +110,16 @@ class DonationForm extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: onSubmit,
                 style: buttonStyle,
-                child: Text(buttonText),
+                child: isLoading
+                    ? const SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2.5,
+                        ),
+                      )
+                    : Text(buttonText),
               ),
             ),
           ),

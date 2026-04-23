@@ -16,7 +16,7 @@ async function createDriver(uid, role, organizationId = "") {
   await db.collection(role).doc(uid).set({
     id: uid,
     phone: "",
-    areas: [],
+    activityZone: [],
     destination: [],
     stops: [],
   });
