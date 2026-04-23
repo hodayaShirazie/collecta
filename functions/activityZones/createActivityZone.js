@@ -28,6 +28,7 @@ module.exports = async (req, res) => {
         name,
         addressId,
         range,
+        driverId: "",
       };
 
       const docRef = await db.collection("activityZone").add(zoneData);

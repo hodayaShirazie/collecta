@@ -151,6 +151,7 @@ import '../widgets/layout_wrapper.dart';
 import '../utils/profile_completion_flow.dart';
 import '../utils/validators/phone_validator.dart';
 import 'package:collecta/app/routes.dart';
+import '../widgets/custom_popup_dialog.dart';
 
 const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
 
@@ -462,9 +463,22 @@ class _AreaSelectionDialogState extends State<_AreaSelectionDialog> {
   }
 
   void _showDropdown() {
-    final remaining =
-        (zones ?? []).where((z) => !selectedIds.contains(z.id)).toList();
-    if (remaining.isEmpty) return;
+    final currentDriverId = widget.driver.user.id;
+    final remaining = (zones ?? [])
+        .where((z) =>
+            !selectedIds.contains(z.id) &&
+            (z.driverId.isEmpty || z.driverId == currentDriverId))
+        .toList();
+    if (remaining.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (_) => const CustomPopupDialog(
+          title: "אין אזורים פנויים",
+          message: "כל אזורי הפעילות תפוסים כרגע. פנה למנהל.",
+        ),
+      );
+      return;
+    }
 
     final renderBox =
         _addBtnKey.currentContext!.findRenderObject() as RenderBox;
@@ -495,8 +509,12 @@ class _AreaSelectionDialogState extends State<_AreaSelectionDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final currentDriverId = widget.driver.user.id;
+    final availableZones = (zones ?? [])
+        .where((z) => z.driverId.isEmpty || z.driverId == currentDriverId)
+        .toList();
     final allSelected =
-        zones != null && zones!.isNotEmpty && selectedIds.length >= zones!.length;
+        availableZones.isNotEmpty && selectedIds.length >= availableZones.length;
 
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -524,7 +542,13 @@ class _AreaSelectionDialogState extends State<_AreaSelectionDialog> {
                   if (zones!.isEmpty)
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Text("לא נמצאו אזורים",
+                      child: Text("לא הוגדרו אזורי פעילות בארגון. פנה למנהל.",
+                          style: TextStyle(color: Colors.grey)),
+                    )
+                  else if (availableZones.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Text("כל אזורי הפעילות תפוסים כרגע. פנה למנהל.",
                           style: TextStyle(color: Colors.grey)),
                     )
                   else ...[
