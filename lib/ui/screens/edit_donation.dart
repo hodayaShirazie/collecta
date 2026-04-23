@@ -1,4 +1,6 @@
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import '../theme/homepage_theme.dart';
@@ -50,12 +52,48 @@ class _EditDonationState extends State<EditDonation> {
   bool isLoading = true;
   bool _isSubmitting = false;
 
+  String _origBusinessName = '';
+  String _origAddress = '';
+  String _origBusinessPhone = '';
+  String _origCrn = '';
+  String _origContactName = '';
+  String _origContactPhone = '';
+  double? _origLat;
+  double? _origLng;
+  List<String> _origTimeSlots = [];
+  String _origDonatedItemsJson = '';
+
   DonationModel? currentDonation;
 
   @override
   void initState() {
     super.initState();
     _loadDonation();
+  }
+
+  @override
+  void dispose() {
+    for (final ctrl in [businessNameCtrl, addressCtrl, businessPhoneCtrl,
+                         businessIdCtrl, contactNameCtrl, contactPhoneCtrl]) {
+      ctrl.removeListener(_onAnyFieldChanged);
+    }
+    super.dispose();
+  }
+
+  void _onAnyFieldChanged() => setState(() {});
+
+  bool get _hasChanges {
+    if (businessNameCtrl.text != _origBusinessName) return true;
+    if (addressCtrl.text != _origAddress) return true;
+    if (businessPhoneCtrl.text != _origBusinessPhone) return true;
+    if (businessIdCtrl.text != _origCrn) return true;
+    if (contactNameCtrl.text != _origContactName) return true;
+    if (contactPhoneCtrl.text != _origContactPhone) return true;
+    if (selectedLat != _origLat || selectedLng != _origLng) return true;
+    if (selectedTimeSlots.length != _origTimeSlots.length ||
+        selectedTimeSlots.any((s) => !_origTimeSlots.contains(s))) return true;
+    if (jsonEncode(donatedItems) != _origDonatedItemsJson) return true;
+    return false;
   }
 
   Future<void> _loadDonation() async {
@@ -117,7 +155,23 @@ class _EditDonationState extends State<EditDonation> {
 
       selectedProducts = donatedItems.map((e) => e["name"] as String).toList();
 
+      _origBusinessName = businessNameCtrl.text;
+      _origAddress = addressCtrl.text;
+      _origBusinessPhone = businessPhoneCtrl.text;
+      _origCrn = businessIdCtrl.text;
+      _origContactName = contactNameCtrl.text;
+      _origContactPhone = contactPhoneCtrl.text;
+      _origLat = selectedLat;
+      _origLng = selectedLng;
+      _origTimeSlots = List<String>.from(selectedTimeSlots);
+      _origDonatedItemsJson = jsonEncode(donatedItems);
+
       if (!mounted) return;
+
+      for (final ctrl in [businessNameCtrl, addressCtrl, businessPhoneCtrl,
+                           businessIdCtrl, contactNameCtrl, contactPhoneCtrl]) {
+        ctrl.addListener(_onAnyFieldChanged);
+      }
 
       setState(() {
         isLoading = false;
@@ -304,7 +358,7 @@ class _EditDonationState extends State<EditDonation> {
                   donatedItems: donatedItems,
                   onEditItem: editItem,
                   onDeleteItem: deleteItem,
-                  onSubmit: _isSubmitting ? null : submit,
+                  onSubmit: (_hasChanges && !_isSubmitting) ? submit : null,
                   buttonText: "שמור שינויים",
                   isLoading: _isSubmitting,
                   isAddressConfirmed: selectedLat != null,

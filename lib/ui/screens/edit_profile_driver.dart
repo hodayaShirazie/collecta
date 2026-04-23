@@ -75,12 +75,47 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
 
   bool isSaving = false;
 
+  String _origName = '';
+  String _origPhone = '';
+  List<String> _origAreaIds = [];
+  Map<String, String> _origDestNames = {};
+  Map<String, String> _origDestAddresses = {};
+
   final GlobalKey _addAreaButtonKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     _loadDriverProfile();
+  }
+
+  @override
+  void dispose() {
+    nameCtrl.removeListener(_onAnyFieldChanged);
+    phoneCtrl.removeListener(_onAnyFieldChanged);
+    for (final ctrl in nameCtrls.values) {
+      ctrl.removeListener(_onAnyFieldChanged);
+    }
+    for (final ctrl in addressCtrls.values) {
+      ctrl.removeListener(_onAnyFieldChanged);
+    }
+    super.dispose();
+  }
+
+  void _onAnyFieldChanged() => setState(() {});
+
+  bool get _hasChanges {
+    if (nameCtrl.text != _origName) return true;
+    if (phoneCtrl.text != _origPhone) return true;
+    if (_selectedAreaIds.length != _origAreaIds.length ||
+        _selectedAreaIds.any((id) => !_origAreaIds.contains(id))) return true;
+    for (final d in _sortedDestinations) {
+      final id = d.id;
+      if (nameCtrls[id]!.text != (_origDestNames[id] ?? '')) return true;
+      if (addressCtrls[id]!.text != (_origDestAddresses[id] ?? '')) return true;
+      if (selectedLatLng[id] != null) return true;
+    }
+    return false;
   }
 
   Future<void> _loadDriverProfile() async {
@@ -115,7 +150,23 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
         selectedLatLng[d.id] = null;
       }
 
-      setState(() {});
+      _origName = nameCtrl.text;
+      _origPhone = phoneCtrl.text;
+      _origAreaIds = List<String>.from(_selectedAreaIds);
+      for (var d in _sortedDestinations) {
+        _origDestNames[d.id] = nameCtrls[d.id]!.text;
+        _origDestAddresses[d.id] = addressCtrls[d.id]!.text;
+      }
+
+      if (mounted) {
+        nameCtrl.addListener(_onAnyFieldChanged);
+        phoneCtrl.addListener(_onAnyFieldChanged);
+        for (var d in _sortedDestinations) {
+          nameCtrls[d.id]!.addListener(_onAnyFieldChanged);
+          addressCtrls[d.id]!.addListener(_onAnyFieldChanged);
+        }
+        setState(() {});
+      }
 
     } catch (e) {
 
@@ -129,26 +180,30 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
 
   Future<void> _saveProfile() async {
 
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
+    if (!_formKey.currentState!.validate()) return;
     if (driver == null) return;
 
     setState(() => isSaving = true);
 
     try {
 
-      await _userService.updateUserProfile(
-        name: nameCtrl.text,
-      );
+      final userChanged = nameCtrl.text != _origName;
+      final driverChanged =
+          phoneCtrl.text != _origPhone ||
+          _selectedAreaIds.length != _origAreaIds.length ||
+          _selectedAreaIds.any((id) => !_origAreaIds.contains(id));
 
-      final updatedDriver = driver!.copyWith(
-        phone: phoneCtrl.text,
-        activityZone: _selectedAreaIds,
-      );
+      if (userChanged) {
+        await _userService.updateUserProfile(name: nameCtrl.text);
+      }
 
-      await _driverService.updateDriverProfile(updatedDriver);
+      if (driverChanged) {
+        final updatedDriver = driver!.copyWith(
+          phone: phoneCtrl.text,
+          activityZone: _selectedAreaIds,
+        );
+        await _driverService.updateDriverProfile(updatedDriver);
+      }
 
       for (var destination in _sortedDestinations) {
 
@@ -157,14 +212,17 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
         final newAddressName = addressCtrls[id]!.text.trim();
         final newLatLng = selectedLatLng[id];
 
-        // User selected a location from autocomplete
-        final hasNewLocation = newLatLng != null;
+        final nameChanged = newName != (_origDestNames[id] ?? '');
+        final addressChanged =
+            newAddressName != (_origDestAddresses[id] ?? '') || newLatLng != null;
+
+        if (!nameChanged && !addressChanged) continue;
 
         AddressModel finalAddress = destination.address;
+        final hasNewLocation = newLatLng != null;
 
         if (hasNewLocation) {
           if (destination.address.id.isEmpty) {
-            // No address exists yet → create one
             final newAddressId = await _addressService.createAddress(
               name: newAddressName,
               lat: newLatLng.lat,
@@ -177,7 +235,6 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
               lng: newLatLng.lng,
             );
           } else {
-            // Address already exists → update it
             final updatedAddress = destination.address.copyWith(
               name: newAddressName,
               lat: newLatLng.lat,
@@ -431,7 +488,7 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
                       SizedBox(
                         width: 140,
                         child: ElevatedButton(
-                          onPressed: isSaving ? null : _saveProfile,
+                          onPressed: (_hasChanges && !isSaving) ? _saveProfile : null,
                           style: ReportDonationTheme.simpleButton,
                           child: isSaving
                               ? const SizedBox(

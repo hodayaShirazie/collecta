@@ -42,6 +42,16 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
   DonorProfile? donor;
   bool _isSaving = false;
 
+  String _origName = '';
+  String _origBusinessName = '';
+  String _origBusinessPhone = '';
+  String _origAddressName = '';
+  double? _origLat;
+  double? _origLng;
+  String _origContactName = '';
+  String _origContactPhone = '';
+  String _origCrn = '';
+
   double? selectedLat;
   double? selectedLng;
 
@@ -59,6 +69,28 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
     _loadDonorProfile();
   }
 
+  @override
+  void dispose() {
+    for (final ctrl in [nameCtrl, businessNameCtrl, businessPhoneCtrl,
+                         businessAddressCtrl, contactNameCtrl, contactPhoneCtrl, crnCtrl]) {
+      ctrl.removeListener(_onAnyFieldChanged);
+    }
+    super.dispose();
+  }
+
+  void _onAnyFieldChanged() => setState(() {});
+
+  bool get _hasChanges =>
+      nameCtrl.text != _origName ||
+      businessNameCtrl.text != _origBusinessName ||
+      businessPhoneCtrl.text != _origBusinessPhone ||
+      businessAddressCtrl.text != _origAddressName ||
+      selectedLat != _origLat ||
+      selectedLng != _origLng ||
+      contactNameCtrl.text != _origContactName ||
+      contactPhoneCtrl.text != _origContactPhone ||
+      crnCtrl.text != _origCrn;
+
   Future<void> _loadDonorProfile() async {
     try {
 
@@ -67,7 +99,6 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
       nameCtrl.text = donor!.user.name;
       businessNameCtrl.text = donor!.businessName;
       businessPhoneCtrl.text = donor!.businessPhone;
-      // businessAddressCtrl.text = donor!.businessAddress.name;
       contactNameCtrl.text = donor!.contactName;
       contactPhoneCtrl.text = donor!.contactPhone;
       crnCtrl.text = donor!.crn;
@@ -78,7 +109,23 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
         selectedLng = donor!.businessAddress.lng;
       }
 
-      setState(() {});
+      _origName = nameCtrl.text;
+      _origBusinessName = businessNameCtrl.text;
+      _origBusinessPhone = businessPhoneCtrl.text;
+      _origAddressName = businessAddressCtrl.text;
+      _origLat = selectedLat;
+      _origLng = selectedLng;
+      _origContactName = contactNameCtrl.text;
+      _origContactPhone = contactPhoneCtrl.text;
+      _origCrn = crnCtrl.text;
+
+      if (mounted) {
+        for (final ctrl in [nameCtrl, businessNameCtrl, businessPhoneCtrl,
+                             businessAddressCtrl, contactNameCtrl, contactPhoneCtrl, crnCtrl]) {
+          ctrl.addListener(_onAnyFieldChanged);
+        }
+        setState(() {});
+      }
 
     } catch (e) {
       debugPrint("Error loading donor: $e");
@@ -86,66 +133,72 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
   }
 
   Future<void> _saveProfile() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
+    if (!_formKey.currentState!.validate()) return;
     if (donor == null) return;
     if (_isSaving) return;
 
     setState(() => _isSaving = true);
 
     try {
-      /// update user
-      await _userService.updateUserProfile(
-        name: nameCtrl.text,
-      );
+      final userChanged = nameCtrl.text != _origName;
+      final donorFieldsChanged =
+          businessNameCtrl.text != _origBusinessName ||
+          businessPhoneCtrl.text != _origBusinessPhone ||
+          contactNameCtrl.text != _origContactName ||
+          contactPhoneCtrl.text != _origContactPhone ||
+          crnCtrl.text != _origCrn;
+      final addressChanged =
+          businessAddressCtrl.text != _origAddressName ||
+          selectedLat != _origLat ||
+          selectedLng != _origLng;
+
+      if (userChanged) {
+        await _userService.updateUserProfile(name: nameCtrl.text);
+      }
 
       String addressId = donor!.businessAddress.id;
       var address = donor!.businessAddress;
 
-      final hasAddress =
-          addressId.isNotEmpty &&
-          addressId.trim().isNotEmpty &&
-          address.name.trim().isNotEmpty;
+      if (addressChanged) {
+        final hasAddress =
+            addressId.isNotEmpty &&
+            addressId.trim().isNotEmpty &&
+            address.name.trim().isNotEmpty;
 
-      /// אם אין כתובת → צור חדשה
-      if (!hasAddress) {
-        addressId = await _addressService.createAddress(
-          name: businessAddressCtrl.text,
-          lat: selectedLat!,
-          lng: selectedLng!,
-        );
-
-        address = address.copyWith(
-          id: addressId,
-          name: businessAddressCtrl.text,
-          lat: selectedLat!,
-          lng: selectedLng!,
-        );
-      } else {
-        /// אם יש כתובת → עדכן
-        final updatedAddress = address.copyWith(
-          name: businessAddressCtrl.text,
-          lat: selectedLat ?? address.lat,
-          lng: selectedLng ?? address.lng,
-        );
-
-        await _addressService.updateAddress(updatedAddress);
-        address = updatedAddress;
+        if (!hasAddress) {
+          addressId = await _addressService.createAddress(
+            name: businessAddressCtrl.text,
+            lat: selectedLat!,
+            lng: selectedLng!,
+          );
+          address = address.copyWith(
+            id: addressId,
+            name: businessAddressCtrl.text,
+            lat: selectedLat!,
+            lng: selectedLng!,
+          );
+        } else {
+          final updatedAddress = address.copyWith(
+            name: businessAddressCtrl.text,
+            lat: selectedLat ?? address.lat,
+            lng: selectedLng ?? address.lng,
+          );
+          await _addressService.updateAddress(updatedAddress);
+          address = updatedAddress;
+        }
       }
 
-      /// update donor
-      final updatedDonor = donor!.copyWith(
-        businessName: businessNameCtrl.text,
-        businessPhone: businessPhoneCtrl.text,
-        contactName: contactNameCtrl.text,
-        contactPhone: contactPhoneCtrl.text,
-        crn: crnCtrl.text,
-        businessAddress: address,
-      );
-
-      await _donorService.updateDonorProfile(updatedDonor);
+      if (donorFieldsChanged || addressChanged) {
+        final updatedDonor = donor!.copyWith(
+          businessName: businessNameCtrl.text,
+          businessPhone: businessPhoneCtrl.text,
+          contactName: contactNameCtrl.text,
+          contactPhone: contactPhoneCtrl.text,
+          crn: crnCtrl.text,
+          businessAddress: address,
+        );
+        await _donorService.updateDonorProfile(updatedDonor);
+      }
 
       if (!mounted) return;
 
@@ -246,7 +299,7 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
                       SizedBox(
                         width: 140,
                         child: ElevatedButton(
-                          onPressed: _isSaving ? null : _saveProfile,
+                          onPressed: (_hasChanges && !_isSaving) ? _saveProfile : null,
                           style: ReportDonationTheme.simpleButton,
                           child: _isSaving
                               ? const SizedBox(
