@@ -1,5 +1,17 @@
 {
   "projects": {
     "default": "collecta-125aa"
+  },
+  "targets": {
+    "collecta-125aa": {
+      "hosting": {
+        "app": [
+          "collecta-125aa"
+        ],
+        "admin": [
+          "collecta-125aa-control"
+        ]
+      }
+    }
   }
 }

@@ -200,3 +200,7 @@ exports.computeRoutes = onRequest(
 exports.assignDriverToDonation = onRequest(
   require("./donations/assignDriverToDonation")
 );
+
+exports.verifyAdmin = onRequest(
+  require("./admin/verifyAdmin")
+);
