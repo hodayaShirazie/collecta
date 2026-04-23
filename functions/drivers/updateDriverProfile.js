@@ -17,29 +17,29 @@ module.exports = async (req, res) => {
 
       const uid = firebaseUser.uid;
 
-      const { phone, areas } = req.body;
+      const { phone, activityZone } = req.body;
 
       if (phone !== undefined && !isValidString(phone)) {
         return res.status(400).send({ error: "Invalid input parameters" });
       }
 
-      if (areas !== undefined && !Array.isArray(areas)) {
-        return res.status(400).send({ error: "areas must be an array" });
+      if (activityZone !== undefined && !Array.isArray(activityZone)) {
+        return res.status(400).send({ error: "activityZone must be an array" });
       }
 
       const updateData = {};
 
       if (phone !== undefined && phone !== '') updateData.phone = phone;
-      if (areas !== undefined) updateData.areas = areas;
+      if (activityZone !== undefined) updateData.activityZone = activityZone;
 
       if (Object.keys(updateData).length === 0) {
         return res.status(400).send({ error: "No fields to update" });
       }
 
-      if (areas !== undefined) {
+      if (activityZone !== undefined) {
         // Validate that none of the new zones are already assigned to another driver
         const zoneChecks = await Promise.all(
-          areas.map((zoneId) => db.collection("activityZone").doc(zoneId).get())
+          activityZone.map((zoneId) => db.collection("activityZone").doc(zoneId).get())
         );
         for (const zoneDoc of zoneChecks) {
           if (!zoneDoc.exists) continue;
@@ -49,12 +49,12 @@ module.exports = async (req, res) => {
           }
         }
 
-        // Get current driver areas to find what changed
+        // Get current driver activityZone to find what changed
         const driverDoc = await db.collection("driver").doc(uid).get();
-        const oldAreas = driverDoc.exists ? (driverDoc.data().areas ?? []) : [];
+        const oldactivityZone = driverDoc.exists ? (driverDoc.data().activityZone ?? []) : [];
 
-        const removedZones = oldAreas.filter((id) => !areas.includes(id));
-        const addedZones = areas.filter((id) => !oldAreas.includes(id));
+        const removedZones = oldactivityZone.filter((id) => !activityZone.includes(id));
+        const addedZones = activityZone.filter((id) => !oldactivityZone.includes(id));
 
         const batch = db.batch();
 

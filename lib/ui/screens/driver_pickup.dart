@@ -193,10 +193,19 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
                   child: ElevatedButton(
                     onPressed: _isSubmitting ? null : _submitPickup,
                     style: ReportDonationTheme.simpleButton,
-                    child: const Text(
-                      "אשר איסוף תרומה",
-                      style: TextStyle(fontSize: 18, fontFamily: 'Assistant'),
-                    ),
+                    child: _isSubmitting
+                        ? const SizedBox(
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2.5,
+                            ),
+                          )
+                        : const Text(
+                            "אשר איסוף תרומה",
+                            style: TextStyle(fontSize: 18, fontFamily: 'Assistant'),
+                          ),
                   ),
                 ),
                 const SizedBox(height: 35),

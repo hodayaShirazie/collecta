@@ -66,7 +66,7 @@ async function resolveDriverId(businessAddressId, organizationId) {
   // 6. מצא נהג שהאזור הזה ברשימת האזורים שלו
   const driverSnap = await db
     .collection("driver")
-    .where("areas", "array-contains", matchingZoneId)
+    .where("activityZone", "array-contains", matchingZoneId)
     .limit(1)
     .get();
 

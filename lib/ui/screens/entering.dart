@@ -188,7 +188,16 @@ class _EnteringScreenState extends State<EnteringScreen> {
                             }
                           },
                           style: EnteringTheme.actionButtonStyle,
-                          child: const Text("כניסה כתורם"),
+                          child: _isSigningIn
+                              ? const SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2.5,
+                                  ),
+                                )
+                              : const Text("כניסה כתורם"),
                         ),
                       ),
                     ),
@@ -215,7 +224,16 @@ class _EnteringScreenState extends State<EnteringScreen> {
                             }
                           },
                           style: EnteringTheme.actionButtonStyle,
-                          child: const Text("כניסה כנהג"),
+                          child: _isSigningIn
+                              ? const SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2.5,
+                                  ),
+                                )
+                              : const Text("כניסה כנהג"),
                         ),
                       ),
                     ),

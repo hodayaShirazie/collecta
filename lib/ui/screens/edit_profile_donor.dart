@@ -248,7 +248,16 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
                         child: ElevatedButton(
                           onPressed: _isSaving ? null : _saveProfile,
                           style: ReportDonationTheme.simpleButton,
-                          child: const Text("שמור"),
+                          child: _isSaving
+                              ? const SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2.5,
+                                  ),
+                                )
+                              : const Text("שמור"),
                         ),
                       ),
 

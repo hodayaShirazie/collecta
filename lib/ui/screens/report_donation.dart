@@ -246,6 +246,7 @@ class _ReportDonationState extends State<ReportDonation> {
                   },
                   onSubmit: _isSubmitting ? null : submit,
                   buttonText: "אשר תרומה",
+                  isLoading: _isSubmitting,
                   isAddressConfirmed: selectedLat != null,
                   onLocationSelected: (lat, lng) {
                     setState(() {

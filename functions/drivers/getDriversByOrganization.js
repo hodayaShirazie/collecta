@@ -85,7 +85,7 @@ module.exports = async (req, res) => {
           role: {
             id: driverData.id,
             phone: driverData.phone || "",
-            areas: driverData.areas || [],
+            activityZone: driverData.activityZone || [],
             destination: driverData.destination || [],
             stops: driverData.stops || [],
           }

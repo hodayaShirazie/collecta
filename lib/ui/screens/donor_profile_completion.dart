@@ -27,6 +27,7 @@ class _State extends State<DonorProfileCompletionScreen> {
   final DonorService _donorService = DonorService();
 
   int step = 0;
+  bool _isLoading = false;
 
   late List<String> fields;
 
@@ -48,20 +49,31 @@ class _State extends State<DonorProfileCompletionScreen> {
       return;
     }
 
-    final updated = widget.donor.copyWith(
-      businessName: businessNameCtrl.text,
-      businessPhone: businessPhoneCtrl.text,
-      contactName: contactNameCtrl.text,
-      contactPhone: contactPhoneCtrl.text,
-      crn: crnCtrl.text,
-    );
+    setState(() => _isLoading = true);
 
-    await _donorService.updateDonorProfile(updated);
+    try {
+      final updated = widget.donor.copyWith(
+        businessName: businessNameCtrl.text,
+        businessPhone: businessPhoneCtrl.text,
+        contactName: contactNameCtrl.text,
+        contactPhone: contactPhoneCtrl.text,
+        crn: crnCtrl.text,
+      );
 
-    if (step < fields.length - 1) {
-      setState(() => step++);
-    } else {
-      Navigator.pushReplacementNamed(context, Routes.donor);
+      await _donorService.updateDonorProfile(updated);
+
+      if (!mounted) return;
+
+      if (step < fields.length - 1) {
+        setState(() {
+          step++;
+          _isLoading = false;
+        });
+      } else {
+        Navigator.pushReplacementNamed(context, Routes.donor);
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -116,8 +128,17 @@ class _State extends State<DonorProfileCompletionScreen> {
                   const Spacer(),
 
                   ElevatedButton(
-                    onPressed: nextStep,
-                    child: const Text("המשך"),
+                    onPressed: _isLoading ? null : nextStep,
+                    child: _isLoading
+                        ? const SizedBox(
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2.5,
+                            ),
+                          )
+                        : const Text("המשך"),
                   ),
                 ],
               )

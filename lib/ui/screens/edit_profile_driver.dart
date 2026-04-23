@@ -95,7 +95,7 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
       driver = results[0] as DriverProfile;
       _allZones = results[1] as List<ActivityZoneModel>;
       _currentDriverId = driver!.user.id;
-      _selectedAreaIds = List<String>.from(driver!.areas);
+      _selectedAreaIds = List<String>.from(driver!.activityZone);
 
       nameCtrl.text = driver!.user.name;
       phoneCtrl.text = driver!.phone;
@@ -145,7 +145,7 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
 
       final updatedDriver = driver!.copyWith(
         phone: phoneCtrl.text,
-        areas: _selectedAreaIds,
+        activityZone: _selectedAreaIds,
       );
 
       await _driverService.updateDriverProfile(updatedDriver);
@@ -291,7 +291,7 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
     });
   }
 
-  Widget _buildAreasSection() {
+  Widget _buildactivityZoneSection() {
     return CardWidget(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -409,7 +409,7 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
                         phone: phoneCtrl,
                       ),
 
-                      _buildAreasSection(),
+                      _buildactivityZoneSection(),
 
                       ..._sortedDestinations.map((destination) {
                         final id = destination.id;
@@ -433,7 +433,16 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
                         child: ElevatedButton(
                           onPressed: isSaving ? null : _saveProfile,
                           style: ReportDonationTheme.simpleButton,
-                          child: const Text("שמור"),
+                          child: isSaving
+                              ? const SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2.5,
+                                  ),
+                                )
+                              : const Text("שמור"),
                         ),
                       ),
 

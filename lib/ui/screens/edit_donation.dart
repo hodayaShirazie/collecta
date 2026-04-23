@@ -306,6 +306,7 @@ class _EditDonationState extends State<EditDonation> {
                   onDeleteItem: deleteItem,
                   onSubmit: _isSubmitting ? null : submit,
                   buttonText: "שמור שינויים",
+                  isLoading: _isSubmitting,
                   isAddressConfirmed: selectedLat != null,
                   onLocationSelected: onLocationSelected,
                   onLocationCleared: () {
