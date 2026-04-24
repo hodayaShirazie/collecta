@@ -1,8 +1,7 @@
 // functions/drivers/updateDriverProfile.js
 const admin = require("firebase-admin");
 const corsHandler = require("../utils/cors");
-// const resolveUid = require("../utils/resolveUid");
-const verifyFirebaseToken = require("../utils/verifyToken");
+const resolveUid = require("../utils/resolveUid");
 const { isValidString } = require("../utils/validate");
 
 const db = admin.firestore();
@@ -10,12 +9,10 @@ const db = admin.firestore();
 module.exports = async (req, res) => {
   corsHandler(req, res, async () => {
 
-    const firebaseUser = await verifyFirebaseToken(req, res);
-    if (!firebaseUser) return;
+    const uid = await resolveUid(req, res);
+    if (!uid) return;
 
     try {
-
-      const uid = firebaseUser.uid;
 
       const { phone, activityZone } = req.body;
 

@@ -141,6 +141,7 @@ import '../../services/organization_service.dart';
 import '../../services/driver_service.dart';
 import '../../services/user_service.dart';
 import '../../services/activity_zone_service.dart';
+import '../../services/org_manager.dart';
 import '../../data/models/organization_model.dart';
 import '../../data/models/driver_model.dart';
 import '../../data/models/activity_zone_model.dart';
@@ -280,11 +281,12 @@ class _DriverHomepageState extends State<DriverHomepage> {
       );
     }
 
-    // Regular driver login
+    // Regular driver login (also used for cross-site admin impersonation)
+    final orgId = OrgManager.orgId ?? kOrganizationId;
     return Scaffold(
       body: FutureBuilder<List<dynamic>>(
         future: Future.wait([
-          orgService.fetchOrganization(kOrganizationId),
+          orgService.fetchOrganization(orgId),
           userService.fetchMyProfile("driver"),
         ]),
         builder: (context, snapshot) {
@@ -401,7 +403,8 @@ class _DriverHomepageState extends State<DriverHomepage> {
                           title: 'עריכת פרטים',
                           icon: Icons.edit_outlined,
                           onPressed: () {
-                            Navigator.pushNamed(context, Routes.driverEditProfile);
+                            Navigator.pushNamed(context, Routes.driverEditProfile)
+                                .then((_) { if (mounted) setState(() {}); });
                           },
                         ),
                       ],

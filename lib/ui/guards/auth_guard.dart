@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../services/impersonation_manager.dart';
 
 class AuthGuard extends StatelessWidget {
   final Widget child;
@@ -9,8 +10,9 @@ class AuthGuard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
+    final isAdminImpersonating = ImpersonationManager.instance.isImpersonating;
 
-    if (user == null) {
+    if (user == null && !isAdminImpersonating) {
       Future.microtask(() {
         Navigator.of(context)
             .pushNamedAndRemoveUntil('/entering', (route) => false);

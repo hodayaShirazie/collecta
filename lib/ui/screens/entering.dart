@@ -13,6 +13,8 @@ import 'donor_homepage.dart';
 import 'driver_homepage.dart';
 
 import '../../services/org_manager.dart';
+import '../../services/admin_view_manager.dart';
+import '../../services/impersonation_manager.dart';
 import '../utils/org_utils.dart';
 
 
@@ -27,6 +29,7 @@ class _EnteringScreenState extends State<EnteringScreen> {
   final UserService _userService = UserService();
   String? _userToken;
   bool _isSigningIn = false;
+  bool _isAdminViewMode = false;
 
   late Future<dynamic> _orgFuture;
 
@@ -34,6 +37,34 @@ class _EnteringScreenState extends State<EnteringScreen> {
   void initState() {
     super.initState();
     _orgFuture = OrgUtils.loadOrganization();
+
+    debugPrint('[AdminView] hasPendingView=${AdminViewManager.hasPendingView} '
+        'driverId=${AdminViewManager.driverId} '
+        'hasToken=${AdminViewManager.adminToken != null}');
+
+    if (AdminViewManager.hasPendingView) {
+      _isAdminViewMode = true;
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => _handleAdminView());
+    }
+  }
+
+  Future<void> _handleAdminView() async {
+    debugPrint('[AdminView] _handleAdminView called, navigating to DriverHomepage');
+    ImpersonationManager.instance.startWithToken(
+      AdminViewManager.driverId!,
+      AdminViewManager.adminToken!,
+      driverName: AdminViewManager.driverName,
+    );
+    AdminViewManager.clear();
+
+    if (!mounted) return;
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const DriverHomepage(isAdminImpersonating: true),
+      ),
+    );
   }
 
   Future<String?> _signInAndSync(String role) async {
@@ -116,6 +147,12 @@ class _EnteringScreenState extends State<EnteringScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isAdminViewMode) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       body: FutureBuilder(
         future: _orgFuture,
