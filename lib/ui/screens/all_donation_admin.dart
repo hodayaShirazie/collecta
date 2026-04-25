@@ -187,6 +187,14 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
   void _showDriverPicker(DonationModel donation) {
     DriverProfile? selected;
 
+    // Pre-select the current driver (null if none assigned)
+    final DriverProfile? preSelected = donation.driverId.isEmpty
+        ? null
+        : drivers.cast<DriverProfile?>().firstWhere(
+            (d) => d!.user.id == donation.driverId,
+            orElse: () => null,
+          );
+
     showDialog(
       context: context,
       builder: (ctx) => Directionality(
@@ -194,9 +202,14 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
         child: StatefulBuilder(
           builder: (ctx, setDialogState) {
             return AlertDialog(
-              title: const Text("שיוך נהג לתרומה"),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              title: const Text(
+                "שיוך נהג לתרומה",
+                textAlign: TextAlign.right,
+                style: TextStyle(fontFamily: 'Assistant', fontWeight: FontWeight.bold),
+              ),
               content: drivers.isEmpty
-                  ? const Text("אין נהגים בארגון")
+                  ? const Text("אין נהגים בארגון", textAlign: TextAlign.right)
                   : SizedBox(
                       width: double.maxFinite,
                       child: ListView(
@@ -205,20 +218,23 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
                           final isCurrentDriver =
                               driver.user.id == donation.driverId;
                           return RadioListTile<DriverProfile>(
-                            title: Text(driver.user.name.isNotEmpty
-                                ? driver.user.name
-                                : "נהג ללא שם"),
+                            title: Text(
+                              driver.user.name.isNotEmpty
+                                  ? driver.user.name
+                                  : "נהג ללא שם",
+                              style: const TextStyle(fontFamily: 'Assistant'),
+                            ),
                             subtitle: isCurrentDriver
-                                ? const Text("נהג נוכחי",
+                                ? const Text(
+                                    "נהג נוכחי",
                                     style: TextStyle(
-                                        fontSize: 12, color: Colors.green))
+                                        fontSize: 12,
+                                        color: Colors.green,
+                                        fontFamily: 'Assistant'),
+                                  )
                                 : null,
                             value: driver,
-                            groupValue: selected ??
-                                drivers.firstWhere(
-                                  (d) => d.user.id == donation.driverId,
-                                  orElse: () => driver,
-                                ),
+                            groupValue: selected ?? preSelected,
                             onChanged: (val) {
                               setDialogState(() => selected = val);
                             },
@@ -226,58 +242,87 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
                         }).toList(),
                       ),
                     ),
+              actionsAlignment: MainAxisAlignment.center,
               actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(ctx),
-                  child: const Text("ביטול"),
-                ),
-                if (drivers.isNotEmpty)
-                  ElevatedButton(
-                    onPressed: () async {
-                      final chosenDriver = selected ??
-                          drivers.firstWhere(
-                            (d) => d.user.id == donation.driverId,
-                            orElse: () => drivers.first,
-                          );
-
-                      if (chosenDriver.user.id == donation.driverId) {
-                        Navigator.pop(ctx);
-                        return;
-                      }
-
-                      Navigator.pop(ctx);
-
-                      try {
-                        await _service.assignDriverToDonation(
-                          donationId: donation.id,
-                          driverId: chosenDriver.user.id,
-                        );
-
-                        setState(() {
-                          final index =
-                              donations.indexWhere((d) => d.id == donation.id);
-                          if (index != -1) {
-                            donations[index] = donations[index]
-                                .copyWith(driverId: chosenDriver.user.id);
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (drivers.isNotEmpty)
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF2C5AA0),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 13),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                        ),
+                        onPressed: () async {
+                          final chosenDriver = selected ?? preSelected;
+                          if (chosenDriver == null) {
+                            Navigator.pop(ctx);
+                            return;
                           }
-                        });
+                          if (chosenDriver.user.id == donation.driverId) {
+                            Navigator.pop(ctx);
+                            return;
+                          }
 
-                        if (!mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                                "הנהג שויך בהצלחה: ${chosenDriver.user.name}"),
-                          ),
-                        );
-                      } catch (e) {
-                        if (!mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("שגיאה בשיוך נהג: $e")),
-                        );
-                      }
-                    },
-                    child: const Text("שמור"),
-                  ),
+                          Navigator.pop(ctx);
+
+                          try {
+                            await _service.assignDriverToDonation(
+                              donationId: donation.id,
+                              driverId: chosenDriver.user.id,
+                            );
+
+                            setState(() {
+                              final idx =
+                                  donations.indexWhere((d) => d.id == donation.id);
+                              if (idx != -1) {
+                                donations[idx] = donations[idx]
+                                    .copyWith(driverId: chosenDriver.user.id);
+                              }
+                            });
+
+                            if (!mounted) return;
+                            showDialog(
+                              context: context,
+                              builder: (_) => CustomPopupDialog(
+                                title: "שיוך בוצע",
+                                message:
+                                    "התרומה שויכה לנהג ${chosenDriver.user.name}",
+                                buttonText: "סגור",
+                              ),
+                            );
+                          } catch (e) {
+                            if (!mounted) return;
+                            showDialog(
+                              context: context,
+                              builder: (_) => CustomPopupDialog(
+                                title: "שגיאה",
+                                message: "שגיאה בשיוך נהג: $e",
+                                buttonText: "סגור",
+                              ),
+                            );
+                          }
+                        },
+                        child: const Text(
+                          "שמור",
+                          style: TextStyle(fontFamily: 'Assistant', fontSize: 15),
+                        ),
+                      ),
+                    const SizedBox(height: 8),
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      child: const Text(
+                        "ביטול",
+                        style: TextStyle(
+                            fontFamily: 'Assistant', color: Colors.black54),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                  ],
+                ),
               ],
             );
           },
@@ -303,7 +348,7 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
                   textDirection: TextDirection.rtl,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_forward_ios_rounded,
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
                           color: HomepageTheme.latetBlue, size: 20),
                       onPressed: () => Navigator.pop(context),
                     ),
