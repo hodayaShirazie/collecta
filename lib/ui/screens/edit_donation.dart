@@ -331,7 +331,7 @@ class _EditDonationState extends State<EditDonation> {
           decoration: const BoxDecoration(
             gradient: HomepageTheme.pageGradient,
           ),
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 25),
             child: Column(
               children: [
