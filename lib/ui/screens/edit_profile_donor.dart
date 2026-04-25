@@ -240,16 +240,28 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
           decoration: const BoxDecoration(
             gradient: HomepageTheme.pageGradient,
           ),
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 25),
             child: Column(
               children: [
 
                 const SizedBox(height: HomepageTheme.topPadding),
 
-                const Text(
-                  "עריכת פרטי תורם",
-                  style: DonorEditProfileTheme.headerStyle,
+                Row(
+                  textDirection: TextDirection.rtl,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                          color: HomepageTheme.latetBlue, size: 20),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    const Expanded(
+                      child: Text("עריכת פרטי תורם",
+                          textAlign: TextAlign.center,
+                          style: DonorEditProfileTheme.headerStyle),
+                    ),
+                    const SizedBox(width: 48),
+                  ],
                 ),
 
                 const SizedBox(height: 35),

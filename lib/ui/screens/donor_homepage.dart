@@ -215,6 +215,7 @@ class _DonorHomepageState extends State<DonorHomepage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
+                              LogoutButton(parentContext: context),
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                                 decoration: HomepageTheme.coinsBoxDecoration,
@@ -229,7 +230,6 @@ class _DonorHomepageState extends State<DonorHomepage> {
                                   ],
                                 ),
                               ),
-                              LogoutButton(parentContext: context),
                             ],
                           ),
                           const SizedBox(height: 50),

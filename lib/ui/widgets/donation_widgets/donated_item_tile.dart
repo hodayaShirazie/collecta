@@ -17,21 +17,13 @@ class DonatedItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.center, 
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.5, 
-        margin: const EdgeInsets.symmetric(vertical: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+    return Container(
+        margin: const EdgeInsets.symmetric(vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.grey.shade50,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.03),
-              blurRadius: 4,
-            )
-          ],
+          color: const Color(0xFFF0F4FA),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFD0DCF0), width: 1),
         ),
         child: Row(
           textDirection: TextDirection.rtl,
@@ -92,7 +84,6 @@ class DonatedItemTile extends StatelessWidget {
             )
           ],
         ),
-      ),
     );
   }
 }
