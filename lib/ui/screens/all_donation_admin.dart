@@ -291,16 +291,29 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
+        backgroundColor: HomepageTheme.pageBackgroundStart,
         body: Container(
           decoration:
-              const BoxDecoration(gradient: HomepageTheme.pageGradient),
+              const BoxDecoration(color: HomepageTheme.pageBackgroundStart),
           child: SafeArea(
             child: Column(
               children: [
                 const SizedBox(height: 20),
-                const Text(
-                  " התרומות שלי ",
-                  style: MyDonationsTheme.headerStyle,
+                Row(
+                  textDirection: TextDirection.rtl,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_forward_ios_rounded,
+                          color: HomepageTheme.latetBlue, size: 20),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    const Expanded(
+                      child: Text("כל התרומות",
+                          textAlign: TextAlign.center,
+                          style: MyDonationsTheme.headerStyle),
+                    ),
+                    const SizedBox(width: 48),
+                  ],
                 ),
                 const SizedBox(height: 20),
 

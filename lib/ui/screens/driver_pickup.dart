@@ -150,8 +150,21 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 30),
-                const Center(
-                  child: Text("איסוף תרומה", style: ReportDonationTheme.headerStyle),
+                Row(
+                  textDirection: TextDirection.rtl,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_forward_ios_rounded,
+                          color: HomepageTheme.latetBlue, size: 20),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    const Expanded(
+                      child: Text("איסוף תרומה",
+                          textAlign: TextAlign.center,
+                          style: ReportDonationTheme.headerStyle),
+                    ),
+                    const SizedBox(width: 48),
+                  ],
                 ),
                 const SizedBox(height: 6),
                 const Center(
@@ -271,7 +284,9 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
     final isApproved = status == true;
     final isOther = item.type.name == "אחר";
 
-    return Container(
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       decoration: BoxDecoration(
@@ -291,7 +306,7 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
         ),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // שם המוצר או שדה עריכה לסוג "אחר"
           if (isOther)
@@ -392,7 +407,7 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
           ),
         ],
       ),
-    );
+    ));
   }
 
   Widget _buildQtyButton(IconData icon, VoidCallback onPressed) {

@@ -223,13 +223,25 @@ class _AllDriverAdminState extends State<AllDriverAdmin> {
                   children: [
                     const SizedBox(height: 30),
 
-                    const Text(
-                      "נהגים שלי",
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF2C5AA0),
-                      ),
+                    Row(
+                      textDirection: TextDirection.rtl,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.arrow_forward_ios_rounded,
+                              color: Color(0xFF2C5AA0), size: 20),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                        const Expanded(
+                          child: Text("נהגים שלי",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF2C5AA0),
+                              )),
+                        ),
+                        const SizedBox(width: 48),
+                      ],
                     ),
 
                     const SizedBox(height: 30),

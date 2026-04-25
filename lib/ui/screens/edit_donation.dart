@@ -257,40 +257,46 @@ class _EditDonationState extends State<EditDonation> {
 
 
 
-    // יצירת ה-body שנשלח ל-API
     final body = <String, dynamic>{
-      "donationId": widget.donationId, // חובה!
+      "donationId": widget.donationId,
     };
 
-    // מוסיפים רק אם יש ערך
-    if (businessNameCtrl.text.isNotEmpty) body["businessName"] = businessNameCtrl.text;
-    if (businessPhoneCtrl.text.isNotEmpty) body["businessPhone"] = businessPhoneCtrl.text;
-    if (businessIdCtrl.text.isNotEmpty) body["businessId"] = businessIdCtrl.text;
-    if (contactNameCtrl.text.isNotEmpty) body["contactName"] = contactNameCtrl.text;
-    if (contactPhoneCtrl.text.isNotEmpty) body["contactPhone"] = contactPhoneCtrl.text;
+    if (businessNameCtrl.text != _origBusinessName) body["businessName"] = businessNameCtrl.text;
+    if (businessPhoneCtrl.text != _origBusinessPhone) body["businessPhone"] = businessPhoneCtrl.text;
+    if (businessIdCtrl.text != _origCrn) body["businessId"] = businessIdCtrl.text;
+    if (contactNameCtrl.text != _origContactName) body["contactName"] = contactNameCtrl.text;
+    if (contactPhoneCtrl.text != _origContactPhone) body["contactPhone"] = contactPhoneCtrl.text;
 
-    body["businessAddress"] = {
-      "id": currentDonation?.businessAddress.id,
-      "name": addressCtrl.text,
-      "lat": selectedLat ?? 0,
-      "lng": selectedLng ?? 0,
-    };
+    if (addressCtrl.text != _origAddress || selectedLat != _origLat || selectedLng != _origLng) {
+      body["businessAddress"] = {
+        "id": currentDonation?.businessAddress.id,
+        "name": addressCtrl.text,
+        "lat": selectedLat ?? 0,
+        "lng": selectedLng ?? 0,
+      };
+    }
 
-    body["pickupTimes"] = selectedTimeSlots.map((slot) {
-      final parts = slot.split("-");
-      return {"from": parts[0], "to": parts[1]};
-    }).toList();
+    final timeSlotsChanged = selectedTimeSlots.length != _origTimeSlots.length ||
+        selectedTimeSlots.any((s) => !_origTimeSlots.contains(s));
+    if (timeSlotsChanged) {
+      body["pickupTimes"] = selectedTimeSlots.map((slot) {
+        final parts = slot.split("-");
+        return {"from": parts[0], "to": parts[1]};
+      }).toList();
+    }
 
-    body["products"] = donatedItems.map((item) {
-    return {
-      "id": item["id"] ?? '',
-      "productTypeId": item["productTypeId"] ?? '',
-      "name": item["name"] ?? '',
-      "quantity": int.tryParse(item["quantity"] ?? '0') ?? 0,
-      "unit": item["unit"] ?? 'ק"ג/יחידות',
-      "description": item["description"] ?? '',
-    };
-  }).toList();
+    if (jsonEncode(donatedItems) != _origDonatedItemsJson) {
+      body["products"] = donatedItems.map((item) {
+        return {
+          "id": item["id"] ?? '',
+          "productTypeId": item["productTypeId"] ?? '',
+          "name": item["name"] ?? '',
+          "quantity": int.tryParse(item["quantity"] ?? '0') ?? 0,
+          "unit": item["unit"] ?? 'ק"ג/יחידות',
+          "description": item["description"] ?? '',
+        };
+      }).toList();
+    }
 
 
     // קריאה ל-Service לעדכון התרומה
@@ -336,9 +342,21 @@ class _EditDonationState extends State<EditDonation> {
             child: Column(
               children: [
                 const SizedBox(height: HomepageTheme.topPadding),
-                const Text(
-                  "עריכת תרומה",
-                  style: ReportDonationTheme.headerStyle,
+                Row(
+                  textDirection: TextDirection.rtl,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_forward_ios_rounded,
+                          color: HomepageTheme.latetBlue, size: 20),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    const Expanded(
+                      child: Text("עריכת תרומה",
+                          textAlign: TextAlign.center,
+                          style: ReportDonationTheme.headerStyle),
+                    ),
+                    const SizedBox(width: 48),
+                  ],
                 ),
                 const SizedBox(height: 35),
                 DonationForm(
