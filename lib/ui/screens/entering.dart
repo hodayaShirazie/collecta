@@ -207,7 +207,7 @@ class _EnteringScreenState extends State<EnteringScreen> {
 
                     Padding(
                       padding:
-                          const EdgeInsets.symmetric(horizontal: 40),
+                          const EdgeInsets.symmetric(horizontal: 60),
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
@@ -227,10 +227,10 @@ class _EnteringScreenState extends State<EnteringScreen> {
                           style: EnteringTheme.actionButtonStyle,
                           child: _isSigningIn
                               ? const SizedBox(
-                                  width: 22,
-                                  height: 22,
+                                  width: 24,
+                                  height: 24,
                                   child: CircularProgressIndicator(
-                                    color: Colors.white,
+                                    color: EnteringTheme.primaryBlue,
                                     strokeWidth: 2.5,
                                   ),
                                 )
@@ -239,11 +239,11 @@ class _EnteringScreenState extends State<EnteringScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 20),
 
                     Padding(
                       padding:
-                          const EdgeInsets.symmetric(horizontal: 40),
+                          const EdgeInsets.symmetric(horizontal: 60),
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
@@ -263,10 +263,10 @@ class _EnteringScreenState extends State<EnteringScreen> {
                           style: EnteringTheme.actionButtonStyle,
                           child: _isSigningIn
                               ? const SizedBox(
-                                  width: 22,
-                                  height: 22,
+                                  width: 24,
+                                  height: 24,
                                   child: CircularProgressIndicator(
-                                    color: Colors.white,
+                                    color: EnteringTheme.primaryBlue,
                                     strokeWidth: 2.5,
                                   ),
                                 )

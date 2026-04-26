@@ -214,7 +214,22 @@ class _ReportDonationState extends State<ReportDonation> {
             child: Column(
               children: [
                 const SizedBox(height: HomepageTheme.topPadding),
-                const Text("דיווח תרומה", style: ReportDonationTheme.headerStyle),
+                Row(
+                  textDirection: TextDirection.rtl,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                          color: HomepageTheme.latetBlue, size: 20),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    const Expanded(
+                      child: Text("דיווח תרומה",
+                          textAlign: TextAlign.center,
+                          style: ReportDonationTheme.headerStyle),
+                    ),
+                    const SizedBox(width: 48),
+                  ],
+                ),
                 const SizedBox(height: 35),
 
                 // ===================== FORM =====================
