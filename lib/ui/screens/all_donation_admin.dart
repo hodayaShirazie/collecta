@@ -143,11 +143,7 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
     }
     setState(() => _isExporting = true);
     try {
-      // שליפת פרטים מלאים במקביל — הרשימה מחזירה שדות חלקיים בלבד
-      final fullDonations = await Future.wait(
-        filteredDonations.map((d) => _service.getDonationById(d.id)),
-      );
-      await ExportService().exportDonationsToExcel(fullDonations, drivers);
+      await ExportService().exportDonationsToExcel(filteredDonations, drivers);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
