@@ -185,12 +185,13 @@ class DonationApi extends ApiSource {
     }
 
 
-    Future<String> cancelDonation(String donationId) async {
+    Future<String> cancelDonation(String donationId, String cancelingReason) async {
       final response = await http.post(
         Uri.parse('${ApiConfig.baseUrl}/cancelDonation'),
         headers: await headers(),
         body: json.encode({
           "donationId": donationId,
+          "cancelingReason": cancelingReason,
         }),
       );
 

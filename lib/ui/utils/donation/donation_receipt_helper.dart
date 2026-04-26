@@ -107,7 +107,23 @@ class DonationReceiptHelper {
       return;
     }
 
+    if (file.bytes == null) {
+      _showPopup(context, "שגיאה", "לא ניתן לקרוא את תוכן הקובץ");
+      return;
+    }
+
     final fileBytes = file.bytes!;
+
+    // Validate PDF magic bytes (%PDF = 0x25 0x50 0x44 0x46)
+    if (fileBytes.length < 4 ||
+        fileBytes[0] != 0x25 ||
+        fileBytes[1] != 0x50 ||
+        fileBytes[2] != 0x44 ||
+        fileBytes[3] != 0x46) {
+      _showPopup(context, "קובץ לא תקין", "הקובץ שנבחר אינו קובץ PDF תקין");
+      return;
+    }
+
     final fileName = 'receipt_$donationId.pdf';
 
     try {

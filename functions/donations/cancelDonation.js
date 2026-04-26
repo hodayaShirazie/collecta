@@ -11,18 +11,19 @@ module.exports = async (req, res) => {
     if (!firebaseUser) return;
 
     try {
-      const { donationId } = req.body;
+      const { donationId, cancelingReason } = req.body;
 
-      if (!donationId) {
-        return res.status(400).send({ error: "Missing donationId" });
+      if (!donationId || !cancelingReason) {
+        return res.status(400).send({ error: "Missing required fields" });
       }
 
-      if (!isValidString(donationId)) {
+      if (!isValidString(donationId) || !isValidString(cancelingReason)) {
         return res.status(400).send({ error: "Invalid input parameters" });
       }
 
       await db.collection("donation").doc(donationId).update({
         status: "cancelled",
+        canceling_reason: cancelingReason,
       });
 
       return res.status(200).send({

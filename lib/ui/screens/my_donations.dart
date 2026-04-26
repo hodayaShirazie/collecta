@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-// import 'package:collecta/ui/guards/auth_guard.dart';
 import '../theme/homepage_theme.dart';
 import '../theme/my_donations_theme.dart';
 import '../../data/models/donation_list_item_model.dart';
 import '../../services/donation_service.dart';
-// import 'edit_donation.dart';
-import '../widgets/custom_popup_dialog.dart';
-import 'edit_donation.dart';
 import '../widgets/donation_widgets/donation_receipt_button.dart';
+import 'donor_donation_detail.dart';
 
 class MyDonations extends StatefulWidget {
   const MyDonations({super.key});
@@ -18,7 +15,6 @@ class MyDonations extends StatefulWidget {
 
 class _MyDonationsState extends State<MyDonations> {
   final DonationService _service = DonationService();
-  late ValueNotifier<bool> _isCancellingNotifier;
 
   String selectedStatus = "הכל";
   DateTimeRange? selectedDateRange;
@@ -29,14 +25,7 @@ class _MyDonationsState extends State<MyDonations> {
   @override
   void initState() {
     super.initState();
-    _isCancellingNotifier = ValueNotifier(false);
     _loadDonations();
-  }
-
-  @override
-  void dispose() {
-    _isCancellingNotifier.dispose();
-    super.dispose();
   }
 
   Future<void> _loadDonations() async {
@@ -47,7 +36,7 @@ class _MyDonationsState extends State<MyDonations> {
         isLoading = false;
       });
     } catch (e) {
-      print("🔴 error loading donations: $e");
+      debugPrint("error loading donations: $e");
       setState(() {
         isLoading = false;
       });
@@ -78,36 +67,28 @@ class _MyDonationsState extends State<MyDonations> {
 
   List<DonationListItemModel> get filteredDonations {
     return donations.where((donation) {
-      final donationDate = donation.createdAt;
-
       if (selectedStatus != "הכל") {
         final statusMap = {
           "ממתין": "pending",
           "נאסף": "collected",
           "בוטל": "cancelled",
         };
-
-        if (donation.status != statusMap[selectedStatus]) {
-          return false;
-        }
+        if (donation.status != statusMap[selectedStatus]) return false;
       }
-
 
       if (selectedDateRange != null) {
-      final start = DateTime(
-          selectedDateRange!.start.year,
-          selectedDateRange!.start.month,
-          selectedDateRange!.start.day);
-      final end = DateTime(
-          selectedDateRange!.end.year,
-          selectedDateRange!.end.month,
-          selectedDateRange!.end.day,
-          23, 59, 59); 
-
-      if (donationDate.isBefore(start) || donationDate.isAfter(end)) {
-        return false;
+        final start = DateTime(
+            selectedDateRange!.start.year,
+            selectedDateRange!.start.month,
+            selectedDateRange!.start.day);
+        final end = DateTime(
+            selectedDateRange!.end.year,
+            selectedDateRange!.end.month,
+            selectedDateRange!.end.day,
+            23, 59, 59);
+        if (donation.createdAt.isBefore(start) ||
+            donation.createdAt.isAfter(end)) return false;
       }
-    }
 
       return true;
     }).toList();
@@ -126,34 +107,6 @@ class _MyDonationsState extends State<MyDonations> {
     }
   }
 
-  Future<void> cancelDonation(String donationId) async {
-    _isCancellingNotifier.value = true;
-
-    try {
-      await _service.cancelDonation(donationId);
-
-      await _loadDonations();
-
-      if (!mounted) return;
-
-      Navigator.pop(context);
-
-      showDialog(
-        context: context,
-        builder: (context) => const CustomPopupDialog(
-          title: "התרומה בוטלה",
-          message: "התרומה בוטלה בהצלחה",
-        ),
-      );
-    } catch (e) {
-      _isCancellingNotifier.value = false;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("שגיאה: $e")),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -161,7 +114,8 @@ class _MyDonationsState extends State<MyDonations> {
       child: Scaffold(
         backgroundColor: HomepageTheme.pageBackgroundStart,
         body: Container(
-          decoration: const BoxDecoration(color: HomepageTheme.pageBackgroundStart),
+          decoration:
+              const BoxDecoration(color: HomepageTheme.pageBackgroundStart),
           child: SafeArea(
             child: SingleChildScrollView(
               child: Column(
@@ -192,7 +146,8 @@ class _MyDonationsState extends State<MyDonations> {
                       onTap: _pickDateRange,
                       child: Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 14),
                         decoration: MyDonationsTheme.dateFilterDecoration,
                         child: Row(
                           children: [
@@ -209,11 +164,8 @@ class _MyDonationsState extends State<MyDonations> {
                             ),
                             if (selectedDateRange != null)
                               GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    selectedDateRange = null;
-                                  });
-                                },
+                                onTap: () =>
+                                    setState(() => selectedDateRange = null),
                                 child: const Icon(Icons.close),
                               ),
                           ],
@@ -230,21 +182,20 @@ class _MyDonationsState extends State<MyDonations> {
                     child: Row(
                       children: ["הכל", "ממתין", "נאסף", "בוטל"].map((status) {
                         final selected = selectedStatus == status;
-
                         return Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 4),
                             child: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  selectedStatus = status;
-                                });
-                              },
+                              onTap: () =>
+                                  setState(() => selectedStatus = status),
                               child: Container(
-                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
                                 alignment: Alignment.center,
                                 decoration:
-                                    MyDonationsTheme.statusChipDecoration(selected),
+                                    MyDonationsTheme.statusChipDecoration(
+                                        selected),
                                 child: Text(
                                   status,
                                   style: MyDonationsTheme.statusChipText,
@@ -280,30 +231,23 @@ class _MyDonationsState extends State<MyDonations> {
                         final donation = filteredDonations[index];
 
                         return GestureDetector(
-                          onTap: () {
-                            if (donation.status != "pending") {
-                              showDialog(
-                                context: context,
-                                builder: (context) => const CustomPopupDialog(
-                                  title: "עריכה אינה אפשרית",
-                                  message: "לא ניתן לערוך תרומה זו.",
-                                ),
-                              );
-                            } else {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EditDonation(donationId: donation.id),
-                                ),
-                              );
-                            }
+                          onTap: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => DonorDonationDetail(
+                                    donationId: donation.id),
+                              ),
+                            );
+                            _loadDonations();
                           },
                           child: Align(
                             alignment: Alignment.center,
                             child: Container(
-                              width: MediaQuery.of(context).size.width * 0.8,
+                              width: MediaQuery.of(context).size.width * 0.9,
                               margin: const EdgeInsets.symmetric(vertical: 8),
-                              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 14, horizontal: 16),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(12),
@@ -316,82 +260,46 @@ class _MyDonationsState extends State<MyDonations> {
                                 ],
                               ),
                               child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  // צד ימין - פרטי התרומה
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            const Icon(Icons.info_outline, size: 28),
-                                            const SizedBox(width: 12),
-                                            Text(
-                                              "${donation.createdAt.day}/${donation.createdAt.month}/${donation.createdAt.year}",
-                                              style: MyDonationsTheme.donationDate,
-                                            ),
-                                            const SizedBox(width: 12),
-                                            Container(
-                                              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-                                              decoration: BoxDecoration(
-                                                color: MyDonationsTheme.statusColor(donation.status),
-                                                borderRadius: BorderRadius.circular(10),
-                                              ),
-                                              child: Text(
-                                                _statusText(donation.status),
-                                                style: const TextStyle(color: Colors.black),
-                                              ),
-                                            ),
-                                          ],
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.info_outline, size: 24),
+                                      const SizedBox(width: 10),
+                                      Text(
+                                        "${donation.createdAt.day}/${donation.createdAt.month}/${donation.createdAt.year}",
+                                        style: MyDonationsTheme.donationDate,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 4, horizontal: 10),
+                                        decoration: BoxDecoration(
+                                          color: MyDonationsTheme.statusColor(
+                                              donation.status),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
                                         ),
-                                        if (donation.status == "pending") ...[
-                                          const SizedBox(height: 8),
-                                          ValueListenableBuilder<bool>(
-                                            valueListenable: _isCancellingNotifier,
-                                            builder: (context, isCancelling, _) {
-                                              return TextButton(
-                                                onPressed: isCancelling ? null : () {
-                                                  showDialog(
-                                                    context: context,
-                                                    builder: (context) => ValueListenableBuilder<bool>(
-                                                      valueListenable: _isCancellingNotifier,
-                                                      builder: (context, isCancellingInDialog, _) {
-                                                        return CustomPopupDialog(
-                                                          title: "ביטול תרומה",
-                                                          message: "האם אתה בטוח שברצונך לבטל את התרומה?",
-                                                          buttonText: "אישור",
-                                                          cancelText: "חזור",
-                                                          isLoading: isCancellingInDialog,
-                                                          onConfirm: () => cancelDonation(donation.id),
-                                                        );
-                                                      },
-                                                    ),
-                                                  );
-                                                },
-                                                style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                                                child: const Text(
-                                                  "בטל תרומה",
-                                                  style: TextStyle(
-                                                    fontSize: 13,
-                                                    color: Colors.black54,
-                                                    decoration: TextDecoration.underline,
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        ],
-                                      ],
-                                    ),
+                                        child: Text(
+                                          _statusText(donation.status),
+                                          style: const TextStyle(
+                                              color: Colors.black),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-
-                                  // צד שמאל - כפתור הקבלה החדש
-                                  DonationReceiptButton(
-                                    donationId: donation.id,
-                                    receiptUrl: donation.receipt,
-                                    onUploadSuccess: _loadDonations,
-                                    isAdmin: false,
+                                  Row(
+                                    children: [
+                                      DonationReceiptButton(
+                                        donationId: donation.id,
+                                        receiptUrl: donation.receipt,
+                                        onUploadSuccess: _loadDonations,
+                                        isAdmin: false,
+                                      ),
+                                      const Icon(Icons.chevron_right,
+                                          color: Colors.black38),
+                                    ],
                                   ),
                                 ],
                               ),

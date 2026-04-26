@@ -6,6 +6,7 @@ class InputFieldWidget extends StatelessWidget {
   final TextEditingController controller;
   final String? Function(String?)? validator;
   final TextInputType keyboardType;
+  final bool readOnly;
 
   const InputFieldWidget({
     super.key,
@@ -13,6 +14,7 @@ class InputFieldWidget extends StatelessWidget {
     required this.controller,
     this.validator,
     this.keyboardType = TextInputType.text,
+    this.readOnly = false,
   });
 
   @override
@@ -23,8 +25,12 @@ class InputFieldWidget extends StatelessWidget {
         textDirection: TextDirection.rtl,
         child: TextFormField(
           controller: controller,
-          validator: validator ??
-              (value) => value == null || value.isEmpty ? "שדה חובה" : null,
+          readOnly: readOnly,
+          validator: readOnly
+              ? null
+              : (validator ??
+                  (value) =>
+                      value == null || value.isEmpty ? "שדה חובה" : null),
           decoration: ReportDonationTheme.inputDecoration(hint),
           textAlign: TextAlign.right,
           keyboardType: keyboardType,
