@@ -25,15 +25,13 @@ module.exports = async (req, res) => {
     }
 
     try {
-      const now = new Date();
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
-      const snap = await db
+      const result = await db
         .collection("donation")
         .where("organization_id", "==", organizationId)
+        .count()
         .get();
 
-      return res.status(200).send({ count: snap.size });
+      return res.status(200).send({ count: result.data().count });
 
     } catch (e) {
       return res.status(500).send({ error: e.message });

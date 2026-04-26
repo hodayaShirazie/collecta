@@ -6,6 +6,8 @@ class OrganizationModel {
   final String departmentLogo;
   final String backgroundImg;
   final List<String> activityZoneIds;
+  final String? supportPhone;
+  final String? supportMail;
 
   OrganizationModel({
     required this.id,
@@ -14,6 +16,8 @@ class OrganizationModel {
     required this.departmentLogo,
     required this.backgroundImg,
     this.activityZoneIds = const [],
+    this.supportPhone,
+    this.supportMail,
   });
 
   factory OrganizationModel.fromMap(Map<String, dynamic> map) {
@@ -24,6 +28,8 @@ class OrganizationModel {
       departmentLogo: map['department_logo'] ?? '',
       backgroundImg: map['background_img'] ?? '',
       activityZoneIds: List<String>.from(map['activityZoneIds'] ?? []),
+      supportPhone: map['support_phone'],
+      supportMail: map['support_mail'],
     );
   }
 }

@@ -16,8 +16,11 @@ import '../utils/donation/donation_category_helper.dart';
 
 import '../../services/donation_flow_service.dart';
 import '../../services/donor_service.dart';
+import '../../services/organization_service.dart';
 
 import '../../data/models/donor_model.dart';
+
+import '../widgets/donation_widgets/support_contact_card.dart';
 
 
 
@@ -49,12 +52,28 @@ class _ReportDonationState extends State<ReportDonation> {
   bool _isSubmitting = false;
 
   DonorProfile? donor;
+  String? _supportPhone;
+  String? _supportMail;
 
 
   @override
   void initState() {
     super.initState();
     _loadDonorProfileIfExists();
+    _loadOrgSupport();
+  }
+
+  Future<void> _loadOrgSupport() async {
+    try {
+      final org = await OrganizationService().fetchOrganization(kOrganizationId);
+      if (!mounted) return;
+      setState(() {
+        _supportPhone = org.supportPhone;
+        _supportMail = org.supportMail;
+      });
+    } catch (e) {
+      debugPrint('Could not load org support info: $e');
+    }
   }
 
   Future<void> _loadDonorProfileIfExists() async {
@@ -279,6 +298,13 @@ class _ReportDonationState extends State<ReportDonation> {
                 ),
 
                 // END FORM
+
+                const SizedBox(height: 8),
+                SupportContactCard(
+                  supportPhone: _supportPhone,
+                  supportMail: _supportMail,
+                ),
+                const SizedBox(height: 32),
 
               ],
             ),

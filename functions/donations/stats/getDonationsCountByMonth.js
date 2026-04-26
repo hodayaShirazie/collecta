@@ -89,14 +89,15 @@ module.exports = async (req, res) => {
         1
       );
 
-      const snap = await db
+      const result = await db
         .collection("donation")
         .where("organization_id", "==", organizationId)
         .where("created_at", ">=", targetMonth)
         .where("created_at", "<", endOfMonth)
+        .count()
         .get();
 
-      return res.status(200).send({ count: snap.size });
+      return res.status(200).send({ count: result.data().count });
 
     } catch (e) {
 

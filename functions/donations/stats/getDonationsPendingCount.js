@@ -28,14 +28,15 @@ module.exports = async (req, res) => {
       const now = new Date();
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-      const snap = await db
+      const result = await db
         .collection("donation")
         .where("organization_id", "==", organizationId)
         .where("created_at", ">=", startOfMonth)
         .where("status", "==", "pending")
+        .count()
         .get();
 
-      return res.status(200).send({ count: snap.size });
+      return res.status(200).send({ count: result.data().count });
 
     } catch (e) {
       return res.status(500).send({ error: e.message });

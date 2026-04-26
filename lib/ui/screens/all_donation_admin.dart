@@ -5,6 +5,7 @@ import '../../data/models/donation_model.dart';
 import '../../data/models/driver_model.dart';
 import '../../services/donation_service.dart';
 import '../../services/driver_service.dart';
+import '../../services/export_service.dart';
 import '../../services/org_manager.dart';
 import 'admin_donation_detail.dart';
 
@@ -26,6 +27,7 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
   List<DonationModel> donations = [];
   List<DriverProfile> drivers = [];
   bool isLoading = true;
+  bool _isExporting = false;
 
   @override
   void initState() {
@@ -132,6 +134,27 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
     }
   }
 
+  Future<void> _exportToExcel() async {
+    if (filteredDonations.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('אין תרומות לייצוא')),
+      );
+      return;
+    }
+    setState(() => _isExporting = true);
+    try {
+      await ExportService().exportDonationsToExcel(filteredDonations, drivers);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('שגיאה בייצוא: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isExporting = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -158,7 +181,24 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
                           textAlign: TextAlign.center,
                           style: MyDonationsTheme.headerStyle),
                     ),
-                    const SizedBox(width: 48),
+                    _isExporting
+                        ? const SizedBox(
+                            width: 48,
+                            height: 48,
+                            child: Center(
+                              child: SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                            ),
+                          )
+                        : IconButton(
+                            icon: const Icon(Icons.file_download_outlined,
+                                color: HomepageTheme.latetBlue),
+                            tooltip: 'ייצוא לאקסל',
+                            onPressed: _exportToExcel,
+                          ),
                   ],
                 ),
                 const SizedBox(height: 20),

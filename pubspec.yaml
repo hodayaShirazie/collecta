@@ -63,7 +63,11 @@ dependencies:
   cloud_firestore: ^6.1.1
   firebase_storage: ^13.0.5 
   syncfusion_flutter_pdfviewer: ^33.1.44
-  
+  excel: ^4.0.6
+  path_provider: ^2.1.0
+  share_plus: ^10.0.0
+  web: ^1.1.0
+
 
 dev_dependencies:
   flutter_test:

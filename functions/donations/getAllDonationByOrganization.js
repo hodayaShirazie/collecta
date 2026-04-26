@@ -27,69 +27,87 @@ module.exports = async (req, res) => {
         .orderBy("created_at", "desc")
         .get();
 
-      const donations = await Promise.all(snapshot.docs.map(async (doc) => {
-        const donationData = doc.data();
+      if (snapshot.empty) return res.status(200).send([]);
 
-        // JOIN ADDRESS + כל המוצרים במקביל
-        const [addressDoc, ...productDocs] = await Promise.all([
-          db.collection("address").doc(donationData.businessAddress).get(),
-          ...(donationData.products || []).map(id =>
-            db.collection("product").doc(id).get()
-          )
-        ]);
+      const docsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-        const addressData = addressDoc.exists
-          ? addressDoc.data()
-          : { lat: 0, lng: 0, name: "לא ידוע" };
+      // Collect all unique IDs across all donations
+      const addressIds = [...new Set(docsData.map(d => d.businessAddress).filter(Boolean))];
+      const productIds = [...new Set(docsData.flatMap(d => d.products || []))];
 
-        // JOIN PRODUCT TYPES במקביל
-        const productsDetailed = await Promise.all(
-          productDocs
-            .filter(productDoc => productDoc.exists)
-            .map(async (productDoc) => {
-              const productData = productDoc.data();
-              const productTypeDoc = await db
-                .collection("productType")
-                .doc(productData.productType)
-                .get();
+      // Fetch all addresses and products in parallel (single round-trip per collection)
+      const [addressDocs, productDocs] = await Promise.all([
+        Promise.all(addressIds.map(id => db.collection("address").doc(id).get())),
+        Promise.all(productIds.map(id => db.collection("product").doc(id).get())),
+      ]);
 
-              const productTypeData = productTypeDoc.exists
-                ? productTypeDoc.data()
-                : { name: "לא ידוע", description: "" };
+      const addressMap = {};
+      addressDocs.forEach(doc => {
+        if (doc.exists) addressMap[doc.id] = { id: doc.id, ...doc.data() };
+      });
 
-              return {
-                id: productDoc.id,
-                quantity: productData.quantity,
-                type: {
-                  id: productData.productType,
-                  name: productTypeData.name,
-                  description: productTypeData.description || ""
-                }
-              };
-            })
-        );
+      const productMap = {};
+      productDocs.forEach(doc => {
+        if (doc.exists) productMap[doc.id] = { id: doc.id, ...doc.data() };
+      });
+
+      // Collect unique productType IDs and fetch them all at once
+      const productTypeIds = [...new Set(
+        Object.values(productMap).map(p => p.productType).filter(Boolean)
+      )];
+      const productTypeDocs = await Promise.all(
+        productTypeIds.map(id => db.collection("productType").doc(id).get())
+      );
+
+      const productTypeMap = {};
+      productTypeDocs.forEach(doc => {
+        if (doc.exists) productTypeMap[doc.id] = { id: doc.id, ...doc.data() };
+      });
+
+      const donations = docsData.map(donationData => {
+        const address = donationData.businessAddress
+          ? (addressMap[donationData.businessAddress] || { id: "MISSING", lat: 0, lng: 0, name: "לא ידוע" })
+          : { id: "MISSING", lat: 0, lng: 0, name: "לא ידוע" };
+
+        const products = (donationData.products || [])
+          .map(productId => {
+            const product = productMap[productId];
+            if (!product) return null;
+            const type = product.productType ? productTypeMap[product.productType] : null;
+            return {
+              id: productId,
+              quantity: product.quantity,
+              type: type
+                ? { id: type.id, name: type.name, description: type.description || "" }
+                : { id: "", name: "לא ידוע", description: "" },
+            };
+          })
+          .filter(Boolean);
 
         return {
-          id: doc.id,
+          id: donationData.id,
           status: donationData.status,
           receipt: donationData.receipt || donationData.recipe || "",
           canceling_reason: donationData.canceling_reason || "",
           organization_id: donationData.organization_id,
           donor_id: donationData.donor_id,
           driver_id: donationData.driver_id || "",
+          businessName: donationData.businessName || "",
+          businessPhone: donationData.businessPhone || "",
+          crn: donationData.crn || "",
           contactName: donationData.contactName,
           contactPhone: donationData.contactPhone,
           created_at: donationData.created_at.toDate().toISOString(),
           businessAddress: {
-            id: addressDoc.id,
-            lat: addressData.lat,
-            lng: addressData.lng,
-            name: addressData.name
+            id: address.id,
+            lat: address.lat,
+            lng: address.lng,
+            name: address.name,
           },
           pickupTimes: donationData.pickupTimes || [],
-          products: productsDetailed
+          products,
         };
-      }));
+      });
 
       return res.status(200).send(donations);
 

@@ -18,57 +18,81 @@ module.exports = async (req, res) => {
         .orderBy("created_at", "desc")
         .get();
 
+      if (snapshot.empty) return res.status(200).send([]);
+
       const normalize = (ts) => ts?.toDate ? ts.toDate().toISOString() : ts;
-      const donations = [];
+      const docsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-      for (const doc of snapshot.docs) {
-        const donationData = doc.data();
+      // Collect all unique IDs across all donations
+      const addressIds = [...new Set(docsData.map(d => d.businessAddress).filter(Boolean))];
+      const productIds = [...new Set(docsData.flatMap(d => d.products || []))];
 
-        // שליפת כתובת
-        let addressData = { id: 'MISSING', lat: 0, lng: 0, name: '' };
-        if (donationData.businessAddress) {
-          const addressSnap = await db.collection("address").doc(donationData.businessAddress).get();
-          if (addressSnap.exists) addressData = { id: addressSnap.id, ...addressSnap.data() };
-        }
+      // Fetch all addresses and products in parallel (single round-trip per collection)
+      const [addressDocs, productDocs] = await Promise.all([
+        Promise.all(addressIds.map(id => db.collection("address").doc(id).get())),
+        Promise.all(productIds.map(id => db.collection("product").doc(id).get())),
+      ]);
 
-        // שליפת מוצרים
-        let productsData = [];
-        if (donationData.products && donationData.products.length > 0) {
-          for (let productId of donationData.products) {
-            const prodSnap = await db.collection("product").doc(productId).get();
-            if (!prodSnap.exists) continue;
-            const prod = prodSnap.data();
+      const addressMap = {};
+      addressDocs.forEach(doc => {
+        if (doc.exists) addressMap[doc.id] = { id: doc.id, ...doc.data() };
+      });
 
-            let productTypeData = null;
-            if (prod.productType) {
-              const typeSnap = await db.collection("productType").doc(prod.productType).get();
-              if (typeSnap.exists) productTypeData = { id: typeSnap.id, ...typeSnap.data() };
-            }
+      const productMap = {};
+      productDocs.forEach(doc => {
+        if (doc.exists) productMap[doc.id] = { id: doc.id, ...doc.data() };
+      });
 
-            productsData.push({
-              id: prodSnap.id,
-              quantity: prod.quantity,
-              type: productTypeData
-            });
-          }
-        }
+      // Collect unique productType IDs and fetch them all at once
+      const productTypeIds = [...new Set(
+        Object.values(productMap).map(p => p.productType).filter(Boolean)
+      )];
+      const productTypeDocs = await Promise.all(
+        productTypeIds.map(id => db.collection("productType").doc(id).get())
+      );
 
-        donations.push({
-          id: doc.id,
+      const productTypeMap = {};
+      productTypeDocs.forEach(doc => {
+        if (doc.exists) productTypeMap[doc.id] = { id: doc.id, ...doc.data() };
+      });
+
+      const donations = docsData.map(donationData => {
+        const addressData = donationData.businessAddress
+          ? (addressMap[donationData.businessAddress] || { id: "MISSING", lat: 0, lng: 0, name: "" })
+          : { id: "MISSING", lat: 0, lng: 0, name: "" };
+
+        const productsData = (donationData.products || [])
+          .map(productId => {
+            const product = productMap[productId];
+            if (!product) return null;
+            const productType = product.productType ? productTypeMap[product.productType] : null;
+            return {
+              id: productId,
+              quantity: product.quantity,
+              type: productType || null,
+            };
+          })
+          .filter(Boolean);
+
+        return {
+          id: donationData.id,
           status: donationData.status,
-          receipt: donationData.recipe || donationData.receipt || '',
-          canceling_reason: donationData.canceling_reason || '',
-          organization_id: donationData.organization_id || '',
-          donor_id: donationData.donor_id || '',
-          driver_id: donationData.driver_id || '',
-          contactName: donationData.contactName || '',
-          contactPhone: donationData.contactPhone || '',
+          receipt: donationData.recipe || donationData.receipt || "",
+          canceling_reason: donationData.canceling_reason || "",
+          organization_id: donationData.organization_id || "",
+          donor_id: donationData.donor_id || "",
+          driver_id: donationData.driver_id || "",
+          businessName: donationData.businessName || "",
+          businessPhone: donationData.businessPhone || "",
+          crn: donationData.crn || "",
+          contactName: donationData.contactName || "",
+          contactPhone: donationData.contactPhone || "",
           created_at: normalize(donationData.created_at),
           businessAddress: addressData,
           pickupTimes: donationData.pickupTimes || [],
           products: productsData,
-        });
-      }
+        };
+      });
 
       return res.status(200).send(donations);
 
