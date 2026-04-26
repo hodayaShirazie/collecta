@@ -99,8 +99,8 @@ class DonationService {
     return result;
   }
 
-  Future<String> cancelDonation(String donationId) async {
-    final result = await _repo.cancelDonation(donationId);
+  Future<String> cancelDonation(String donationId, String cancelingReason) async {
+    final result = await _repo.cancelDonation(donationId, cancelingReason);
     _invalidateDonationCaches();
     return result;
   }

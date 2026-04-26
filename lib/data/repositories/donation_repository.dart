@@ -67,8 +67,8 @@ class DonationRepository {
     return _source.updateDonation(body);
   }
 
-  Future<String> cancelDonation(String donationId) {
-    return _source.cancelDonation(donationId);
+  Future<String> cancelDonation(String donationId, String cancelingReason) {
+    return _source.cancelDonation(donationId, cancelingReason);
   }
 
   Future<String> uploadDonationReceipt({

@@ -3,12 +3,14 @@ class DonationListItemModel {
   final String status;
   final DateTime createdAt;
   final String receipt;
+  final String cancelingReason;
 
   DonationListItemModel({
     required this.id,
     required this.status,
     required this.createdAt,
     required this.receipt,
+    this.cancelingReason = '',
   });
 
   factory DonationListItemModel.fromApi(Map<String, dynamic> json) {
@@ -17,6 +19,7 @@ class DonationListItemModel {
       status: json['status'],
       createdAt: DateTime.parse(json['created_at']),
       receipt: json['receipt'] ?? json['recipe'] ?? '',
+      cancelingReason: json['canceling_reason'] ?? '',
     );
   }
 }
