@@ -136,17 +136,28 @@ class _EditDonationState extends State<EditDonation> {
 
 
       donatedItems = (donation.products ?? []).map<Map<String, dynamic>>((p) {
-        final typeName = p.type?.name ?? '';
-        final typeDescription = p.type?.description ?? '';
-        final displayName = (typeName == "אחר" && typeDescription.isNotEmpty)
-            ? "אחר: $typeDescription"
+        final typeId = p.type.id;
+        final typeName = p.type.name;
+        final typeDescription = p.type.description ?? '';
+
+        final constantProduct = DonationConstants.products.firstWhere(
+          (prod) => prod["id"] == typeId,
+          orElse: () => <String, dynamic>{},
+        );
+
+        final resolvedName = constantProduct.isNotEmpty
+            ? constantProduct["name"] as String
             : typeName;
 
+        final displayName = (resolvedName == "אחר" && typeDescription.isNotEmpty)
+            ? "אחר: $typeDescription"
+            : resolvedName;
+
         return <String, dynamic>{
-          "id": p.id ?? '',
-          "productTypeId": p.type?.id ?? '',
+          "id": p.id,
+          "productTypeId": typeId,
           "name": displayName,
-          "icon": '',
+          "icon": constantProduct["icon"] ?? '',
           "quantity": p.quantity.toString(),
           "unit": 'ק"ג/יחידות',
           "display": displayName,
