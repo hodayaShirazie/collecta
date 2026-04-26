@@ -348,23 +348,31 @@ class _DriverHomepageState extends State<DriverHomepage> {
                   if (widget.isAdminImpersonating) ...[
                     Container(
                       margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Colors.orange.shade700,
-                        borderRadius: BorderRadius.circular(12),
+                        color: HomepageTheme.latetBlue.withValues(alpha: 0.07),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: HomepageTheme.latetBlue.withValues(alpha: 0.2),
+                          width: 1,
+                        ),
                       ),
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.admin_panel_settings, color: Colors.white, size: 18),
-                          const SizedBox(width: 8),
+                          Icon(Icons.visibility_outlined,
+                              color: HomepageTheme.latetBlue.withValues(alpha: 0.6),
+                              size: 14),
+                          const SizedBox(width: 6),
                           Flexible(
                             child: Text(
-                              'מצב מנהל — צופה בנהג: ${driver.user.name}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
+                              'צופה בפרופיל של ${driver.user.name}',
+                              style: TextStyle(
+                                color: HomepageTheme.latetBlue.withValues(alpha: 0.7),
+                                fontWeight: FontWeight.w500,
+                                fontSize: 12,
+                                fontFamily: 'Assistant',
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
