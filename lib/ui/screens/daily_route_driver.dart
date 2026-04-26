@@ -55,6 +55,12 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
       final fetchedDonations = results[0] as List<DonationModel>;
       final driverProfile = results[1] as DriverProfile;
 
+      // Fetch full donation data in parallel — the list endpoint omits some
+      // fields (e.g. businessName), while getDonationById returns the complete document.
+      final fullDonations = await Future.wait(
+        fetchedDonations.map((d) => _donationService.getDonationById(d.id)),
+      );
+
       final todayHebrew = _weekdayToHebrew[DateTime.now().weekday];
       final todayDest = todayHebrew != null
           ? driverProfile.destinations
@@ -63,7 +69,7 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
           : null;
 
       setState(() {
-        donations = fetchedDonations;
+        donations = fullDonations;
         _todayDestination = todayDest;
         isLoading = false;
         isOptimized = false;
@@ -335,9 +341,7 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
                                 final businessName =
                                     donation.businessName.isNotEmpty
                                         ? donation.businessName
-                                        : donation.contactName.isNotEmpty
-                                            ? donation.contactName
-                                            : 'עסק לא ידוע';
+                                        : 'עסק לא ידוע';
 
                                 return _buildTimelineItem(
                                   isFirst: isFirst,

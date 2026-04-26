@@ -74,11 +74,11 @@ class DonationModel {
     organizationId: json['organization_id'] ?? '',
     donorId: json['donor_id'] ?? '',
     driverId: json['driver_id'] ?? '',
-    businessName: json['businessName'] ?? '',
-    businessPhone: json['businessPhone'] ?? '',
+    businessName: json['businessName'] ?? json['business_name'] ?? '',
+    businessPhone: json['businessPhone'] ?? json['business_phone'] ?? '',
     crn: json['crn'] ?? '',
-    contactName: json['contactName'] ?? '',
-    contactPhone: json['contactPhone'] ?? '',
+    contactName: json['contactName'] ?? json['contact_name'] ?? '',
+    contactPhone: json['contactPhone'] ?? json['contact_phone'] ?? '',
     createdAt: json['created_at'] != null
         ? DateTime.parse(json['created_at'])
         : DateTime.now(),
