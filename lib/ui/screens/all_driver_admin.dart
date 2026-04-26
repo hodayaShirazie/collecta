@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../services/driver_service.dart';
-import '../../services/impersonation_manager.dart';
 import '../../data/models/driver_model.dart';
-import '../../ui/screens/driver_homepage.dart';
 import '../../ui/utils/validators/phone_validator.dart';
 import '../../ui/utils/validators/email_validator.dart';
 import '../../ui/widgets/custom_popup_dialog.dart';
@@ -303,20 +303,27 @@ class _AllDriverAdminState extends State<AllDriverAdmin> {
                                     return InkWell(
                                         borderRadius: BorderRadius.circular(24),
                                         onTap: () async {
-                                          ImpersonationManager.instance.start(
-                                            driver.user.id,
-                                            driverName: driver.user.name,
+                                          final user = FirebaseAuth
+                                              .instance.currentUser;
+                                          final token =
+                                              await user?.getIdToken();
+                                          if (token == null) return;
+
+                                          final uri = Uri.https(
+                                            'collecta-125aa.web.app',
+                                            '/',
+                                            {
+                                              'adminToken': token,
+                                              'driverId': driver.user.id,
+                                              'driverName': driver.user.name,
+                                              'orgId':
+                                                  widget.organizationId,
+                                            },
                                           );
-                                          await Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (_) => DriverHomepage(
-                                                driver: driver,
-                                                isAdminImpersonating: true,
-                                              ),
-                                            ),
+                                          await launchUrl(
+                                            uri,
+                                            webOnlyWindowName: '_blank',
                                           );
-                                          ImpersonationManager.instance.stop();
                                         },
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),

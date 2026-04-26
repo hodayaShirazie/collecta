@@ -6,6 +6,7 @@ import 'app/app.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:app_links/app_links.dart';
 import 'services/org_manager.dart';
+import 'services/admin_view_manager.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,6 +20,11 @@ Future<void> main() async {
   // Web: OrgManager.init() reads orgId from Uri.base (the browser URL)
   // Mobile: also reads from SharedPreferences (previously saved)
   await OrgManager.init();
+
+  // Web: check if admin opened driver site via cross-site redirect
+  AdminViewManager.readFromUrl();
+  debugPrint('[AdminView] main: hasPendingView=${AdminViewManager.hasPendingView} '
+      'url=${Uri.base}');
 
   // Mobile only: handle cold-start deep link (app opened via link)
   if (!kIsWeb) {
