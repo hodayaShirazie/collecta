@@ -101,16 +101,31 @@ class _ActivityZonesAdminState extends State<ActivityZonesAdmin> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
-                    const SizedBox(height: 30),
-                    const Text(
-                      'אזורי פעילות',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF2C5AA0),
-                      ),
+                    const SizedBox(height: 20),
+                    Row(
+                      textDirection: TextDirection.rtl,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                              color: Color(0xFF2C5AA0), size: 20),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                        const Expanded(
+                          child: Text(
+                            'אזורי פעילות',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 26,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF2C5AA0),
+                              fontFamily: 'Assistant',
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 48),
+                      ],
                     ),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 20),
 
                     // Search bar
                     Container(
