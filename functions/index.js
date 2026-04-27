@@ -194,6 +194,7 @@ exports.geocodeAddress = onRequest(
 );
 
 exports.computeRoutes = onRequest(
+  { secrets: [config] },
   require("./routes/computeRoutes")
 );
 
