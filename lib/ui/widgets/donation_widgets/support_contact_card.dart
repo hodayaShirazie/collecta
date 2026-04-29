@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../theme/homepage_theme.dart';
 
@@ -12,9 +13,79 @@ class SupportContactCard extends StatelessWidget {
     this.supportMail,
   });
 
-  Future<void> _launch(String url) async {
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) await launchUrl(uri);
+  Future<void> _launchPhone(String phone) async {
+    final uri = Uri.parse('tel:$phone');
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
+  void _showEmailOptions(BuildContext context, String email) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) => SafeArea(
+        child: Directionality(
+          textDirection: TextDirection.rtl,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 10),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  email,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Colors.black54,
+                    fontFamily: 'Assistant',
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(height: 4),
+              ListTile(
+                leading: const Icon(Icons.open_in_new,
+                    color: HomepageTheme.latetBlue),
+                title: const Text('פתח Gmail',
+                    style: TextStyle(fontFamily: 'Assistant')),
+                onTap: () async {
+                  Navigator.pop(sheetContext);
+                  final uri = Uri.parse('mailto:$email');
+                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+                },
+              ),
+              ListTile(
+                leading:
+                    const Icon(Icons.copy, color: HomepageTheme.latetBlue),
+                title: const Text('העתק כתובת מייל',
+                    style: TextStyle(fontFamily: 'Assistant')),
+                onTap: () {
+                  Clipboard.setData(ClipboardData(text: email));
+                  Navigator.pop(sheetContext);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('כתובת המייל הועתקה'),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -54,25 +125,23 @@ class SupportContactCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 14),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 12,
+            runSpacing: 8,
             children: [
-              if (supportPhone != null) ...[
+              if (supportPhone != null)
                 _ContactButton(
                   icon: Icons.phone_outlined,
                   label: supportPhone!,
-                  onTap: () => _launch('tel:$supportPhone'),
+                  onTap: () => _launchPhone(supportPhone!),
                 ),
-              ],
-              if (supportPhone != null && supportMail != null)
-                const SizedBox(width: 12),
-              if (supportMail != null) ...[
+              if (supportMail != null)
                 _ContactButton(
                   icon: Icons.email_outlined,
                   label: supportMail!,
-                  onTap: () => _launch('mailto:$supportMail'),
+                  onTap: () => _showEmailOptions(context, supportMail!),
                 ),
-              ],
             ],
           ),
         ],
@@ -97,11 +166,13 @@ class _ContactButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        constraints: const BoxConstraints(maxWidth: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: HomepageTheme.latetBlue.withValues(alpha: 0.25)),
+          border: Border.all(
+              color: HomepageTheme.latetBlue.withValues(alpha: 0.25)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.04),
@@ -115,13 +186,17 @@ class _ContactButton extends StatelessWidget {
           children: [
             Icon(icon, size: 17, color: HomepageTheme.latetBlue),
             const SizedBox(width: 6),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: HomepageTheme.latetBlue,
-                fontFamily: 'Assistant',
+            Flexible(
+              child: Text(
+                label,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: HomepageTheme.latetBlue,
+                  fontFamily: 'Assistant',
+                ),
               ),
             ),
           ],

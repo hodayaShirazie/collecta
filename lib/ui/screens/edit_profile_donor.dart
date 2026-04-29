@@ -240,7 +240,7 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
           decoration: const BoxDecoration(
             gradient: HomepageTheme.pageGradient,
           ),
-          child: SingleChildScrollView(
+          child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25),
             child: Column(
               children: [
