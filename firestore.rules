@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // כניסת אדמין: משתמש מחובר יכול לקרוא את המסמך שלו עצמו בלבד
+    match /admin/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+    }
+
+    match /user/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // התראות: משתמש מחובר יכול לקרוא ולעדכן (סימון כנקרא) את ההתראות שלו
+    match /notifications/{notificationId} {
+      allow read: if request.auth != null;
+      allow update: if request.auth != null
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isRead'])
+                    && request.resource.data.isRead is bool;
+    }
+
+    // כל השאר — נחסם (האפליקציה הרגילה עוברת דרך Cloud Functions)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
