@@ -3,10 +3,11 @@ import 'package:fl_chart/fl_chart.dart';
 import '../theme/homepage_theme.dart';
 import '../widgets/homepage_button.dart';
 import '../widgets/layout_wrapper.dart';
-import 'all_donation_admin.dart';
+import '../widgets/notification_bell.dart';
 import 'all_driver_admin.dart';
 import '../../services/donation_service.dart';
 import '../../services/org_manager.dart';
+import '../../services/notification_service.dart';
 import 'package:collecta/app/routes.dart';
 
 class AdminHomepage extends StatefulWidget {
@@ -30,8 +31,11 @@ class _AdminHomepageState extends State<AdminHomepage> {
   void initState() {
     super.initState();
     _loadStats();
+    final orgId = OrgManager.orgId;
+    if (orgId != null && orgId.isNotEmpty) {
+      NotificationService().start(orgId);
+    }
   }
-
 
   Future<void> _loadStats() async {
     final orgId = OrgManager.orgId ?? '';
@@ -72,127 +76,139 @@ class _AdminHomepageState extends State<AdminHomepage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: LayoutWrapper(
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: HomepageTheme.pageGradient,
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                top: -120,
-                right: -80,
-                child: Container(
-                  width: 300,
-                  height: 300,
-                  decoration: HomepageTheme.decorativeCircle,
-                ),
+      body: Stack(
+        children: [
+          LayoutWrapper(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: HomepageTheme.pageGradient,
               ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: -120,
+                    right: -80,
+                    child: Container(
+                      width: 300,
+                      height: 300,
+                      decoration: HomepageTheme.decorativeCircle,
+                    ),
+                  ),
 
-              if (loading)
-                const Center(child: CircularProgressIndicator())
-              else
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: HomepageTheme.topPadding),
-                      const SizedBox(height: 30),
-
-                      Text(
-                        'מרכז ניהול',
-                        style: HomepageTheme.welcomeTextStyle,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'ברוכים הבאים למערכת הניהול',
-                        style: HomepageTheme.subtitleTextStyle.copyWith(
-                          color: Colors.black54,
-                        ),
-                      ),
-
-                      const SizedBox(height: 45),
-
-                      HomepageButton(
-                        title: 'הנהגים שלי',
-                        flipIcon: true,
-                        icon: Icons.local_shipping_outlined,
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  AllDriverAdmin(organizationId: OrgManager.orgId ?? ''),
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: HomepageTheme.betweenButtons + 20),
-
-                      HomepageButton(
-                        title: 'צפייה בתרומות',
-                        flipIcon: true,
-                        icon: Icons.list_alt_outlined,
-                        onPressed: () {
-                          Navigator.pushNamed(context, Routes.allDonationAdmin);
-                        },
-                      ),
-                      const SizedBox(height: HomepageTheme.betweenButtons + 20),
-
-                      HomepageButton(
-                        title: 'אזורי פעילות',
-                        flipIcon: true,
-                        icon: Icons.location_on_outlined,
-                        onPressed: () {
-                          Navigator.pushNamed(context, Routes.activityZones);
-                        },
-                      ),
-
-                      const SizedBox(height: 60),
-
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  if (loading)
+                    const Center(child: CircularProgressIndicator())
+                  else
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 25),
+                      child: Column(
                         children: [
-                          _StatItem(
-                            title: "התקבלו",
-                            // סך הכל כל התרומות שדווחו אי פעם
-                            value: totalDonations.toString(),
+                          const SizedBox(height: HomepageTheme.topPadding),
+                          const SizedBox(height: 30),
+
+                          Text(
+                            'מרכז ניהול',
+                            style: HomepageTheme.welcomeTextStyle,
                           ),
-                          _StatItem(
-                            title: "ממתינות",
-                            value: pending.toString(),
+                          const SizedBox(height: 8),
+                          Text(
+                            'ברוכים הבאים למערכת הניהול',
+                            style: HomepageTheme.subtitleTextStyle.copyWith(
+                              color: Colors.black54,
+                            ),
                           ),
-                          _StatItem(
-                            title: "בוטלו",
-                            value: canceled.toString(),
+
+                          const SizedBox(height: 45),
+
+                          HomepageButton(
+                            title: 'הנהגים שלי',
+                            flipIcon: true,
+                            icon: Icons.local_shipping_outlined,
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      AllDriverAdmin(organizationId: OrgManager.orgId ?? ''),
+                                ),
+                              );
+                            },
                           ),
-                          _StatItem(
-                            title: "אחוז גדילה",
-                            value: "$growth%",
+                          const SizedBox(height: HomepageTheme.betweenButtons + 20),
+
+                          HomepageButton(
+                            title: 'צפייה בתרומות',
+                            flipIcon: true,
+                            icon: Icons.list_alt_outlined,
+                            onPressed: () {
+                              Navigator.pushNamed(context, Routes.allDonationAdmin);
+                            },
                           ),
+                          const SizedBox(height: HomepageTheme.betweenButtons + 20),
+
+                          HomepageButton(
+                            title: 'אזורי פעילות',
+                            flipIcon: true,
+                            icon: Icons.location_on_outlined,
+                            onPressed: () {
+                              Navigator.pushNamed(context, Routes.activityZones);
+                            },
+                          ),
+
+                          const SizedBox(height: 60),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              _StatItem(
+                                title: "התקבלו",
+                                value: totalDonations.toString(),
+                              ),
+                              _StatItem(
+                                title: "ממתינות",
+                                value: pending.toString(),
+                              ),
+                              _StatItem(
+                                title: "בוטלו",
+                                value: canceled.toString(),
+                              ),
+                              _StatItem(
+                                title: "אחוז גדילה",
+                                value: "$growth%",
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 60),
+
+                          _DonutChart(
+                            collected: collected.toDouble(),
+                            pending: pending.toDouble(),
+                            canceled: canceled.toDouble(),
+                          ),
+
+                          const SizedBox(height: 20),
                         ],
                       ),
-
-                      const SizedBox(height: 60),
-
-                      _DonutChart(
-                        collected: collected.toDouble(),
-                        pending: pending.toDouble(),
-                        canceled: canceled.toDouble(),
-                      ),
-
-                      const SizedBox(height: 20),
-                      // לא צריך Spacer – LayoutWrapper מאפשר גלילה
-                    ],
-                  ),
-                ),
-            ],
+                    ),
+                ],
+              ),
+            ),
           ),
-        ),
+
+          // Bell icon – fixed in top-left corner (RTL trailing position)
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16, top: 10),
+                child: const NotificationBell(),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -252,10 +268,6 @@ class _DonutChartState extends State<_DonutChart> {
   Widget build(BuildContext context) {
     final total = widget.collected + widget.pending + widget.canceled;
 
-    final collectedPercent = total == 0 ? 0 : (widget.collected / total) * 100;
-    final pendingPercent = total == 0 ? 0 : (widget.pending / total) * 100;
-    final canceledPercent = total == 0 ? 0 : (widget.canceled / total) * 100;
-
     final values = [
       widget.collected,
       widget.pending,
@@ -269,8 +281,8 @@ class _DonutChartState extends State<_DonutChart> {
     ];
 
     final colors = [
-      HomepageTheme.latetBlue.withOpacity(0.85),
-      HomepageTheme.latetYellow.withOpacity(0.9),
+      HomepageTheme.latetBlue.withValues(alpha: 0.85),
+      HomepageTheme.latetYellow.withValues(alpha: 0.9),
       const Color.fromARGB(255, 160, 183, 233),
     ];
 
