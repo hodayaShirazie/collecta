@@ -40,7 +40,7 @@
     {
       "target": "app",
       "public": "build/web_app",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "ignore": ["firebase.json", ".last_build_id", "**/node_modules/**"],
       "headers": [
         {
           "source": "/.well-known/apple-app-site-association",
@@ -62,7 +62,7 @@
     {
       "target": "admin",
       "public": "build/web_admin",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "ignore": ["firebase.json", ".last_build_id", "**/node_modules/**"],
       "rewrites": [
         {
           "source": "**",

@@ -2,7 +2,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class DonationConstants {
 
-  static final List<Map<String, dynamic>> products = [
+  static List<Map<String, dynamic>> get products => [
     {"name": "מאפים", "id": dotenv.env['PRODUCT_BAKERY_ID'], "icon": "assets/images/category_icons/croissant.png"},
     {"name": "עוגות", "id": dotenv.env['PRODUCT_CAKE_ID'], "icon": "assets/images/category_icons/cake.png"},
     {"name": "היגיינה", "id": dotenv.env['PRODUCT_HYGIENE_ID'], "icon": "assets/images/category_icons/hygiene.png"},

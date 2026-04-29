@@ -148,7 +148,6 @@ import '../../data/models/activity_zone_model.dart';
 import '../theme/homepage_theme.dart';
 import '../widgets/homepage_button.dart';
 import '../widgets/sign_out.dart';
-import '../widgets/layout_wrapper.dart';
 import '../utils/profile_completion_flow.dart';
 import '../utils/validators/phone_validator.dart';
 import 'package:collecta/app/routes.dart';
@@ -273,9 +272,7 @@ class _DriverHomepageState extends State<DriverHomepage> {
             if (snapshot.hasError) {
               return Center(child: Text("שגיאה: ${snapshot.error}"));
             }
-            return LayoutWrapper(
-              child: _buildLayout(context, widget.driver!, organization: snapshot.data!),
-            );
+            return _buildLayout(context, widget.driver!, organization: snapshot.data!);
           },
         ),
       );
@@ -303,9 +300,7 @@ class _DriverHomepageState extends State<DriverHomepage> {
 
           _checkMissingFields(fetchedDriver);
 
-          return LayoutWrapper(
-            child: _buildLayout(context, fetchedDriver, organization: org),
-          );
+          return _buildLayout(context, fetchedDriver, organization: org);
         },
       ),
     );

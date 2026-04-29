@@ -255,7 +255,7 @@ class _DonorDonationDetailState extends State<DonorDonationDetail> {
           decoration: const BoxDecoration(
             gradient: HomepageTheme.pageGradient,
           ),
-          child: SingleChildScrollView(
+          child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25),
             child: Column(
               children: [

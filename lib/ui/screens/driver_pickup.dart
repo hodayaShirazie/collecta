@@ -144,7 +144,7 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
       body: LayoutWrapper(
         child: Container(
           decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
-          child: SingleChildScrollView(
+          child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,

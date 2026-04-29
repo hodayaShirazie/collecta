@@ -8,7 +8,6 @@ import '../../data/models/donor_model.dart';
 import '../../data/models/address_model.dart';
 import '../widgets/homepage_button.dart';
 import '../widgets/sign_out.dart';
-import '../widgets/layout_wrapper.dart';
 import 'package:collecta/app/routes.dart';
 import '../theme/homepage_theme.dart';
 import '../widgets/donation_widgets/address_field.dart';
@@ -192,8 +191,7 @@ class _DonorHomepageState extends State<DonorHomepage> {
           final donor = snapshot.data![1] as DonorProfile;
           _checkMissingFields(donor);
 
-          return LayoutWrapper(
-            child: Container(
+          return Container(
               decoration: BoxDecoration(gradient: HomepageTheme.pageGradient),
               child: SafeArea(
                 child: Stack(
@@ -275,7 +273,6 @@ class _DonorHomepageState extends State<DonorHomepage> {
                   ],
                 ),
               ),
-            ),
           );
         },
       ),
