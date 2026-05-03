@@ -148,6 +148,12 @@ module.exports = async (req, res) => {
 
       const docRef = await db.collection("donation").add(donationData);
 
+      if (driver_id) {
+        await db.collection("driver").doc(driver_id).update({
+          stops: admin.firestore.FieldValue.arrayUnion(docRef.id),
+        });
+      }
+
       return res.status(200).send({
         status: "success",
         donationId: docRef.id

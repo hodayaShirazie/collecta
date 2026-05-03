@@ -24,8 +24,8 @@ class UserModel {
       mail: map['mail'],
       img: map['img'],
       organizationId: map['organization_id'] ?? '',
-      createdAt: DateTime.parse(map['created_at']),
-      lastLogin: DateTime.parse(map['last_login'])
+      createdAt: map['created_at'] != null ? DateTime.parse(map['created_at']) : DateTime.now(),
+      lastLogin: map['last_login'] != null ? DateTime.parse(map['last_login']) : DateTime.now(),
     );
   }
 
