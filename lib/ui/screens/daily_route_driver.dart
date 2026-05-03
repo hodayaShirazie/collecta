@@ -34,10 +34,21 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
 
   List<DonationModel> donations = [];
   DestinationModel? _todayDestination;
+  final Set<String> _collectedIds = {};
 
   bool isLoading = true;
   bool isOptimizing = false;
   bool isOptimized = false;
+
+  int get _currentStopIndex {
+    for (int i = 0; i < donations.length; i++) {
+      if (!_collectedIds.contains(donations[i].id)) return i;
+    }
+    return -1;
+  }
+
+  bool get _allCollected =>
+      donations.isNotEmpty && _collectedIds.length >= donations.length;
 
   @override
   void initState() {
@@ -65,11 +76,15 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
       setState(() {
         donations = fetchedDonations;
         _todayDestination = todayDest;
-        isLoading = false;
         isOptimized = false;
       });
+
+      if (fetchedDonations.isNotEmpty) {
+        await _optimizeRoute();
+      }
     } catch (e) {
       debugPrint("🔴 Error loading route: $e");
+    } finally {
       setState(() => isLoading = false);
     }
   }
@@ -117,7 +132,7 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
     }
   }
 
-  void _showStopOptions(BuildContext context, DonationModel donation, String businessName) {
+  void _showStopOptions(BuildContext context, DonationModel donation, String businessName, {bool isCollected = false}) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -127,37 +142,58 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
           textAlign: TextAlign.right,
           style: const TextStyle(fontFamily: 'Assistant', fontWeight: FontWeight.bold),
         ),
-        content: Text(
-          donation.businessAddress.name,
-          textAlign: TextAlign.right,
-          style: const TextStyle(fontFamily: 'Assistant', color: Colors.grey),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              donation.businessAddress.name,
+              textAlign: TextAlign.right,
+              style: const TextStyle(fontFamily: 'Assistant', color: Colors.grey),
+            ),
+            if (isCollected) ...[
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  const Text('נאסף', style: TextStyle(fontFamily: 'Assistant', color: Colors.green, fontSize: 13)),
+                  const SizedBox(width: 4),
+                  Icon(Icons.check_circle, color: Colors.green.shade600, size: 16),
+                ],
+              ),
+            ],
+          ],
         ),
         actionsAlignment: MainAxisAlignment.center,
         actions: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: HomepageTheme.latetBlue,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
+              if (!isCollected)
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: HomepageTheme.latetBlue,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                  ),
+                  icon: const Icon(Icons.volunteer_activism),
+                  label: const Text('איסוף תרומה',
+                      style: TextStyle(fontFamily: 'Assistant', fontSize: 16)),
+                  onPressed: () async {
+                    Navigator.pop(ctx);
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => DriverPickupPage(donationId: donation.id)),
+                    );
+                    if (result == true && mounted) {
+                      setState(() => _collectedIds.add(donation.id));
+                    }
+                  },
                 ),
-                icon: const Icon(Icons.volunteer_activism),
-                label: const Text('איסוף תרומה',
-                    style: TextStyle(fontFamily: 'Assistant', fontSize: 16)),
-                onPressed: () {
-                  Navigator.pop(ctx);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => DriverPickupPage(donationId: donation.id)),
-                  );
-                },
-              ),
-              const SizedBox(height: 10),
+              if (!isCollected) const SizedBox(height: 10),
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF00B4D8),
@@ -181,6 +217,121 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
         ],
       ),
     );
+  }
+
+  void _showDestinationOptions(DestinationModel destination) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          destination.name.isNotEmpty ? destination.name : 'יעד סיום',
+          textAlign: TextAlign.right,
+          style: const TextStyle(fontFamily: 'Assistant', fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          destination.address.name,
+          textAlign: TextAlign.right,
+          style: const TextStyle(fontFamily: 'Assistant', color: Colors.grey),
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF00B4D8),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                ),
+                icon: const Icon(Icons.navigation),
+                label: const Text('נווט ליעד',
+                    style: TextStyle(fontFamily: 'Assistant', fontSize: 16)),
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  _navigateWithWaze(
+                      destination.address.lat, destination.address.lng);
+                },
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green.shade600,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                ),
+                icon: const Icon(Icons.inventory_2_outlined),
+                label: const Text('אשר פריקה',
+                    style: TextStyle(fontFamily: 'Assistant', fontSize: 16)),
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  _confirmUnloading();
+                },
+              ),
+              const SizedBox(height: 4),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _confirmUnloading() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('אישור פריקה',
+            textAlign: TextAlign.right,
+            style: TextStyle(fontFamily: 'Assistant', fontWeight: FontWeight.bold)),
+        content: const Text(
+          'האם לאשר פריקה וסיום המסלול היומי?',
+          textAlign: TextAlign.right,
+          style: TextStyle(fontFamily: 'Assistant'),
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => Navigator.pop(ctx, false),
+                  child: const Text('ביטול',
+                      style: TextStyle(fontFamily: 'Assistant', color: Colors.grey)),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green.shade600,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () => Navigator.pop(ctx, true),
+                  child: const Text('אשר',
+                      style: TextStyle(fontFamily: 'Assistant')),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    try {
+      await _driverService.clearDriverStops();
+      if (!mounted) return;
+      Navigator.pop(context);
+    } catch (e) {
+      _showError('שגיאה באיפוס המסלול: ${e.toString().replaceFirst('Exception: ', '')}');
+    }
   }
 
   void _showError(String message) {
@@ -227,58 +378,39 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
                                   style: ReportDonationTheme.headerStyle,
                                 ),
                               ),
-                              const SizedBox(width: 48),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          // ── כפתור מיטוב ──
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 16),
-                            child: SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton.icon(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: isOptimized
-                                      ? Colors.green.shade600
-                                      : HomepageTheme.latetBlue,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 13),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(14)),
-                                  elevation: 3,
-                                ),
-                                onPressed:
-                                    isOptimizing ? null : _optimizeRoute,
-                                icon: isOptimizing
-                                    ? const SizedBox(
-                                        width: 18,
-                                        height: 18,
-                                        child: CircularProgressIndicator(
-                                            color: Colors.white,
-                                            strokeWidth: 2),
-                                      )
-                                    : Icon(isOptimized
-                                        ? Icons.check_circle_outline
-                                        : Icons.route),
-                                label: Text(
-                                  isOptimizing
-                                      ? 'מחשב מסלול אופטימלי...'
-                                      : isOptimized
-                                          ? 'המסלול אופטימלי ✓'
-                                          : 'חשב מסלול אופטימלי',
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontFamily: 'Assistant',
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              Tooltip(
+                                message: 'חשב מסלול מחדש',
+                                child: SizedBox(
+                                  width: 40,
+                                  height: 40,
+                                  child: isOptimizing
+                                      ? const Center(
+                                          child: SizedBox(
+                                            width: 16,
+                                            height: 16,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: HomepageTheme.latetBlue,
+                                            ),
+                                          ),
+                                        )
+                                      : IconButton(
+                                          icon: Icon(
+                                            Icons.refresh_rounded,
+                                            size: 20,
+                                            color: isOptimized
+                                                ? Colors.green.shade500
+                                                : HomepageTheme.latetBlue
+                                                    .withOpacity(0.5),
+                                          ),
+                                          padding: EdgeInsets.zero,
+                                          onPressed: _optimizeRoute,
+                                        ),
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 12),
                         ],
                       ),
                     ),
@@ -317,17 +449,25 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
                                     index == donations.length;
 
                                 if (isDestinationItem) {
+                                  final canUnload = _allCollected;
                                   return _buildTimelineItem(
                                     isFirst: isFirst,
                                     isLast: isLast,
-                                    pinColor: Colors.green.shade600,
+                                    pinColor: canUnload
+                                        ? Colors.green.shade600
+                                        : Colors.green.shade300,
                                     pinIcon: Icons.flag_rounded,
                                     label: "יעד סיום",
                                     title: _todayDestination!.name.isNotEmpty
                                         ? _todayDestination!.name
                                         : 'יעד ${_todayDestination!.day}',
                                     subtitle: _todayDestination!.address.name,
-                                    onTap: null,
+                                    onTap: canUnload
+                                        ? () => _showDestinationOptions(_todayDestination!)
+                                        : null,
+                                    destinationHint: canUnload
+                                        ? 'נווט ופרוק'
+                                        : null,
                                   );
                                 }
 
@@ -336,21 +476,30 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
                                     donation.businessName.isNotEmpty
                                         ? donation.businessName
                                         : 'עסק לא ידוע';
+                                final isCollected = _collectedIds.contains(donation.id);
+                                final currentIdx = _currentStopIndex;
+                                final isCurrent = index == currentIdx;
 
                                 return _buildTimelineItem(
                                   isFirst: isFirst,
                                   isLast: isLast,
-                                  pinColor: index == 0
-                                      ? const Color(0xFFD32F2F)
-                                      : HomepageTheme.latetBlue,
-                                  pinIcon: index == 0
-                                      ? Icons.my_location_rounded
-                                      : Icons.location_on_rounded,
+                                  isCollected: isCollected,
+                                  pinColor: isCollected
+                                      ? Colors.grey.shade400
+                                      : isCurrent
+                                          ? const Color(0xFFD32F2F)
+                                          : HomepageTheme.latetBlue,
+                                  pinIcon: isCollected
+                                      ? Icons.check_rounded
+                                      : isCurrent
+                                          ? Icons.my_location_rounded
+                                          : Icons.location_on_rounded,
                                   label: "תחנה ${index + 1}",
                                   title: businessName,
                                   subtitle: donation.businessAddress.name,
                                   onTap: () => _showStopOptions(
-                                      context, donation, businessName),
+                                      context, donation, businessName,
+                                      isCollected: isCollected),
                                 );
                               },
                             ),
@@ -371,9 +520,13 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
     required String title,
     required String subtitle,
     required VoidCallback? onTap,
+    bool isCollected = false,
+    String? destinationHint,
   }) {
     const lineColor = Color(0xFFB0C4DE);
     const pinSize = 46.0;
+    final titleColor = isCollected ? Colors.grey.shade400 : HomepageTheme.latetBlue;
+    final cardColor = isCollected ? Colors.grey.shade50 : Colors.white;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -382,86 +535,115 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
         Expanded(
           child: GestureDetector(
             onTap: onTap,
-            child: Container(
-              margin: const EdgeInsets.only(right: 10, bottom: 6),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(18),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.06),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: pinColor,
-                      fontWeight: FontWeight.w700,
-                      fontFamily: 'Assistant',
+            child: Opacity(
+              opacity: isCollected ? 0.72 : 1.0,
+              child: Container(
+                margin: const EdgeInsets.only(right: 10, bottom: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                decoration: BoxDecoration(
+                  color: cardColor,
+                  borderRadius: BorderRadius.circular(18),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(isCollected ? 0.03 : 0.06),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    title,
-                    textAlign: TextAlign.right,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Assistant',
-                      color: HomepageTheme.latetBlue,
-                    ),
-                  ),
-                  if (subtitle.isNotEmpty) ...[
-                    const SizedBox(height: 4),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Flexible(
-                          child: Text(
-                            subtitle,
-                            textAlign: TextAlign.right,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                              fontFamily: 'Assistant',
-                            ),
+                        if (isCollected) ...[
+                          Icon(Icons.check_circle, size: 13, color: Colors.green.shade400),
+                          const SizedBox(width: 4),
+                        ],
+                        Text(
+                          label,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: pinColor,
+                            fontWeight: FontWeight.w700,
+                            fontFamily: 'Assistant',
                           ),
                         ),
-                        const SizedBox(width: 3),
-                        const Icon(Icons.location_on_outlined,
-                            size: 13, color: Colors.grey),
                       ],
                     ),
-                  ],
-                  if (onTap != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 6),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text(
-                            'לחץ לאפשרויות',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: pinColor.withOpacity(0.6),
-                              fontFamily: 'Assistant',
-                            ),
-                          ),
-                          Icon(Icons.chevron_left,
-                              size: 14, color: pinColor.withOpacity(0.6)),
-                        ],
+                    const SizedBox(height: 2),
+                    Text(
+                      title,
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Assistant',
+                        color: titleColor,
+                        decoration: isCollected ? TextDecoration.lineThrough : null,
+                        decorationColor: Colors.grey.shade400,
                       ),
                     ),
-                ],
+                    if (subtitle.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              subtitle,
+                              textAlign: TextAlign.right,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                                fontFamily: 'Assistant',
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 3),
+                          const Icon(Icons.location_on_outlined,
+                              size: 13, color: Colors.grey),
+                        ],
+                      ),
+                    ],
+                    if (onTap != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              destinationHint ?? (isCollected ? 'נווט לבית העסק' : 'לחץ לאפשרויות'),
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: destinationHint != null
+                                    ? Colors.green.shade500
+                                    : isCollected
+                                        ? Colors.grey.shade400
+                                        : pinColor.withOpacity(0.6),
+                                fontFamily: 'Assistant',
+                              ),
+                            ),
+                            Icon(
+                              destinationHint != null
+                                  ? Icons.flag_outlined
+                                  : isCollected
+                                      ? Icons.navigation_outlined
+                                      : Icons.chevron_left,
+                              size: 14,
+                              color: destinationHint != null
+                                  ? Colors.green.shade500
+                                  : isCollected
+                                      ? Colors.grey.shade400
+                                      : pinColor.withOpacity(0.6),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
           ),

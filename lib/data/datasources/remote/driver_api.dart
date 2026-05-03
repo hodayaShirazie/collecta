@@ -73,6 +73,16 @@ class DriverApi extends ApiSource {
         return data['status'] as String;
     }
 
+    Future<void> clearDriverStops() async {
+        final response = await http.post(
+            Uri.parse('${ApiConfig.baseUrl}/clearDriverStops'),
+            headers: await headers(),
+        );
+        if (response.statusCode != 200) {
+            throw Exception(json.decode(response.body)['error']);
+        }
+    }
+
     Future<List<Map<String, dynamic>>> getDriversByOrganization(String organizationId) async {
         // final headers = await AuthHeaders.build();
         final url = '${ApiConfig.baseUrl}/getDriversByOrganization?organizationId=$organizationId';
