@@ -205,3 +205,7 @@ exports.assignDriverToDonation = onRequest(
 exports.verifyAdmin = onRequest(
   require("./admin/verifyAdmin")
 );
+
+exports.clearDriverStops = onRequest(
+  require("./drivers/clearDriverStops")
+);

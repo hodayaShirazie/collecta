@@ -25,6 +25,10 @@ class DriverRepository {
 
   }
 
+  Future<void> clearDriverStops() {
+    return _source.clearDriverStops();
+  }
+
   Future<String> addDriverByAdmin({
     required String name,
     required String email,
