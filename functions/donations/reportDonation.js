@@ -39,12 +39,14 @@ async function resolveDriverId(businessAddressId, organizationId) {
   const uids = usersSnap.docs.map((d) => d.data().uid).filter(Boolean);
   if (uids.length === 0) return "";
 
-  // 3. שלוף את כל הנהגים בקבוצות של 30 (מגבלת Firestore)
+  // 3. שלוף את כל הנהגים ישירות לפי מזהה מסמך (UID = document ID)
   const driverDocs = [];
   for (let i = 0; i < uids.length; i += 30) {
     const chunk = uids.slice(i, i + 30);
-    const snap = await db.collection("driver").where("id", "in", chunk).get();
-    driverDocs.push(...snap.docs);
+    const snapshots = await Promise.all(
+      chunk.map(uid => db.collection("driver").doc(uid).get())
+    );
+    driverDocs.push(...snapshots.filter(d => d.exists));
   }
   if (driverDocs.length === 0) {
     console.log("🔍 resolveDriverId: no drivers found for org:", organizationId);
