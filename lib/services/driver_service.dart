@@ -37,6 +37,11 @@ class DriverService {
     return result;
   }
 
+  Future<void> clearDriverStops() async {
+    await _repo.clearDriverStops();
+    invalidateProfileCache();
+  }
+
   /// Creates the driver account. The backend automatically creates 5 empty
   /// destinations (one per weekday: ראשון–חמישי) linked to the new driver.
   Future<String> addDriverByAdmin({

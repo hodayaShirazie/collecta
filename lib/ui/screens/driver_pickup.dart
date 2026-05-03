@@ -81,10 +81,12 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
   Future<void> _submitPickup() async {
     bool allSelected = productStatus.values.every((status) => status != null);
     if (!allSelected) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("יש לסמן אישור או ביטול לכל המוצרים"),
-          backgroundColor: Colors.red,
+      await showDialog(
+        context: context,
+        builder: (ctx) => const CustomPopupDialog(
+          title: "שים לב",
+          message: "יש לסמן אישור או ביטול לכל המוצרים לפני שממשיכים",
+          buttonText: "הבנתי",
         ),
       );
       return;
@@ -201,24 +203,26 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
 
                 const SizedBox(height: 10),
 
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _isSubmitting ? null : _submitPickup,
-                    style: ReportDonationTheme.simpleButton,
-                    child: _isSubmitting
-                        ? const SizedBox(
-                            width: 22,
-                            height: 22,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2.5,
+                Center(
+                  child: SizedBox(
+                    width: 160,
+                    child: ElevatedButton(
+                      onPressed: _isSubmitting ? null : _submitPickup,
+                      style: ReportDonationTheme.simpleButton,
+                      child: _isSubmitting
+                          ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2.5,
+                              ),
+                            )
+                          : const Text(
+                              "אשר איסוף",
+                              style: TextStyle(fontSize: 16, fontFamily: 'Assistant'),
                             ),
-                          )
-                        : const Text(
-                            "אשר איסוף תרומה",
-                            style: TextStyle(fontSize: 18, fontFamily: 'Assistant'),
-                          ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 35),
