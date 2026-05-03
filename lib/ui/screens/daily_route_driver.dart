@@ -65,11 +65,15 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
       setState(() {
         donations = fetchedDonations;
         _todayDestination = todayDest;
-        isLoading = false;
         isOptimized = false;
       });
+
+      if (fetchedDonations.isNotEmpty) {
+        await _optimizeRoute();
+      }
     } catch (e) {
       debugPrint("🔴 Error loading route: $e");
+    } finally {
       setState(() => isLoading = false);
     }
   }
@@ -227,58 +231,39 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
                                   style: ReportDonationTheme.headerStyle,
                                 ),
                               ),
-                              const SizedBox(width: 48),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          // ── כפתור מיטוב ──
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 16),
-                            child: SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton.icon(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: isOptimized
-                                      ? Colors.green.shade600
-                                      : HomepageTheme.latetBlue,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 13),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(14)),
-                                  elevation: 3,
-                                ),
-                                onPressed:
-                                    isOptimizing ? null : _optimizeRoute,
-                                icon: isOptimizing
-                                    ? const SizedBox(
-                                        width: 18,
-                                        height: 18,
-                                        child: CircularProgressIndicator(
-                                            color: Colors.white,
-                                            strokeWidth: 2),
-                                      )
-                                    : Icon(isOptimized
-                                        ? Icons.check_circle_outline
-                                        : Icons.route),
-                                label: Text(
-                                  isOptimizing
-                                      ? 'מחשב מסלול אופטימלי...'
-                                      : isOptimized
-                                          ? 'המסלול אופטימלי ✓'
-                                          : 'חשב מסלול אופטימלי',
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontFamily: 'Assistant',
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              Tooltip(
+                                message: 'חשב מסלול מחדש',
+                                child: SizedBox(
+                                  width: 40,
+                                  height: 40,
+                                  child: isOptimizing
+                                      ? const Center(
+                                          child: SizedBox(
+                                            width: 16,
+                                            height: 16,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: HomepageTheme.latetBlue,
+                                            ),
+                                          ),
+                                        )
+                                      : IconButton(
+                                          icon: Icon(
+                                            Icons.refresh_rounded,
+                                            size: 20,
+                                            color: isOptimized
+                                                ? Colors.green.shade500
+                                                : HomepageTheme.latetBlue
+                                                    .withOpacity(0.5),
+                                          ),
+                                          padding: EdgeInsets.zero,
+                                          onPressed: _optimizeRoute,
+                                        ),
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 12),
                         ],
                       ),
                     ),
