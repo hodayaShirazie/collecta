@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../utils/donation/donation_receipt_helper.dart';
+import '../centered_toast.dart';
 
 class DonationReceiptButton extends StatelessWidget {
   final String donationId;
@@ -56,49 +57,39 @@ class DonationReceiptButton extends StatelessWidget {
       );
     }
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        PopupMenuButton<String>(
-          icon: const Icon(Icons.description_outlined, color: Colors.blueGrey, size: 26),
-          tooltip: "",
-          padding: EdgeInsets.zero,
-          onSelected: (value) async {
-            if (value == 'view') {
-              await DonationReceiptHelper.viewReceipt(context, receiptUrl);
-            } else {
-              await DonationReceiptHelper.downloadReceipt(context, receiptUrl);
-            }
-          },
-          itemBuilder: (context) => [
-            const PopupMenuItem(
-              value: 'view',
-              child: Row(
-                children: [
-                  Icon(Icons.visibility_outlined, color: Colors.blueGrey, size: 20),
-                  SizedBox(width: 10),
-                  Text('צפה בקבלה'),
-                ],
-              ),
-            ),
-            const PopupMenuItem(
-              value: 'download',
-              child: Row(
-                children: [
-                  Icon(Icons.file_download_outlined, color: Colors.blueGrey, size: 20),
-                  SizedBox(width: 10),
-                  Text('הורד קבלה'),
-                ],
-              ),
-            ),
-          ],
+    return PopupMenuButton<String>(
+      icon: const Icon(Icons.description_outlined, color: Colors.blueGrey, size: 26),
+      tooltip: "",
+      padding: EdgeInsets.zero,
+      onSelected: (value) async {
+        if (value == 'view') {
+          await DonationReceiptHelper.viewReceipt(context, receiptUrl);
+        } else {
+          await DonationReceiptHelper.downloadReceipt(context, receiptUrl);
+          if (context.mounted) {
+            CenteredToast.show(context, 'הורדה הסתיימה');
+          }
+        }
+      },
+      itemBuilder: (context) => [
+        const PopupMenuItem(
+          value: 'view',
+          child: Row(
+            children: [
+              Icon(Icons.visibility_outlined, color: Colors.blueGrey, size: 20),
+              SizedBox(width: 10),
+              Text('צפה בקבלה'),
+            ],
+          ),
         ),
-        const Text(
-          "קבלה",
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.blueGrey,
-            fontWeight: FontWeight.bold,
+        const PopupMenuItem(
+          value: 'download',
+          child: Row(
+            children: [
+              Icon(Icons.file_download_outlined, color: Colors.blueGrey, size: 20),
+              SizedBox(width: 10),
+              Text('הורד קבלה'),
+            ],
           ),
         ),
       ],
