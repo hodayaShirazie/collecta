@@ -70,7 +70,6 @@ class DonorEditProfileTheme {
     fontWeight: FontWeight.bold,
     color: primaryBlue,
     fontFamily: 'Assistant',
-    fontStyle: FontStyle.italic,
   );
 
   // כותרות מעל שדות הקלט

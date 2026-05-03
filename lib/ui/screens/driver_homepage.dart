@@ -403,7 +403,7 @@ class _DriverHomepageState extends State<DriverHomepage> {
                         ),
                         const SizedBox(height: HomepageTheme.betweenButtons),
                         HomepageButton(
-                          title: 'עריכת פרטים',
+                          title: 'הפרופיל שלי',
                           icon: Icons.edit_outlined,
                           onPressed: () {
                             Navigator.pushNamed(context, Routes.driverEditProfile)
