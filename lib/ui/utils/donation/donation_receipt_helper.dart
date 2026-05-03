@@ -85,10 +85,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import '../../../services/donation_service.dart'; 
+import '../../../services/donation_service.dart';
 import '../../widgets/custom_popup_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../pdf_view_page.dart'; 
+import '../pdf_view_page.dart';
+import 'download_receipt_stub.dart'
+    if (dart.library.html) 'download_receipt_web.dart';
 
 class DonationReceiptHelper {
   static Future<void> pickAndUploadPDF(BuildContext context, String donationId) async {
@@ -181,6 +183,25 @@ class DonationReceiptHelper {
     } catch (e) {
       debugPrint("🔴 Helper Error opening PDF: $e");
       _showPopup(context, "שגיאה", "לא ניתן להציג את הקובץ במכשיר זה");
+    }
+  }
+
+  static Future<void> downloadReceipt(BuildContext context, String urlString) async {
+    if (urlString.isEmpty) return;
+
+    final Uri? url = Uri.tryParse(urlString);
+    if (url == null || !urlString.startsWith('https')) {
+      _showPopup(context, "שגיאה", "קישור לקובץ אינו תקין");
+      return;
+    }
+
+    try {
+      await downloadReceiptFile(urlString, 'קבלה.pdf');
+    } catch (e) {
+      debugPrint("🔴 Download error: $e");
+      if (context.mounted) {
+        _showPopup(context, "שגיאה", "לא ניתן להוריד את הקובץ");
+      }
     }
   }
 
