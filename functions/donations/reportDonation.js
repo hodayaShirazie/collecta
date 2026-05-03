@@ -20,15 +20,23 @@ function getDistanceMeters(lat1, lng1, lat2, lng2) {
 async function resolveDriverId(businessAddressId, organizationId) {
   // 1. שלוף את הלט/לנג של כתובת התרומה
   const addrDoc = await db.collection("address").doc(businessAddressId).get();
-  if (!addrDoc.exists) return "";
+  if (!addrDoc.exists) {
+    console.log("🔍 resolveDriverId: address doc not found:", businessAddressId);
+    return "";
+  }
 
   const { lat: donLat, lng: donLng } = addrDoc.data();
+  console.log(`🔍 resolveDriverId: donation address lat=${donLat}, lng=${donLng}`);
 
   // 2. שלוף את אזורי הפעילות של הארגון
   const orgDoc = await db.collection("organization").doc(organizationId).get();
-  if (!orgDoc.exists) return "";
+  if (!orgDoc.exists) {
+    console.log("🔍 resolveDriverId: organization not found:", organizationId);
+    return "";
+  }
 
   const activityZoneIds = orgDoc.data().activityZoneIds || [];
+  console.log("🔍 resolveDriverId: activityZoneIds:", activityZoneIds);
   if (activityZoneIds.length === 0) return "";
 
   // 3. שלוף את כל מסמכי האזורים
@@ -36,6 +44,7 @@ async function resolveDriverId(businessAddressId, organizationId) {
     activityZoneIds.map((id) => db.collection("activityZone").doc(id).get())
   );
   const existingZones = zoneDocs.filter((d) => d.exists);
+  console.log("🔍 resolveDriverId: existingZones count:", existingZones.length);
 
   // 4. שלוף את הכתובות של האזורים (ללא כפילויות)
   const uniqueAddressIds = [...new Set(existingZones.map((d) => d.data().addressId))];
@@ -52,26 +61,29 @@ async function resolveDriverId(businessAddressId, organizationId) {
   for (const zoneDoc of existingZones) {
     const zone = zoneDoc.data();
     const zoneAddr = addressMap[zone.addressId];
-    if (!zoneAddr) continue;
+    if (!zoneAddr) {
+      console.log(`🔍 resolveDriverId: zone ${zoneDoc.id} (${zone.name}) - address not found`);
+      continue;
+    }
 
     const dist = getDistanceMeters(donLat, donLng, zoneAddr.lat, zoneAddr.lng);
+    console.log(`🔍 resolveDriverId: zone "${zone.name}" dist=${Math.round(dist)}m range=${zone.range}m driverId="${zone.driverId}"`);
     if (dist <= zone.range) {
       matchingZoneId = zoneDoc.id;
       break;
     }
   }
 
-  if (!matchingZoneId) return "";
+  if (!matchingZoneId) {
+    console.log("🔍 resolveDriverId: no matching zone found");
+    return "";
+  }
 
-  // 6. מצא נהג שהאזור הזה ברשימת האזורים שלו
-  const driverSnap = await db
-    .collection("driver")
-    .where("activityZone", "array-contains", matchingZoneId)
-    .limit(1)
-    .get();
-
-  if (driverSnap.empty) return "";
-  return driverSnap.docs[0].data().id || "";
+  // 6. קרא את driverId ישירות ממסמך האזור (כבר טעון)
+  const matchingZone = existingZones.find((d) => d.id === matchingZoneId);
+  const driverId = matchingZone?.data().driverId || "";
+  console.log(`🔍 resolveDriverId: matched zone ${matchingZoneId}, driverId="${driverId}"`);
+  return driverId;
 }
 
 // Function to report a donation
@@ -147,6 +159,12 @@ module.exports = async (req, res) => {
       };
 
       const docRef = await db.collection("donation").add(donationData);
+
+      if (driver_id) {
+        await db.collection("driver").doc(driver_id).update({
+          stops: admin.firestore.FieldValue.arrayUnion(docRef.id),
+        });
+      }
 
       return res.status(200).send({
         status: "success",
