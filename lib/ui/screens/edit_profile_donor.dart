@@ -247,20 +247,20 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
 
                 const SizedBox(height: HomepageTheme.topPadding),
 
-                Row(
-                  textDirection: TextDirection.rtl,
+                Stack(
+                  alignment: Alignment.center,
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                          color: HomepageTheme.latetBlue, size: 20),
-                      onPressed: () => Navigator.pop(context),
+                    const Text("עריכת פרטי תורם",
+                        textAlign: TextAlign.center,
+                        style: DonorEditProfileTheme.headerStyle),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                            color: HomepageTheme.latetBlue, size: 20),
+                        onPressed: () => Navigator.pop(context),
+                      ),
                     ),
-                    const Expanded(
-                      child: Text("עריכת פרטי תורם",
-                          textAlign: TextAlign.center,
-                          style: DonorEditProfileTheme.headerStyle),
-                    ),
-                    const SizedBox(width: 48),
                   ],
                 ),
 

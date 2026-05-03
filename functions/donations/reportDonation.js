@@ -16,62 +16,99 @@ function getDistanceMeters(lat1, lng1, lat2, lng2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-// מחזיר driver_id של הנהג שהאזור שלו מכסה את הכתובת, או "" אם לא נמצא
+// עובר נהג נהג ובודק אם כתובת התרומה נמצאת בטווח של אחד מאזורי הפעילות שלו.
+// מחזיר את ה-id של הנהג הראשון שנמצאה התאמה, או "" אם אין.
 async function resolveDriverId(businessAddressId, organizationId) {
   // 1. שלוף את הלט/לנג של כתובת התרומה
   const addrDoc = await db.collection("address").doc(businessAddressId).get();
-  if (!addrDoc.exists) return "";
-
+  if (!addrDoc.exists) {
+    console.log("🔍 resolveDriverId: address doc not found:", businessAddressId);
+    return "";
+  }
   const { lat: donLat, lng: donLng } = addrDoc.data();
+  console.log(`🔍 resolveDriverId: donation lat=${donLat}, lng=${donLng}`);
 
-  // 2. שלוף את אזורי הפעילות של הארגון
-  const orgDoc = await db.collection("organization").doc(organizationId).get();
-  if (!orgDoc.exists) return "";
+  // 2. שלוף את כל המשתמשים של הארגון
+  const usersSnap = await db.collection("user")
+    .where("organization_id", "==", organizationId)
+    .get();
+  if (usersSnap.empty) {
+    console.log("🔍 resolveDriverId: no users for org:", organizationId);
+    return "";
+  }
+  const uids = usersSnap.docs.map((d) => d.data().uid).filter(Boolean);
+  if (uids.length === 0) return "";
 
-  const activityZoneIds = orgDoc.data().activityZoneIds || [];
-  if (activityZoneIds.length === 0) return "";
+  // 3. שלוף את כל הנהגים ישירות לפי מזהה מסמך (UID = document ID)
+  const driverDocs = [];
+  for (let i = 0; i < uids.length; i += 30) {
+    const chunk = uids.slice(i, i + 30);
+    const snapshots = await Promise.all(
+      chunk.map(uid => db.collection("driver").doc(uid).get())
+    );
+    driverDocs.push(...snapshots.filter(d => d.exists));
+  }
+  if (driverDocs.length === 0) {
+    console.log("🔍 resolveDriverId: no drivers found for org:", organizationId);
+    return "";
+  }
 
-  // 3. שלוף את כל מסמכי האזורים
-  const zoneDocs = await Promise.all(
-    activityZoneIds.map((id) => db.collection("activityZone").doc(id).get())
+  // 4. אסוף את כל מזהי האזורים מכל הנהגים
+  const driverZoneMap = {};
+  const allZoneIds = new Set();
+  for (const driverDoc of driverDocs) {
+    const data = driverDoc.data();
+    const zoneIds = data.activityZone || [];
+    driverZoneMap[data.id] = zoneIds;
+    zoneIds.forEach((id) => allZoneIds.add(id));
+  }
+  if (allZoneIds.size === 0) {
+    console.log("🔍 resolveDriverId: no activity zones assigned to any driver");
+    return "";
+  }
+
+  // 5. טען את כל מסמכי האזורים בבת אחת
+  const zoneDocsArr = await Promise.all(
+    [...allZoneIds].map((id) => db.collection("activityZone").doc(id).get())
   );
-  const existingZones = zoneDocs.filter((d) => d.exists);
-
-  // 4. שלוף את הכתובות של האזורים (ללא כפילויות)
-  const uniqueAddressIds = [...new Set(existingZones.map((d) => d.data().addressId))];
-  const addressMap = {};
-  await Promise.all(
-    uniqueAddressIds.map(async (aid) => {
-      const doc = await db.collection("address").doc(aid).get();
-      if (doc.exists) addressMap[aid] = doc.data();
-    })
-  );
-
-  // 5. מצא אזור ראשון שהכתובת של התרומה בתוך הטווח שלו
-  let matchingZoneId = null;
-  for (const zoneDoc of existingZones) {
-    const zone = zoneDoc.data();
-    const zoneAddr = addressMap[zone.addressId];
-    if (!zoneAddr) continue;
-
-    const dist = getDistanceMeters(donLat, donLng, zoneAddr.lat, zoneAddr.lng);
-    if (dist <= zone.range) {
-      matchingZoneId = zoneDoc.id;
-      break;
+  const zonesMap = {};
+  const zoneAddressIds = new Set();
+  for (const zoneDoc of zoneDocsArr) {
+    if (zoneDoc.exists) {
+      zonesMap[zoneDoc.id] = zoneDoc.data();
+      zoneAddressIds.add(zoneDoc.data().addressId);
     }
   }
 
-  if (!matchingZoneId) return "";
+  // 6. טען את כל כתובות מרכזי האזורים בבת אחת
+  const zoneAddrDocsArr = await Promise.all(
+    [...zoneAddressIds].map((id) => db.collection("address").doc(id).get())
+  );
+  const zoneAddressMap = {};
+  for (const zAddrDoc of zoneAddrDocsArr) {
+    if (zAddrDoc.exists) zoneAddressMap[zAddrDoc.id] = zAddrDoc.data();
+  }
 
-  // 6. מצא נהג שהאזור הזה ברשימת האזורים שלו
-  const driverSnap = await db
-    .collection("driver")
-    .where("activityZone", "array-contains", matchingZoneId)
-    .limit(1)
-    .get();
+  // 7. עבור נהג נהג ובדוק אם כתובת התרומה בטווח של אחד מאזוריו
+  for (const driverDoc of driverDocs) {
+    const driverData = driverDoc.data();
+    const zoneIds = driverZoneMap[driverData.id] || [];
+    for (const zoneId of zoneIds) {
+      const zone = zonesMap[zoneId];
+      if (!zone) continue;
+      const zoneAddr = zoneAddressMap[zone.addressId];
+      if (!zoneAddr) continue;
+      const dist = getDistanceMeters(donLat, donLng, zoneAddr.lat, zoneAddr.lng);
+      console.log(`🔍 Driver ${driverData.id} | zone "${zone.name}" | dist=${Math.round(dist)}m | range=${zone.range}m`);
+      if (dist <= zone.range) {
+        console.log(`✅ resolveDriverId: matched driver ${driverData.id} via zone "${zone.name}"`);
+        return driverData.id;
+      }
+    }
+  }
 
-  if (driverSnap.empty) return "";
-  return driverSnap.docs[0].data().id || "";
+  console.log("🔍 resolveDriverId: no matching driver zone found");
+  return "";
 }
 
 // Function to report a donation
@@ -147,6 +184,12 @@ module.exports = async (req, res) => {
       };
 
       const docRef = await db.collection("donation").add(donationData);
+
+      if (driver_id) {
+        await db.collection("driver").doc(driver_id).update({
+          stops: admin.firestore.FieldValue.arrayUnion(docRef.id),
+        });
+      }
 
       return res.status(200).send({
         status: "success",

@@ -41,6 +41,7 @@ class _AllDriverAdminState extends State<AllDriverAdmin> {
         isLoading = false;
       });
     } catch (e) {
+      debugPrint("🔴 Error loading drivers: $e");
       setState(() {
         isLoading = false;
       });

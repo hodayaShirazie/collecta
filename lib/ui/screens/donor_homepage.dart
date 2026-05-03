@@ -258,7 +258,7 @@ class _DonorHomepageState extends State<DonorHomepage> {
                                 ),
                                 const SizedBox(height: HomepageTheme.betweenButtons),
                                 HomepageButton(
-                                  title: 'עריכת פרטים אישיים',
+                                  title: 'הפרופיל שלי',
                                   icon: Icons.edit_outlined,
                                   onPressed: () => Navigator.pushNamed(context, Routes.donorEditProfile),
                                 ),

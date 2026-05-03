@@ -1,13 +1,12 @@
 import 'user_model.dart';
 import 'destination_model.dart';
-import 'donation_model.dart';
 
 class DriverProfile {
   final UserModel user;
   final String phone;
   final List<String> activityZone;
   final List<DestinationModel> destinations;
-  final List<DonationModel> stops;
+  final List<String> stops;
 
   DriverProfile({
     required this.user,
@@ -29,7 +28,7 @@ class DriverProfile {
           .map((e) => DestinationModel.fromApi(e))
           .toList(),
       stops: (role['stops'] as List<dynamic>? ?? [])
-          .map((e) => DonationModel.fromApi(e))
+          .map((e) => e.toString())
           .toList(),
     );
   }
@@ -54,7 +53,7 @@ class DriverProfile {
     String? phone,
     List<String>? activityZone,
     List<DestinationModel>? destinations,
-    List<DonationModel>? stops,
+    List<String>? stops,
   }) {
     return DriverProfile(
       user: user ?? this.user,

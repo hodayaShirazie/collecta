@@ -53,12 +53,10 @@ module.exports = async (req, res) => {
       for (let i = 0; i < uids.length; i += chunkSize) {
         const chunk = uids.slice(i, i + chunkSize);
 
-        const driversSnap = await db
-          .collection("driver")
-          .where("id", "in", chunk)
-          .get();
-
-        driverDocs.push(...driversSnap.docs);
+        const snapshots = await Promise.all(
+          chunk.map(uid => db.collection("driver").doc(uid).get())
+        );
+        driverDocs.push(...snapshots.filter(d => d.exists));
       }
 
       const result = driverDocs.map(doc => {

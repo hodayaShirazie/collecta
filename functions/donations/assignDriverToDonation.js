@@ -59,7 +59,19 @@ module.exports = async (req, res) => {
         return res.status(400).send({ error: "User is not a driver" });
       }
 
+      const previousDriverId = donation.driver_id;
+
       await donationRef.update({ driver_id: driverId });
+
+      if (previousDriverId && previousDriverId !== driverId) {
+        await db.collection("driver").doc(previousDriverId).update({
+          stops: admin.firestore.FieldValue.arrayRemove(donationId),
+        });
+      }
+
+      await db.collection("driver").doc(driverId).update({
+        stops: admin.firestore.FieldValue.arrayUnion(donationId),
+      });
 
       return res.status(200).send({ status: "ok" });
     } catch (error) {
