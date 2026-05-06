@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../utils/donation/donation_receipt_helper.dart';
+import '../centered_toast.dart';
 
 class DonationReceiptButton extends StatelessWidget {
   final String donationId;
@@ -26,37 +27,69 @@ class DonationReceiptButton extends StatelessWidget {
     final bool hasReceipt = receiptUrl.isNotEmpty;
     final bool canUpload = enabled && !hasReceipt;
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Tooltip(
-          message: !canUpload && !hasReceipt
-              ? "ניתן להעלות קבלה רק לתרומות שנאספו"
-              : "",
-          child: IconButton(
-            icon: Icon(
-              !hasReceipt
-                  ? Icons.cloud_upload_outlined
-                  : Icons.visibility_outlined,
-              color: canUpload || hasReceipt ? Colors.blueGrey : Colors.grey,
-              size: 28,
-            ),
-            onPressed: (canUpload || hasReceipt) ? () async {
-              if (!hasReceipt) {
+    if (!hasReceipt) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Tooltip(
+            message: !canUpload ? "ניתן להעלות קבלה רק לתרומות שנאספו" : "",
+            child: IconButton(
+              icon: Icon(
+                Icons.cloud_upload_outlined,
+                color: canUpload ? Colors.blueGrey : Colors.grey,
+                size: 28,
+              ),
+              onPressed: canUpload ? () async {
                 await DonationReceiptHelper.pickAndUploadPDF(context, donationId);
                 onUploadSuccess();
-              } else {
-                await DonationReceiptHelper.viewReceipt(context, receiptUrl);
-              }
-            } : null,
+              } : null,
+            ),
+          ),
+          Text(
+            "העלה",
+            style: TextStyle(
+              fontSize: 12,
+              color: canUpload ? Colors.blueGrey : Colors.grey,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      );
+    }
+
+    return PopupMenuButton<String>(
+      icon: const Icon(Icons.description_outlined, color: Colors.blueGrey, size: 26),
+      tooltip: "",
+      padding: EdgeInsets.zero,
+      onSelected: (value) async {
+        if (value == 'view') {
+          await DonationReceiptHelper.viewReceipt(context, receiptUrl);
+        } else {
+          await DonationReceiptHelper.downloadReceipt(context, receiptUrl);
+          if (context.mounted) {
+            CenteredToast.show(context, 'הורדה הסתיימה');
+          }
+        }
+      },
+      itemBuilder: (context) => [
+        const PopupMenuItem(
+          value: 'view',
+          child: Row(
+            children: [
+              Icon(Icons.visibility_outlined, color: Colors.blueGrey, size: 20),
+              SizedBox(width: 10),
+              Text('צפה בקבלה'),
+            ],
           ),
         ),
-        Text(
-          !hasReceipt ? "העלה" : "צפה",
-          style: TextStyle(
-            fontSize: 12,
-            color: canUpload || hasReceipt ? Colors.blueGrey : Colors.grey,
-            fontWeight: FontWeight.bold,
+        const PopupMenuItem(
+          value: 'download',
+          child: Row(
+            children: [
+              Icon(Icons.file_download_outlined, color: Colors.blueGrey, size: 20),
+              SizedBox(width: 10),
+              Text('הורד קבלה'),
+            ],
           ),
         ),
       ],

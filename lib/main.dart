@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'config/firebase_options.dart';
 import 'app/app.dart';
@@ -26,8 +27,9 @@ Future<void> main() async {
   debugPrint('[AdminView] main: hasPendingView=${AdminViewManager.hasPendingView} '
       'url=${Uri.base}');
 
-  // Mobile only: handle cold-start deep link (app opened via link)
+  // Mobile only
   if (!kIsWeb) {
+    await FlutterDownloader.initialize(debug: false);
     await _handleInitialDeepLink();
   }
 
