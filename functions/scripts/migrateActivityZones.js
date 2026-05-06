@@ -18,12 +18,9 @@ admin.initializeApp({
 const db = admin.firestore();
 
 async function migrate() {
-  console.log("Starting migration...");
-
   const zonesSnap = await db.collection("activityZone").get();
 
   if (zonesSnap.empty) {
-    console.log("No activityZone documents found. Nothing to migrate.");
     return;
   }
 
@@ -33,7 +30,6 @@ async function migrate() {
     const data = doc.data();
     const orgId = data.organizationId;
     if (!orgId) {
-      console.log(`  Skipping zone ${doc.id} — no organizationId field.`);
       continue;
     }
     if (!orgToZones[orgId]) orgToZones[orgId] = [];
@@ -42,7 +38,6 @@ async function migrate() {
 
   const orgIds = Object.keys(orgToZones);
   if (orgIds.length === 0) {
-    console.log("No zones with organizationId found. Nothing to migrate.");
     return;
   }
 
@@ -53,7 +48,6 @@ async function migrate() {
   const commitIfNeeded = async () => {
     if (opCount >= 490) {
       await batch.commit();
-      console.log("  Committed intermediate batch.");
       batch = db.batch();
       opCount = 0;
     }
@@ -61,7 +55,6 @@ async function migrate() {
 
   // 1. Update each organization — set activityZoneIds array
   for (const [orgId, zoneIds] of Object.entries(orgToZones)) {
-    console.log(`  Org ${orgId}: adding zones [${zoneIds.join(", ")}]`);
     const orgRef = db.collection("organization").doc(orgId);
     batch.update(orgRef, {
       activityZoneIds: admin.firestore.FieldValue.arrayUnion(...zoneIds),
@@ -73,7 +66,6 @@ async function migrate() {
   // 2. Remove organizationId from each activityZone document
   for (const doc of zonesSnap.docs) {
     if (!doc.data().organizationId) continue;
-    console.log(`  Removing organizationId from zone ${doc.id}`);
     batch.update(doc.ref, {
       organizationId: admin.firestore.FieldValue.delete(),
     });
@@ -82,7 +74,6 @@ async function migrate() {
   }
 
   await batch.commit();
-  console.log("Migration complete!");
 }
 
 migrate().catch((err) => {

@@ -65,20 +65,25 @@ class _DonorHomepageState extends State<DonorHomepage> {
         },
       );
     }
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(labelText: _getLabel(field)),
-      validator: (value) {
-        switch (field) {
-          case "crn":
-            return validatecrn(value);
-          case "businessPhone":
-          case "contactPhone":
-            return validatePhone(value);
-          default:
-            return (value == null || value.trim().isEmpty) ? "שדה חובה" : null;
-        }
-      },
+    return Center(
+      child: FractionallySizedBox(
+        widthFactor: 0.75,
+        child: TextFormField(
+          controller: controller,
+          decoration: InputDecoration(labelText: _getLabel(field)),
+          validator: (value) {
+            switch (field) {
+              case "crn":
+                return validatecrn(value);
+              case "businessPhone":
+              case "contactPhone":
+                return validatePhone(value);
+              default:
+                return (value == null || value.trim().isEmpty) ? "שדה חובה" : null;
+            }
+          },
+        ),
+      ),
     );
   }
 
