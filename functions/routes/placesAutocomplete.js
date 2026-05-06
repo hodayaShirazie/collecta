@@ -24,8 +24,6 @@ exports.placesAutocomplete = functions.https.onRequest((req, res) => {
       }
 
       const GOOGLE_KEY = config.value().google.key;
-      console.log("GOOGLE KEY:", GOOGLE_KEY);
-
       const response = await axios.get(
         "https://maps.googleapis.com/maps/api/place/autocomplete/json",
         {

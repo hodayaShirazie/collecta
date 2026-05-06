@@ -34,9 +34,5 @@ module.exports = async function resolveUid(req, res) {
     return null;
   }
 
-  console.log(
-    `[impersonation] admin=${firebaseUser.uid} acting as driver=${impersonateHeader}`
-  );
-
   return impersonateHeader;
 };

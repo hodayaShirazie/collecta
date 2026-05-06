@@ -233,13 +233,18 @@ class _DriverHomepageState extends State<DriverHomepage> {
   }
 
   Widget _buildFieldContent(String field, TextEditingController controller) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(labelText: _getLabel(field)),
-      validator: (value) {
-        if (field == "phone") return validatePhone(value);
-        return (value == null || value.trim().isEmpty) ? "שדה חובה" : null;
-      },
+    return Center(
+      child: FractionallySizedBox(
+        widthFactor: 0.75,
+        child: TextFormField(
+          controller: controller,
+          decoration: InputDecoration(labelText: _getLabel(field)),
+          validator: (value) {
+            if (field == "phone") return validatePhone(value);
+            return (value == null || value.trim().isEmpty) ? "שדה חובה" : null;
+          },
+        ),
+      ),
     );
   }
 

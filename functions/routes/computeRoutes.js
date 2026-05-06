@@ -69,11 +69,6 @@ module.exports = async (req, res) => {
       const googleKey = config.value().google.key;
       const trafficMatrix = await buildTrafficMatrix(points, googleKey);
 
-      console.log(
-        `[computeRoutes] traffic_matrix built: ${points.length}x${points.length} nodes. ` +
-        `Sample [0→1]: ${trafficMatrix[0]?.[1] ?? "N/A"} seconds`
-      );
-
       const lgcnResponse = await axios.post(
         LGCN_URL,
         { nodes: points, traffic_matrix: trafficMatrix },

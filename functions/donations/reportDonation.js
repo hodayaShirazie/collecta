@@ -22,18 +22,14 @@ async function resolveDriverId(businessAddressId, organizationId) {
   // 1. שלוף את הלט/לנג של כתובת התרומה
   const addrDoc = await db.collection("address").doc(businessAddressId).get();
   if (!addrDoc.exists) {
-    console.log("🔍 resolveDriverId: address doc not found:", businessAddressId);
     return "";
   }
   const { lat: donLat, lng: donLng } = addrDoc.data();
-  console.log(`🔍 resolveDriverId: donation lat=${donLat}, lng=${donLng}`);
-
   // 2. שלוף את כל המשתמשים של הארגון
   const usersSnap = await db.collection("user")
     .where("organization_id", "==", organizationId)
     .get();
   if (usersSnap.empty) {
-    console.log("🔍 resolveDriverId: no users for org:", organizationId);
     return "";
   }
   const uids = usersSnap.docs.map((d) => d.data().uid).filter(Boolean);
@@ -49,7 +45,6 @@ async function resolveDriverId(businessAddressId, organizationId) {
     driverDocs.push(...snapshots.filter(d => d.exists));
   }
   if (driverDocs.length === 0) {
-    console.log("🔍 resolveDriverId: no drivers found for org:", organizationId);
     return "";
   }
 
@@ -63,7 +58,6 @@ async function resolveDriverId(businessAddressId, organizationId) {
     zoneIds.forEach((id) => allZoneIds.add(id));
   }
   if (allZoneIds.size === 0) {
-    console.log("🔍 resolveDriverId: no activity zones assigned to any driver");
     return "";
   }
 
@@ -99,15 +93,11 @@ async function resolveDriverId(businessAddressId, organizationId) {
       const zoneAddr = zoneAddressMap[zone.addressId];
       if (!zoneAddr) continue;
       const dist = getDistanceMeters(donLat, donLng, zoneAddr.lat, zoneAddr.lng);
-      console.log(`🔍 Driver ${driverData.id} | zone "${zone.name}" | dist=${Math.round(dist)}m | range=${zone.range}m`);
       if (dist <= zone.range) {
-        console.log(`✅ resolveDriverId: matched driver ${driverData.id} via zone "${zone.name}"`);
         return driverData.id;
       }
     }
   }
-
-  console.log("🔍 resolveDriverId: no matching driver zone found");
   return "";
 }
 
