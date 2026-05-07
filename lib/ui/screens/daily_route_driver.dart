@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../services/donation_service.dart';
 import '../../services/driver_service.dart';
@@ -116,15 +119,84 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
     });
   }
 
+  String get _collectedIdsKey {
+    final today = DateTime.now();
+    return 'collected_stops_${today.year}_${today.month}_${today.day}';
+  }
+
+  String get _collectedDataKey {
+    final today = DateTime.now();
+    return 'collected_donations_${today.year}_${today.month}_${today.day}';
+  }
+
+  // Returns collected donations saved from previous sessions today.
+  // Also fills _collectedIds.
+  Future<List<DonationModel>> _loadPersistedCollectedDonations() async {
+    final prefs = await SharedPreferences.getInstance();
+    final ids = prefs.getStringList(_collectedIdsKey) ?? [];
+    final dataList = prefs.getStringList(_collectedDataKey) ?? [];
+    if (mounted) setState(() => _collectedIds.addAll(ids));
+    return dataList
+        .map((s) {
+          try {
+            return DonationModel.fromApi(
+                Map<String, dynamic>.from(jsonDecode(s) as Map));
+          } catch (_) {
+            return null;
+          }
+        })
+        .whereType<DonationModel>()
+        .toList();
+  }
+
+  Future<void> _persistCollectedDonation(DonationModel donation) async {
+    final prefs = await SharedPreferences.getInstance();
+    // persist ID
+    final ids = prefs.getStringList(_collectedIdsKey) ?? [];
+    if (!ids.contains(donation.id)) {
+      ids.add(donation.id);
+      await prefs.setStringList(_collectedIdsKey, ids);
+    }
+    // persist full data (deduplicated by id)
+    final dataList = prefs.getStringList(_collectedDataKey) ?? [];
+    final alreadySaved = dataList.any((s) {
+      try {
+        return (jsonDecode(s) as Map)['id'] == donation.id;
+      } catch (_) {
+        return false;
+      }
+    });
+    if (!alreadySaved) {
+      dataList.add(jsonEncode(donation.toJson()));
+      await prefs.setStringList(_collectedDataKey, dataList);
+    }
+  }
+
+  Future<void> _clearPersistedCollectedData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await Future.wait([
+      prefs.remove(_collectedIdsKey),
+      prefs.remove(_collectedDataKey),
+    ]);
+  }
+
   Future<void> _loadDriverRoute() async {
     try {
       setState(() => isLoading = true);
       final results = await Future.wait([
         _donationService.getDriverDonationsById(),
         _driverService.getMyDriverProfile(),
+        _loadPersistedCollectedDonations(),
       ]);
       final fetchedDonations = results[0] as List<DonationModel>;
       final driverProfile = results[1] as DriverProfile;
+      final persistedCollected = results[2] as List<DonationModel>;
+
+      // Merge: add persisted collected donations that the API no longer returns
+      final fetchedIds = fetchedDonations.map((d) => d.id).toSet();
+      final missingCollected = persistedCollected
+          .where((d) => !fetchedIds.contains(d.id))
+          .toList();
 
       final todayHebrew = _weekdayToHebrew[DateTime.now().weekday];
       final todayDest = todayHebrew != null
@@ -134,7 +206,9 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
           : null;
 
       setState(() {
-        donations = fetchedDonations;
+        // Collected stops go at the front so they appear at the bottom of
+        // the visual route (route is displayed bottom-first).
+        donations = [...missingCollected, ...fetchedDonations];
         _todayDestination = todayDest;
         isOptimized = false;
       });
@@ -246,6 +320,7 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
                 );
                 if (result == true && mounted) {
                   setState(() => _collectedIds.add(donation.id));
+                  await _persistCollectedDonation(donation);
                   _scrollToCurrentStop();
                 }
               },
@@ -295,7 +370,10 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
         onConfirm: () async {
           Navigator.of(context).pop();
           try {
-            await _driverService.clearDriverStops();
+            await Future.wait([
+              _driverService.clearDriverStops(),
+              _clearPersistedCollectedData(),
+            ]);
             if (!mounted) return;
             Navigator.pop(context);
           } catch (e) {
@@ -495,13 +573,15 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
   Color _nodeColor(_StopData d) {
     if (d.isCollected) return Colors.grey.shade400;
     if (d.isCurrent) return const Color(0xFFD32F2F);
-    if (d.isDestination) return HomepageTheme.latetBlue;
-    return const Color(0xFFBF9A00); // warm gold — same hue as latetYellow, saturated
+    return HomepageTheme.latetBlue;
   }
 
   Widget _buildPositionedCircle(int di, Offset center, double w) {
     final d = _stopData(di);
     final color = _nodeColor(d);
+    final bool isRegularStop = !d.isCollected && !d.isCurrent && !d.isDestination;
+    final Color circleBg = isRegularStop ? const Color(0xFFD0E8F8) : color;
+    final Color circleIconColor = isRegularStop ? HomepageTheme.latetBlue : Colors.white;
 
     return Positioned(
       left: center.dx - _kCircleR,
@@ -513,17 +593,17 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
         child: Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: color,
+            color: circleBg,
             boxShadow: [
               BoxShadow(
-                color: color.withValues(alpha: 0.45),
+                color: circleBg.withValues(alpha: 0.45),
                 blurRadius: 14,
                 spreadRadius: 2,
                 offset: const Offset(0, 4),
               ),
               if (d.isCurrent)
                 BoxShadow(
-                  color: color.withValues(alpha: 0.2),
+                  color: circleBg.withValues(alpha: 0.2),
                   blurRadius: 24,
                   spreadRadius: 6,
                 ),
@@ -537,7 +617,7 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
                     : d.isDestination
                         ? Icons.flag_rounded
                         : Icons.storefront_rounded,
-            color: Colors.white,
+            color: circleIconColor,
             size: 26,
           ),
         ),
