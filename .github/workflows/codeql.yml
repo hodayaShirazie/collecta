@@ -49,6 +49,7 @@ jobs:
         if: matrix.language == 'java-kotlin'
         run: |
           flutter pub get
+          chmod +x android/gradlew
           cd android
           ./gradlew assembleDebug --no-daemon
 
