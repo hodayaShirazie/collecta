@@ -236,12 +236,11 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
 
     return Scaffold(
       body: LayoutWrapper(
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: HomepageTheme.pageGradient,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25),
+        decoration: const BoxDecoration(
+          gradient: HomepageTheme.pageGradient,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 25),
             child: Column(
               children: [
 
@@ -335,7 +334,6 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
             ),
           ),
         ),
-      ),
     );
   }
 }

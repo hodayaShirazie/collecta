@@ -12,7 +12,6 @@ import '../../data/models/address_model.dart';
 import '../../data/models/lat_lng_model.dart';
 import '../../data/models/activity_zone_model.dart';
 
-import '../widgets/layout_wrapper.dart';
 import '../widgets/loading_indicator.dart';
 
 import '../widgets/personal_details/driver_details_card.dart';
