@@ -527,104 +527,84 @@ class _activityZoneelectionDialogState extends State<_activityZoneelectionDialog
     final allSelected =
         availableZones.isNotEmpty && selectedIds.length >= availableZones.length;
 
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: const Text(
-          "השלמת פרטים",
-          textAlign: TextAlign.center,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-        ),
-        content: zones == null
-            ? const SizedBox(
-                height: 80,
-                child: Center(child: CircularProgressIndicator()),
-              )
-            : Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "בחר אזורי פעילות",
-                    style: TextStyle(fontSize: 15, color: Colors.black87),
-                  ),
-                  const SizedBox(height: 10),
-                  if (zones!.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Text("לא הוגדרו אזורי פעילות בארגון. פנה למנהל.",
-                          style: TextStyle(color: Colors.grey)),
-                    )
-                  else if (availableZones.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Text("כל אזורי הפעילות תפוסים כרגע. פנה למנהל.",
-                          style: TextStyle(color: Colors.grey)),
-                    )
-                  else ...[
-                    if (selectedIds.isNotEmpty)
-                      Wrap(
-                        spacing: 6,
-                        runSpacing: 4,
-                        children: selectedIds.map((id) {
-                          final zone = zones!.firstWhere((z) => z.id == id,
-                              orElse: () => ActivityZoneModel(
-                                  id: id,
-                                  name: id,
-                                  addressId: '',
-                                  range: 0,
-                                  organizationId: ''));
-                          return Chip(
-                            label: Text(zone.name,
-                                style: const TextStyle(
-                                    color: Color(0xFF2C5AA0),
-                                    fontWeight: FontWeight.w500)),
-                            deleteIcon:
-                                const Icon(Icons.close, size: 15),
-                            onDeleted: () =>
-                                setState(() => selectedIds.remove(id)),
-                            backgroundColor: const Color(0xFFE8EDF6),
-                          );
-                        }).toList(),
-                      ),
-                    const SizedBox(height: 6),
-                    TextButton.icon(
-                      key: _addBtnKey,
-                      onPressed: allSelected ? null : _showDropdown,
-                      icon: const Icon(Icons.arrow_drop_down, size: 20),
-                      label: const Text("הוסף אזור"),
-                      style: TextButton.styleFrom(
-                        foregroundColor: allSelected
-                            ? Colors.grey
-                            : const Color(0xFF2C5AA0),
-                      ),
+    return CustomPopupDialog(
+      title: "השלמת פרטים",
+      cancelText: "דלג",
+      buttonText: "שמור",
+      isLoading: isSaving,
+      content: zones == null
+          ? const SizedBox(
+              height: 80,
+              child: Center(child: CircularProgressIndicator()),
+            )
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "בחר אזורי פעילות",
+                  style: TextStyle(fontSize: 15, color: Colors.black87),
+                ),
+                const SizedBox(height: 10),
+                if (zones!.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Text("לא הוגדרו אזורי פעילות בארגון. פנה למנהל.",
+                        style: TextStyle(color: Colors.grey)),
+                  )
+                else if (availableZones.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Text("כל אזורי הפעילות תפוסים כרגע. פנה למנהל.",
+                        style: TextStyle(color: Colors.grey)),
+                  )
+                else ...[
+                  if (selectedIds.isNotEmpty)
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 4,
+                      children: selectedIds.map((id) {
+                        final zone = zones!.firstWhere((z) => z.id == id,
+                            orElse: () => ActivityZoneModel(
+                                id: id,
+                                name: id,
+                                addressId: '',
+                                range: 0,
+                                organizationId: ''));
+                        return Chip(
+                          label: Text(zone.name,
+                              style: const TextStyle(
+                                  color: Color(0xFF2C5AA0),
+                                  fontWeight: FontWeight.w500)),
+                          deleteIcon: const Icon(Icons.close, size: 15),
+                          onDeleted: () =>
+                              setState(() => selectedIds.remove(id)),
+                          backgroundColor: const Color(0xFFE8EDF6),
+                        );
+                      }).toList(),
                     ),
-                  ],
+                  const SizedBox(height: 6),
+                  TextButton.icon(
+                    key: _addBtnKey,
+                    onPressed: allSelected ? null : _showDropdown,
+                    icon: const Icon(Icons.arrow_drop_down, size: 20),
+                    label: const Text("הוסף אזור"),
+                    style: TextButton.styleFrom(
+                      foregroundColor:
+                          allSelected ? Colors.grey : const Color(0xFF2C5AA0),
+                    ),
+                  ),
                 ],
-              ),
-        actionsAlignment: MainAxisAlignment.center,
-        actions: [
-          TextButton(
-            onPressed: isSaving ? null : () => Navigator.pop(context),
-            child: const Text("דלג"),
-          ),
-          ElevatedButton(
-            onPressed: isSaving
-                ? null
-                : () async {
-                    setState(() => isSaving = true);
-                    if (selectedIds.isNotEmpty) {
-                      final updated =
-                          widget.driver.copyWith(activityZone: selectedIds);
-                      await widget.driverService.updateDriverProfile(updated);
-                    }
-                    if (mounted) Navigator.pop(context);
-                  },
-            child: const Text("שמור"),
-          ),
-        ],
-      ),
+              ],
+            ),
+      onConfirm: () async {
+        setState(() => isSaving = true);
+        if (selectedIds.isNotEmpty) {
+          final updated = widget.driver.copyWith(activityZone: selectedIds);
+          await widget.driverService.updateDriverProfile(updated);
+        }
+        if (mounted) Navigator.pop(context);
+      },
     );
   }
 }
