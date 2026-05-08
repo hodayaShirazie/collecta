@@ -41,15 +41,8 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    // apiKey: 'AIzaSyAA8jXYuQM8QlQ3vH67xd4zimYnXRALANw',
-    // appId: '1:520182917938:web:3e7614063be33e7c1f452b',
-    // messagingSenderId: '520182917938',
-    // projectId: 'collecta-125aa',
-    // authDomain: 'collecta-125aa.firebaseapp.com',
-    // storageBucket: 'collecta-125aa.firebasestorage.app',
-    // measurementId: 'G-M4801X6VYK',
 
-    apiKey: "AIzaSyCniLqCqQaWLPVn1qmqz08K92_xtRYb_k0",
+    apiKey: "AIzaSyBQ6_MaslZYMNhUbmPjm2TMN0xMfeTyeLI",
     authDomain: "collecta-125aa.firebaseapp.com",
     projectId: "collecta-125aa",
     storageBucket: "collecta-125aa.firebasestorage.app",
@@ -59,7 +52,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBARA8lE2koZRK7G3PmMdy_J_MGXrb2gLA',
+    apiKey: 'AIzaSyC47qflt8ZaelH6pxnbry6YtDoYLVDc2OU',
     appId: '1:520182917938:android:ae4b3a5de69efc051f452b',
     messagingSenderId: '520182917938',
     projectId: 'collecta-125aa',
@@ -67,7 +60,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyACLd-ElNI0smjKvd7Y2L7o-n8x1mnrtfw',
+    apiKey: 'AIzaSyBvLfyk3eWczamqkIphZgtNAxo6nwT_pFU',
     appId: '1:520182917938:ios:b207e07fb618c9ee1f452b',
     messagingSenderId: '520182917938',
     projectId: 'collecta-125aa',
@@ -77,7 +70,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyACLd-ElNI0smjKvd7Y2L7o-n8x1mnrtfw',
+    apiKey: 'AIzaSyBvLfyk3eWczamqkIphZgtNAxo6nwT_pFU',
     appId: '1:520182917938:ios:b207e07fb618c9ee1f452b',
     messagingSenderId: '520182917938',
     projectId: 'collecta-125aa',
@@ -87,7 +80,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyAA8jXYuQM8QlQ3vH67xd4zimYnXRALANw',
+    apiKey: 'AIzaSyDlOOXb3n3vLrTpVsiofSGKkrKrWvTwG_I',
     appId: '1:520182917938:web:704a68b40824064d1f452b',
     messagingSenderId: '520182917938',
     projectId: 'collecta-125aa',

@@ -113,9 +113,10 @@
           } else {
             document.body.innerHTML = `
               <h2>Web Mode</h2>
-              <p>orgId: ${orgId}</p>
+              <p id="orgIdText"></p>
               <p>פתח את האפליקציה מהמובייל</p>
             `;
+            document.getElementById("orgIdText").textContent = "orgId: " + orgId;
           }
         };
         </script>
