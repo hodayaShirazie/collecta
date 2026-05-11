@@ -48,13 +48,13 @@ class MyDonationsTheme {
   static BoxDecoration statusChipDecoration(bool selected) {
     return BoxDecoration(
       color: selected
-          ? HomepageTheme.latetBlue.withOpacity(0.12)
+          ? HomepageTheme.latetBlue.withValues(alpha: 0.12)
           : Colors.white,
       borderRadius: BorderRadius.circular(20),
       border: Border.all(
         color: selected
             ? HomepageTheme.latetBlue
-            : HomepageTheme.latetBlue.withOpacity(0.2),
+            : HomepageTheme.latetBlue.withValues(alpha: 0.2),
       ),
     );
   }
@@ -95,13 +95,26 @@ class MyDonationsTheme {
   static Color statusColor(String status) {
     switch (status) {
       case "pending":
-        return const Color(0xFFFFF9C4);
+        return const Color(0xFFFEF3C7);
       case "collected":
-        return Colors.green;
+        return const Color(0xFFD1FAE5);
       case "cancelled":
-        return Colors.red;
+        return const Color(0xFFFFE4E6);
       default:
-        return Colors.grey;
+        return const Color(0xFFF3F4F6);
+    }
+  }
+
+  static Color statusTextColor(String status) {
+    switch (status) {
+      case "pending":
+        return const Color(0xFF92400E);
+      case "collected":
+        return const Color(0xFF065F46);
+      case "cancelled":
+        return const Color(0xFF9F1239);
+      default:
+        return const Color(0xFF374151);
     }
   }
 
@@ -133,7 +146,7 @@ class MyDonationsTheme {
     borderRadius: BorderRadius.circular(20),
     boxShadow: [
       BoxShadow(
-        color: Colors.black.withOpacity(0.05),
+        color: Colors.black.withValues(alpha: 0.05),
         blurRadius: 10,
         offset: Offset(0, 4),
       )

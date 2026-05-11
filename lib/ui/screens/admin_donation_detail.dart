@@ -211,48 +211,68 @@ class _AdminDonationDetailState extends State<AdminDonationDetail> {
               ),
               actionsAlignment: MainAxisAlignment.center,
               actions: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    ValueListenableBuilder<bool>(
-                      valueListenable: _isCancellingNotifier,
-                      builder: (context, isCancelling, _) {
-                        return ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF2C5AA0),
-                            foregroundColor: Colors.white,
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 13),
+                            side: const BorderSide(color: Color(0xFF2C5AA0)),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10)),
                           ),
-                          onPressed: (reasonCtrl.text.trim().isEmpty || isCancelling)
-                              ? null
-                              : () {
-                                  Navigator.pop(ctx);
-                                  _cancelDonation(reasonCtrl.text.trim());
-                                },
-                          child: isCancelling
-                              ? const SizedBox(
-                                  height: 18,
-                                  width: 18,
-                                  child: CircularProgressIndicator(
-                                      strokeWidth: 2, color: Colors.white),
-                                )
-                              : const Text("אישור",
-                                  style: TextStyle(
-                                      fontFamily: 'Assistant', fontSize: 15)),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                    TextButton(
-                      onPressed: () => Navigator.pop(ctx),
-                      child: const Text("חזור",
-                          style: TextStyle(
-                              fontFamily: 'Assistant', color: Colors.black54)),
-                    ),
-                    const SizedBox(height: 4),
-                  ],
+                          child: const Text(
+                            "חזור",
+                            style: TextStyle(
+                                fontFamily: 'Assistant',
+                                fontSize: 15,
+                                color: Color(0xFF2C5AA0)),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ValueListenableBuilder<bool>(
+                          valueListenable: _isCancellingNotifier,
+                          builder: (context, isCancelling, _) {
+                            return ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF2C5AA0),
+                                foregroundColor: Colors.white,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 13),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                              ),
+                              onPressed: (reasonCtrl.text.trim().isEmpty ||
+                                      isCancelling)
+                                  ? null
+                                  : () {
+                                      Navigator.pop(ctx);
+                                      _cancelDonation(
+                                          reasonCtrl.text.trim());
+                                    },
+                              child: isCancelling
+                                  ? const SizedBox(
+                                      height: 18,
+                                      width: 18,
+                                      child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white),
+                                    )
+                                  : const Text("אישור",
+                                      style: TextStyle(
+                                          fontFamily: 'Assistant',
+                                          fontSize: 15)),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             );
@@ -575,6 +595,7 @@ class _AdminDonationDetailState extends State<AdminDonationDetail> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 12),
                         child: Row(
+                          textDirection: TextDirection.rtl,
                           children: [
                             const Text(
                               "סטטוס: ",
@@ -672,10 +693,11 @@ class _AdminDonationDetailState extends State<AdminDonationDetail> {
                         ],
                       ),
 
-                      const SizedBox(height: 16),
+                      const Divider(height: 20, thickness: 0.5, color: Color(0xFFE8E8E8)),
 
                       // קבלה + ביטול
                       Row(
+                        textDirection: TextDirection.rtl,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           if (d.status == "pending")
@@ -687,7 +709,10 @@ class _AdminDonationDetailState extends State<AdminDonationDetail> {
                                       ? null
                                       : _showCancelDialog,
                                   style: TextButton.styleFrom(
-                                      padding: EdgeInsets.zero),
+                                    padding: EdgeInsets.zero,
+                                    minimumSize: Size.zero,
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  ),
                                   child: const Text(
                                     "בטל תרומה",
                                     style: TextStyle(

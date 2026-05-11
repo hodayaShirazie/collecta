@@ -225,10 +225,11 @@ class _MyDonationsState extends State<MyDonations> {
                     ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.symmetric(vertical: 6),
                       itemCount: filteredDonations.length,
                       itemBuilder: (context, index) {
                         final donation = filteredDonations[index];
+                        final accentColor = MyDonationsTheme.statusTextColor(donation.status);
 
                         return GestureDetector(
                           onTap: () async {
@@ -244,64 +245,98 @@ class _MyDonationsState extends State<MyDonations> {
                           child: Align(
                             alignment: Alignment.center,
                             child: Container(
-                              width: MediaQuery.of(context).size.width * 0.9,
-                              margin: const EdgeInsets.symmetric(vertical: 8),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 14, horizontal: 16),
+                              width: MediaQuery.of(context).size.width * 0.92,
+                              margin: const EdgeInsets.symmetric(vertical: 6),
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: const [
+                                borderRadius: BorderRadius.circular(14),
+                                boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 4,
-                                    offset: Offset(0, 2),
+                                    color: Colors.black.withValues(alpha: 0.06),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 3),
                                   ),
                                 ],
                               ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(14),
+                                child: IntrinsicHeight(
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.stretch,
                                     children: [
-                                      const Icon(Icons.info_outline, size: 24),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        "${donation.createdAt.day}/${donation.createdAt.month}/${donation.createdAt.year}",
-                                        style: MyDonationsTheme.donationDate,
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 4, horizontal: 10),
-                                        decoration: BoxDecoration(
-                                          color: MyDonationsTheme.statusColor(
-                                              donation.status),
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        child: Text(
-                                          _statusText(donation.status),
-                                          style: const TextStyle(
-                                              color: Colors.black),
+                                      Container(width: 4, color: accentColor),
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 14, horizontal: 14),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.calendar_today_outlined,
+                                                        size: 13,
+                                                        color: Colors.grey.shade500,
+                                                      ),
+                                                      const SizedBox(width: 5),
+                                                      Text(
+                                                        "${donation.createdAt.day}/${donation.createdAt.month}/${donation.createdAt.year}",
+                                                        style: TextStyle(
+                                                          fontSize: 13,
+                                                          color: Colors.grey.shade600,
+                                                          fontFamily: 'Assistant',
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(height: 7),
+                                                  Container(
+                                                    padding: const EdgeInsets.symmetric(
+                                                        vertical: 3, horizontal: 12),
+                                                    decoration: BoxDecoration(
+                                                      color: MyDonationsTheme
+                                                          .statusColor(donation.status),
+                                                      borderRadius:
+                                                          BorderRadius.circular(20),
+                                                    ),
+                                                    child: Text(
+                                                      _statusText(donation.status),
+                                                      style: TextStyle(
+                                                        fontSize: 12,
+                                                        fontWeight: FontWeight.w600,
+                                                        color: accentColor,
+                                                        fontFamily: 'Assistant',
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  DonationReceiptButton(
+                                                    donationId: donation.id,
+                                                    receiptUrl: donation.receipt,
+                                                    onUploadSuccess: _loadDonations,
+                                                    isAdmin: false,
+                                                  ),
+                                                  Icon(Icons.chevron_right,
+                                                      color: Colors.grey.shade400,
+                                                      size: 20),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ],
                                   ),
-                                  Row(
-                                    children: [
-                                      DonationReceiptButton(
-                                        donationId: donation.id,
-                                        receiptUrl: donation.receipt,
-                                        onUploadSuccess: _loadDonations,
-                                        isAdmin: false,
-                                      ),
-                                      const Icon(Icons.chevron_right,
-                                          color: Colors.black38),
-                                    ],
-                                  ),
-                                ],
+                                ),
                               ),
                             ),
                           ),
