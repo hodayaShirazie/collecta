@@ -1,25 +1,15 @@
 import 'dart:io';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
+import 'package:share_plus/share_plus.dart';
 
 Future<void> downloadReceiptFile(String url, String fileName) async {
-  late final String dirPath;
-
-  if (Platform.isAndroid) {
-    final downloadsDir = Directory('/storage/emulated/0/Download');
-    dirPath = await downloadsDir.exists()
-        ? downloadsDir.path
-        : (await getExternalStorageDirectory())!.path;
-  } else {
-    dirPath = (await getApplicationDocumentsDirectory()).path;
-  }
-
-  await FlutterDownloader.enqueue(
-    url: url,
-    savedDir: dirPath,
-    fileName: fileName,
-    showNotification: true,
-    openFileFromNotification: true,
-    saveInPublicStorage: true,
+  final tempDir = await getTemporaryDirectory();
+  final filePath = '${tempDir.path}/$fileName';
+  final response = await http.get(Uri.parse(url));
+  await File(filePath).writeAsBytes(response.bodyBytes);
+  await Share.shareXFiles(
+    [XFile(filePath, mimeType: 'application/pdf')],
+    subject: fileName,
   );
 }

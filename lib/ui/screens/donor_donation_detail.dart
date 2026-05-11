@@ -251,12 +251,11 @@ class _DonorDonationDetailState extends State<DonorDonationDetail> {
 
     return Scaffold(
       body: LayoutWrapper(
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: HomepageTheme.pageGradient,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25),
+        decoration: const BoxDecoration(
+          gradient: HomepageTheme.pageGradient,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 25),
             child: Column(
               children: [
                 const SizedBox(height: HomepageTheme.topPadding),
@@ -553,7 +552,6 @@ class _DonorDonationDetailState extends State<DonorDonationDetail> {
             ),
           ),
         ),
-      ),
     );
   }
 }

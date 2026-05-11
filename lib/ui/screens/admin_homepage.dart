@@ -82,11 +82,10 @@ class _AdminHomepageState extends State<AdminHomepage> {
       body: Stack(
         children: [
           LayoutWrapper(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: HomepageTheme.pageGradient,
-              ),
-              child: Stack(
+            decoration: BoxDecoration(
+              gradient: HomepageTheme.pageGradient,
+            ),
+            child: Stack(
                 children: [
                   Positioned(
                     top: -120,
@@ -195,7 +194,6 @@ class _AdminHomepageState extends State<AdminHomepage> {
                     ),
                 ],
               ),
-            ),
           ),
 
           // Bell icon – fixed in top-left corner (RTL trailing position)
