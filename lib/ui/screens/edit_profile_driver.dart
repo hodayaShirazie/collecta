@@ -253,6 +253,8 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
 
       }
 
+      DriverService.invalidateProfileCache();
+
       if (!mounted) return;
 
       await showDialog(

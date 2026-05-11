@@ -34,7 +34,7 @@ class _AddressFieldWidgetState extends State<AddressFieldWidget> {
   @override
   void initState() {
     super.initState();
-    _isConfirmed = widget.initialIsConfirmed;
+    _isConfirmed = widget.initialIsConfirmed || widget.controller.text.isNotEmpty;
   }
 
   @override
