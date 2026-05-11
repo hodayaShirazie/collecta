@@ -144,10 +144,9 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
 
     return Scaffold(
       body: LayoutWrapper(
-        child: Container(
-          decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25),
+        decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 25),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -230,7 +229,6 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
             ),
           ),
         ),
-      ),
     );
   }
 

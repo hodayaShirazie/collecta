@@ -41,6 +41,10 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>האפליקציה זקוקה לגישה למיקום כדי לחשב את המסלול האופטימלי לאיסוף תרומות</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>האפליקציה זקוקה לגישה למיקום כדי לחשב את המסלול האופטימלי לאיסוף תרומות</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSceneManifest</key>

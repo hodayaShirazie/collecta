@@ -51,3 +51,5 @@ app.*.map.json
 # Firebase - sensitive API keys, do not commit
 **/GoogleService-Info.plist
 **/google-services.json
+lib/firebase_options.dart
+lib/config/firebase_options.dart

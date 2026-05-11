@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 
 class LayoutWrapper extends StatelessWidget {
   final Widget child;
+  final BoxDecoration? decoration;
 
-  const LayoutWrapper({super.key, required this.child});
+  const LayoutWrapper({super.key, required this.child, this.decoration});
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    final content = SafeArea(
       child: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(
@@ -21,5 +22,13 @@ class LayoutWrapper extends StatelessWidget {
         },
       ),
     );
+
+    if (decoration != null) {
+      return DecoratedBox(
+        decoration: decoration!,
+        child: content,
+      );
+    }
+    return content;
   }
 }

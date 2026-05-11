@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(xargs grep *)",
-      "Bash(grep -E \"\\\\.js$|^d\")"
+      "Bash(grep -E \"\\\\.js$|^d\")",
+      "Bash(grep -n \"^      \\),$\\\\|^        \\),$\\\\|^    \\);\" /Users/hilashirazi/Documents/collecta/lib/ui/screens/edit_profile_donor.dart)",
+      "Bash(grep -n \"^            \\),$\\\\|^          \\),$\\\\|^        \\),$\\\\|^      \\),$\" /Users/hilashirazi/Documents/collecta/lib/ui/screens/admin_homepage.dart)"
     ]
   }
 }
