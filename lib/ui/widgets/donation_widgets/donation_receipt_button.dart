@@ -20,79 +20,96 @@ class DonationReceiptButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (receiptUrl.isEmpty && !isAdmin) {
-      return const SizedBox.shrink();
+    final bool hasReceipt = receiptUrl.isNotEmpty;
+
+    // Donor with no receipt: faded indicator (non-interactive)
+    if (!isAdmin && !hasReceipt) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6),
+        child: Icon(
+          Icons.receipt_long_outlined,
+          size: 22,
+          color: Colors.grey.shade300,
+        ),
+      );
     }
 
-    final bool hasReceipt = receiptUrl.isNotEmpty;
-    final bool canUpload = enabled && !hasReceipt;
-
-    if (!hasReceipt) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Tooltip(
-            message: !canUpload ? "ניתן להעלות קבלה רק לתרומות שנאספו" : "",
-            child: IconButton(
-              icon: Icon(
-                Icons.cloud_upload_outlined,
-                color: canUpload ? Colors.blueGrey : Colors.grey,
-                size: 28,
-              ),
-              onPressed: canUpload ? () async {
-                await DonationReceiptHelper.pickAndUploadPDF(context, donationId);
-                onUploadSuccess();
-              } : null,
+    // Both admin and donor: has receipt → view/download popup
+    if (hasReceipt) {
+      return PopupMenuButton<String>(
+        icon: Icon(Icons.receipt_long_outlined, color: Colors.grey.shade600, size: 22),
+        tooltip: "",
+        padding: EdgeInsets.zero,
+        onSelected: (value) async {
+          if (value == 'view') {
+            await DonationReceiptHelper.viewReceipt(context, receiptUrl);
+          } else {
+            await DonationReceiptHelper.downloadReceipt(context, receiptUrl);
+            if (context.mounted) {
+              CenteredToast.show(context, 'הורדה הסתיימה');
+            }
+          }
+        },
+        itemBuilder: (context) => [
+          const PopupMenuItem(
+            value: 'view',
+            child: Row(
+              children: [
+                Icon(Icons.visibility_outlined, color: Colors.blueGrey, size: 20),
+                SizedBox(width: 10),
+                Text('צפה בקבלה'),
+              ],
             ),
           ),
-          Text(
-            "העלה",
-            style: TextStyle(
-              fontSize: 12,
-              color: canUpload ? Colors.blueGrey : Colors.grey,
-              fontWeight: FontWeight.bold,
+          const PopupMenuItem(
+            value: 'download',
+            child: Row(
+              children: [
+                Icon(Icons.file_download_outlined, color: Colors.blueGrey, size: 20),
+                SizedBox(width: 10),
+                Text('הורד קבלה'),
+              ],
             ),
           ),
         ],
       );
     }
 
-    return PopupMenuButton<String>(
-      icon: const Icon(Icons.description_outlined, color: Colors.blueGrey, size: 26),
-      tooltip: "",
-      padding: EdgeInsets.zero,
-      onSelected: (value) async {
-        if (value == 'view') {
-          await DonationReceiptHelper.viewReceipt(context, receiptUrl);
-        } else {
-          await DonationReceiptHelper.downloadReceipt(context, receiptUrl);
-          if (context.mounted) {
-            CenteredToast.show(context, 'הורדה הסתיימה');
-          }
-        }
-      },
-      itemBuilder: (context) => [
-        const PopupMenuItem(
-          value: 'view',
+    // Admin with no receipt: upload button
+    final bool canUpload = enabled;
+    return Tooltip(
+      message: !canUpload ? "ניתן להעלות קבלה רק לתרומות שנאספו" : "",
+      child: InkWell(
+        onTap: canUpload
+            ? () async {
+                await DonationReceiptHelper.pickAndUploadPDF(context, donationId);
+                onUploadSuccess();
+              }
+            : null,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
           child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.visibility_outlined, color: Colors.blueGrey, size: 20),
-              SizedBox(width: 10),
-              Text('צפה בקבלה'),
+              Icon(
+                Icons.cloud_upload_outlined,
+                color: canUpload ? Colors.blueGrey : Colors.grey,
+                size: 18,
+              ),
+              const SizedBox(width: 5),
+              Text(
+                "העלה קבלה",
+                style: TextStyle(
+                  fontSize: 13,
+                  color: canUpload ? Colors.blueGrey : Colors.grey,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ],
           ),
         ),
-        const PopupMenuItem(
-          value: 'download',
-          child: Row(
-            children: [
-              Icon(Icons.file_download_outlined, color: Colors.blueGrey, size: 20),
-              SizedBox(width: 10),
-              Text('הורד קבלה'),
-            ],
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
