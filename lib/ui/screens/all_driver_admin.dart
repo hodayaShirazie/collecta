@@ -61,133 +61,177 @@ class _AllDriverAdminState extends State<AllDriverAdmin> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => Directionality(
           textDirection: TextDirection.rtl,
-          child: AlertDialog(
+          child: Dialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            title: const Text(
-              "הוספת נהג חדש",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF2C5AA0),
-              ),
-            ),
-            content: Form(
-              key: formKey,
+            elevation: 8,
+            shadowColor: Colors.black.withValues(alpha: 0.12),
+            backgroundColor: Colors.white,
+            insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 360),
+              child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextFormField(
-                    controller: nameController,
-                    keyboardType: TextInputType.name,
-                    decoration: InputDecoration(
-                      labelText: "שם מלא",
-                      prefixIcon: const Icon(Icons.person_outline),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                  const Text(
+                    "הוספת נהג חדש",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1E5DAA),
+                      fontFamily: 'Assistant',
                     ),
-                    validator: (v) => (v == null || v.trim().isEmpty) ? "שדה חובה" : null,
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    height: 2,
+                    width: 32,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E5DAA).withValues(alpha: 0.25),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
                   const SizedBox(height: 16),
-                  TextFormField(
-                    controller: emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    textDirection: TextDirection.ltr,
-                    decoration: InputDecoration(
-                      labelText: "כתובת מייל",
-                      prefixIcon: const Icon(Icons.email_outlined),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                  Form(
+                    key: formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextFormField(
+                          controller: nameController,
+                          keyboardType: TextInputType.name,
+                          decoration: InputDecoration(
+                            labelText: "שם מלא",
+                            prefixIcon: const Icon(Icons.person_outline),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          validator: (v) => (v == null || v.trim().isEmpty) ? "שדה חובה" : null,
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          textDirection: TextDirection.ltr,
+                          decoration: InputDecoration(
+                            labelText: "כתובת מייל",
+                            prefixIcon: const Icon(Icons.email_outlined),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          validator: validateEmail,
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: phoneController,
+                          keyboardType: TextInputType.phone,
+                          textDirection: TextDirection.ltr,
+                          decoration: InputDecoration(
+                            labelText: "מספר טלפון",
+                            prefixIcon: const Icon(Icons.phone_outlined),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          validator: validatePhone,
+                        ),
+                      ],
                     ),
-                    validator: validateEmail,
                   ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: phoneController,
-                    keyboardType: TextInputType.phone,
-                    textDirection: TextDirection.ltr,
-                    decoration: InputDecoration(
-                      labelText: "מספר טלפון",
-                      prefixIcon: const Icon(Icons.phone_outlined),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      TextButton(
+                        onPressed: isSubmitting ? null : () => Navigator.pop(ctx),
+                        style: TextButton.styleFrom(
+                          foregroundColor: const Color(0xFF888888),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        ),
+                        child: const Text("ביטול",
+                            style: TextStyle(fontFamily: 'Assistant', fontSize: 14)),
                       ),
-                    ),
-                    validator: validatePhone,
+                      ElevatedButton(
+                        onPressed: isSubmitting
+                            ? null
+                            : () async {
+                                if (!formKey.currentState!.validate()) return;
+                                setDialogState(() => isSubmitting = true);
+                                try {
+                                  await _service.addDriverByAdmin(
+                                    name: nameController.text.trim(),
+                                    email: emailController.text.trim(),
+                                    phone: phoneController.text.trim(),
+                                    organizationId: widget.organizationId,
+                                  );
+                                  if (ctx.mounted) Navigator.pop(ctx);
+                                  await _loadDrivers();
+                                  if (mounted) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (_) => Directionality(
+                                        textDirection: TextDirection.rtl,
+                                        child: CustomPopupDialog(
+                                          title: "הנהג נוסף בהצלחה",
+                                          message: "הנהג נוסף למערכת בהצלחה.",
+                                          buttonText: "סגור",
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                } catch (e) {
+                                  setDialogState(() => isSubmitting = false);
+                                  if (mounted) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (_) => Directionality(
+                                        textDirection: TextDirection.rtl,
+                                        child: CustomPopupDialog(
+                                          title: "שגיאה",
+                                          message: e.toString().replaceFirst("Exception: ", ""),
+                                          buttonText: "סגור",
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF1E5DAA),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                        ),
+                        child: isSubmitting
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text("הוסף נהג",
+                                style: TextStyle(
+                                  fontFamily: 'Assistant',
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                )),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-            actions: [
-              TextButton(
-                onPressed: isSubmitting ? null : () => Navigator.pop(ctx),
-                child: const Text("ביטול"),
-              ),
-              ElevatedButton(
-                onPressed: isSubmitting
-                    ? null
-                    : () async {
-                        if (!formKey.currentState!.validate()) return;
-                        setDialogState(() => isSubmitting = true);
-                        try {
-                          await _service.addDriverByAdmin(
-                            name: nameController.text.trim(),
-                            email: emailController.text.trim(),
-                            phone: phoneController.text.trim(),
-                            organizationId: widget.organizationId,
-                          );
-                          if (ctx.mounted) Navigator.pop(ctx);
-                          await _loadDrivers();
-                          if (mounted) {
-                            showDialog(
-                              context: context,
-                              builder: (_) => Directionality(
-                                textDirection: TextDirection.rtl,
-                                child: CustomPopupDialog(
-                                  title: "הנהג נוסף בהצלחה",
-                                  message: "הנהג נוסף למערכת בהצלחה.",
-                                  buttonText: "סגור",
-                                ),
-                              ),
-                            );
-                          }
-                        } catch (e) {
-                          setDialogState(() => isSubmitting = false);
-                          if (mounted) {
-                            showDialog(
-                              context: context,
-                              builder: (_) => Directionality(
-                                textDirection: TextDirection.rtl,
-                                child: CustomPopupDialog(
-                                  title: "שגיאה",
-                                  message: e.toString().replaceFirst("Exception: ", ""),
-                                  buttonText: "סגור",
-                                ),
-                              ),
-                            );
-                          }
-                        }
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2C5AA0),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: isSubmitting
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : const Text("הוסף נהג"),
-              ),
-            ],
+            ),
           ),
         ),
       ),

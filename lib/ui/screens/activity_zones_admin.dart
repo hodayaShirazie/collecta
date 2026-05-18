@@ -452,7 +452,12 @@ class _ActivityZoneDialogState extends State<_ActivityZoneDialog> {
       textDirection: TextDirection.rtl,
       child: Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: SingleChildScrollView(
+        elevation: 8,
+        shadowColor: Colors.black.withValues(alpha: 0.12),
+        backgroundColor: Colors.white,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 360),
+          child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -461,13 +466,26 @@ class _ActivityZoneDialogState extends State<_ActivityZoneDialog> {
               Text(
                 _isEdit ? 'עריכת אזור פעילות' : 'הוספת אזור פעילות',
                 style: const TextStyle(
-                  fontSize: 22,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF2C5AA0),
+                  color: Color(0xFF1E5DAA),
+                  fontFamily: 'Assistant',
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.center,
+                child: Container(
+                  height: 2,
+                  width: 32,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E5DAA).withValues(alpha: 0.25),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
 
               // Name field
               _buildLabel('שם / כינוי'),
@@ -552,48 +570,51 @@ class _ActivityZoneDialogState extends State<_ActivityZoneDialog> {
 
               // Buttons
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed:
-                          _isSaving ? null : () => Navigator.pop(context),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        side: const BorderSide(color: Color(0xFF2C5AA0)),
-                      ),
-                      child: const Text('ביטול',
-                          style: TextStyle(color: Color(0xFF2C5AA0))),
+                  TextButton(
+                    onPressed: _isSaving ? null : () => Navigator.pop(context),
+                    style: TextButton.styleFrom(
+                      foregroundColor: const Color(0xFF888888),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     ),
+                    child: const Text('ביטול',
+                        style: TextStyle(fontFamily: 'Assistant', fontSize: 14)),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: _isSaving ? null : _save,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2C5AA0),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                      ),
-                      child: _isSaving
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: Colors.white),
-                            )
-                          : Text(
-                              _isEdit ? 'שמור' : 'הוסף',
-                              style: const TextStyle(color: Colors.white),
-                            ),
+                  ElevatedButton(
+                    onPressed: _isSaving ? null : _save,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF1E5DAA),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                     ),
+                    child: _isSaving
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2, color: Colors.white),
+                          )
+                        : Text(
+                            _isEdit ? 'שמור' : 'הוסף',
+                            style: const TextStyle(
+                              fontFamily: 'Assistant',
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
                 ],
               ),
             ],
           ),
+        ),
         ),
       ),
     );

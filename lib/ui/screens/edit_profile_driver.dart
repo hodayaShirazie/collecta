@@ -441,7 +441,18 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
           gradient: HomepageTheme.pageGradient,
         ),
         child: SafeArea(
-          child: SingleChildScrollView(
+          child: Stack(
+            children: [
+              Positioned(
+                top: -120,
+                right: -80,
+                child: Container(
+                  width: 300,
+                  height: 300,
+                  decoration: HomepageTheme.decorativeCircle,
+                ),
+              ),
+              SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 25),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -524,6 +535,8 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
 
               ],
             ),
+          ),
+            ],
           ),
         ),
       ),

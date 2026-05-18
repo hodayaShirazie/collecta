@@ -298,121 +298,162 @@ class _AdminDonationDetailState extends State<AdminDonationDetail> {
         textDirection: TextDirection.rtl,
         child: StatefulBuilder(
           builder: (ctx, setDialogState) {
-            return AlertDialog(
+            return Dialog(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
-              title: const Text(
-                "שיוך נהג לתרומה",
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                    fontFamily: 'Assistant',
-                    fontWeight: FontWeight.bold),
-              ),
-              content: widget.drivers.isEmpty
-                  ? const Text("אין נהגים בארגון",
-                      textAlign: TextAlign.right)
-                  : SizedBox(
-                      width: double.maxFinite,
-                      child: ListView(
-                        shrinkWrap: true,
-                        children: widget.drivers.map((driver) {
-                          final isCurrentDriver =
-                              driver.user.id == d.driverId;
-                          return RadioListTile<DriverProfile>(
-                            title: Text(
-                              driver.user.name.isNotEmpty
-                                  ? driver.user.name
-                                  : "נהג ללא שם",
-                              style: const TextStyle(
-                                  fontFamily: 'Assistant'),
-                            ),
-                            subtitle: isCurrentDriver
-                                ? const Text(
-                                    "נהג נוכחי",
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.green,
-                                        fontFamily: 'Assistant'),
-                                  )
-                                : null,
-                            value: driver,
-                            groupValue: selected ?? preSelected,
-                            onChanged: (val) =>
-                                setDialogState(() => selected = val),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-              actionsAlignment: MainAxisAlignment.center,
-              actions: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  borderRadius: BorderRadius.circular(20)),
+              elevation: 8,
+              shadowColor: Colors.black.withValues(alpha: 0.12),
+              backgroundColor: Colors.white,
+              insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 360),
+                child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (widget.drivers.isNotEmpty)
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2C5AA0),
-                          foregroundColor: Colors.white,
-                          padding:
-                              const EdgeInsets.symmetric(vertical: 13),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                        ),
-                        onPressed: () async {
-                          final chosenDriver = selected ?? preSelected;
-                          if (chosenDriver == null ||
-                              chosenDriver.user.id == d.driverId) {
-                            Navigator.pop(ctx);
-                            return;
-                          }
-                          Navigator.pop(ctx);
-                          try {
-                            await _service.assignDriverToDonation(
-                              donationId: d.id,
-                              driverId: chosenDriver.user.id,
-                            );
-                            setState(() {
-                              donation =
-                                  d.copyWith(driverId: chosenDriver.user.id);
-                            });
-                            if (!mounted) return;
-                            showDialog(
-                              context: context,
-                              builder: (_) => CustomPopupDialog(
-                                title: "שיוך בוצע",
-                                message:
-                                    "התרומה שויכה לנהג ${chosenDriver.user.name}",
-                                buttonText: "סגור",
-                              ),
-                            );
-                          } catch (e) {
-                            if (!mounted) return;
-                            showDialog(
-                              context: context,
-                              builder: (_) => CustomPopupDialog(
-                                title: "שגיאה",
-                                message: "שגיאה בשיוך נהג: $e",
-                                buttonText: "סגור",
-                              ),
-                            );
-                          }
-                        },
-                        child: const Text("שמור",
-                            style: TextStyle(
-                                fontFamily: 'Assistant', fontSize: 15)),
+                    const Text(
+                      "שיוך נהג לתרומה",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1E5DAA),
+                        fontFamily: 'Assistant',
                       ),
-                    const SizedBox(height: 8),
-                    TextButton(
-                      onPressed: () => Navigator.pop(ctx),
-                      child: const Text("ביטול",
-                          style: TextStyle(
-                              fontFamily: 'Assistant',
-                              color: Colors.black54)),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 8),
+                    Container(
+                      height: 2,
+                      width: 32,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1E5DAA).withValues(alpha: 0.25),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    widget.drivers.isEmpty
+                        ? const Text(
+                            "אין נהגים בארגון",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Color(0xFF555555),
+                              fontFamily: 'Assistant',
+                            ),
+                          )
+                        : SizedBox(
+                            width: double.maxFinite,
+                            child: ListView(
+                              shrinkWrap: true,
+                              children: widget.drivers.map((driver) {
+                                final isCurrentDriver =
+                                    driver.user.id == d.driverId;
+                                return RadioListTile<DriverProfile>(
+                                  title: Text(
+                                    driver.user.name.isNotEmpty
+                                        ? driver.user.name
+                                        : "נהג ללא שם",
+                                    style: const TextStyle(
+                                        fontFamily: 'Assistant'),
+                                  ),
+                                  subtitle: isCurrentDriver
+                                      ? const Text(
+                                          "נהג נוכחי",
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.green,
+                                              fontFamily: 'Assistant'),
+                                        )
+                                      : null,
+                                  value: driver,
+                                  groupValue: selected ?? preSelected,
+                                  onChanged: (val) =>
+                                      setDialogState(() => selected = val),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          style: TextButton.styleFrom(
+                            foregroundColor: const Color(0xFF888888),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8)),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                          ),
+                          child: const Text("ביטול",
+                              style: TextStyle(
+                                  fontFamily: 'Assistant', fontSize: 14)),
+                        ),
+                        if (widget.drivers.isNotEmpty)
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF1E5DAA),
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 24, vertical: 8),
+                            ),
+                            onPressed: () async {
+                              final chosenDriver = selected ?? preSelected;
+                              if (chosenDriver == null ||
+                                  chosenDriver.user.id == d.driverId) {
+                                Navigator.pop(ctx);
+                                return;
+                              }
+                              Navigator.pop(ctx);
+                              try {
+                                await _service.assignDriverToDonation(
+                                  donationId: d.id,
+                                  driverId: chosenDriver.user.id,
+                                );
+                                setState(() {
+                                  donation =
+                                      d.copyWith(driverId: chosenDriver.user.id);
+                                });
+                                if (!mounted) return;
+                                showDialog(
+                                  context: context,
+                                  builder: (_) => CustomPopupDialog(
+                                    title: "שיוך בוצע",
+                                    message:
+                                        "התרומה שויכה לנהג ${chosenDriver.user.name}",
+                                    buttonText: "סגור",
+                                  ),
+                                );
+                              } catch (e) {
+                                if (!mounted) return;
+                                showDialog(
+                                  context: context,
+                                  builder: (_) => CustomPopupDialog(
+                                    title: "שגיאה",
+                                    message: "שגיאה בשיוך נהג: $e",
+                                    buttonText: "סגור",
+                                  ),
+                                );
+                              }
+                            },
+                            child: const Text("שמור",
+                                style: TextStyle(
+                                  fontFamily: 'Assistant',
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                )),
+                          ),
+                      ],
+                    ),
                   ],
                 ),
-              ],
+              ),
+              ),
             );
           },
         ),
