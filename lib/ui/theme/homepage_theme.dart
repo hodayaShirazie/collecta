@@ -76,9 +76,15 @@ class HomepageTheme {
     ],
   );
 
-  // decorative circle 
+  // decorative circle
   static BoxDecoration decorativeCircle = BoxDecoration(
     color: latetYellow.withOpacity(0.25),
+    shape: BoxShape.circle,
+  );
+
+  // faint decorative circle (for admin extra circles)
+  static BoxDecoration decorativeCircleFaint = BoxDecoration(
+    color: latetYellow.withOpacity(0.14),
     shape: BoxShape.circle,
   );
 

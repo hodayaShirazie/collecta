@@ -6,6 +6,7 @@ import '../../data/models/driver_model.dart';
 import '../../ui/utils/validators/phone_validator.dart';
 import '../../ui/utils/validators/email_validator.dart';
 import '../../ui/widgets/custom_popup_dialog.dart';
+import '../theme/homepage_theme.dart';
 
 class AllDriverAdmin extends StatefulWidget {
   final String organizationId;
@@ -252,19 +253,36 @@ class _AllDriverAdminState extends State<AllDriverAdmin> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: const Color(0xFFE8EDF6),
         floatingActionButton: FloatingActionButton(
           onPressed: _showAddDriverDialog,
           backgroundColor: const Color(0xFF2C5AA0),
           child: const Icon(Icons.add, color: Colors.white),
         ),
-        body: SafeArea(
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 650),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
+        body: Container(
+          width: double.infinity,
+          decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
+          child: SafeArea(
+            child: Stack(
+              children: [
+                Positioned(
+                  top: -100, right: -80,
+                  child: Container(width: 420, height: 420, decoration: HomepageTheme.decorativeCircle),
+                ),
+                Positioned(
+                  bottom: -80, left: -70,
+                  child: Container(width: 340, height: 340, decoration: HomepageTheme.decorativeCircle),
+                ),
+                Positioned(
+                  top: 180, left: -60,
+                  child: Container(width: 240, height: 240, decoration: HomepageTheme.decorativeCircle),
+                ),
+                SizedBox.expand(
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 650),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
                   children: [
                     const SizedBox(height: 30),
 
@@ -456,6 +474,10 @@ class _AllDriverAdminState extends State<AllDriverAdmin> {
                   ],
                 ),
               ),
+            ),
+          ),
+        ),
+              ],
             ),
           ),
         ),

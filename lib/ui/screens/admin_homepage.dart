@@ -88,11 +88,29 @@ class _AdminHomepageState extends State<AdminHomepage> {
             child: Stack(
                 children: [
                   Positioned(
-                    top: -120,
+                    top: -100,
                     right: -80,
                     child: Container(
-                      width: 300,
-                      height: 300,
+                      width: 420,
+                      height: 420,
+                      decoration: HomepageTheme.decorativeCircle,
+                    ),
+                  ),
+                  Positioned(
+                    bottom: -80,
+                    left: -70,
+                    child: Container(
+                      width: 340,
+                      height: 340,
+                      decoration: HomepageTheme.decorativeCircle,
+                    ),
+                  ),
+                  Positioned(
+                    top: 180,
+                    left: -60,
+                    child: Container(
+                      width: 240,
+                      height: 240,
                       decoration: HomepageTheme.decorativeCircle,
                     ),
                   ),

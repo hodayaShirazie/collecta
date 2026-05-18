@@ -239,6 +239,7 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
         decoration: const BoxDecoration(
           gradient: HomepageTheme.pageGradient,
         ),
+        showDecorativeCircle: true,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25),
             child: Column(

@@ -31,7 +31,6 @@ module.exports = async (req, res) => {
         return res.status(400).send({ error: "Invalid donationId" });
       }
 
-      // 🔹 1. עדכון כתובת אם קיימת
       if (businessAddress?.id) {
         const updateAddress = {};
         if (businessAddress.name && typeof businessAddress.name === "string") {
@@ -49,7 +48,6 @@ module.exports = async (req, res) => {
         }
       }
 
-      // 🔹 2. בנייה של עדכון התרומה עם השדות שלא ריקים
       const updateDonation = {};
       if (businessName && typeof businessName === "string") {
         updateDonation.businessName = businessName;
@@ -70,18 +68,15 @@ module.exports = async (req, res) => {
         updateDonation.pickupTimes = pickupTimes;
       }
 
-      // אם יש שדות לעדכון, עדכן את התרומה
       if (Object.keys(updateDonation).length > 0) {
         await db.collection("donation").doc(donationId).update(updateDonation);
       }
 
-      // 🔹 3. עדכון פריטים בתרומה
       if (Array.isArray(products)) {
         const finalProductIds = [];
 
         for (const item of products) {
           if (item.id) {
-            // פריט קיים — עדכן כמות
             const updateProduct = {};
             if (typeof item.quantity === "number") {
               updateProduct.quantity = item.quantity;
@@ -89,21 +84,18 @@ module.exports = async (req, res) => {
             if (Object.keys(updateProduct).length > 0) {
               await db.collection("product").doc(item.id).update(updateProduct);
             }
-            // עדכן תיאור אם פריט מסוג "אחר"
             if (item.productTypeId && item.name && item.name.startsWith("אחר: ")) {
               const description = item.name.replace("אחר: ", "");
               await db.collection("productType").doc(item.productTypeId).update({ description });
             }
             finalProductIds.push(item.id);
           } else if (item.productTypeId) {
-            // פריט חדש רגיל — צור אותו
             const newRef = await db.collection("product").add({
               productType: item.productTypeId,
               quantity: typeof item.quantity === "number" ? item.quantity : 1,
             });
             finalProductIds.push(newRef.id);
           } else if (item.name && item.name.startsWith("אחר: ")) {
-            // פריט חדש מסוג "אחר" — צור productType ואז product
             const description = item.name.replace("אחר: ", "");
             const ptRef = await db.collection("productType").add({
               name: "אחר",
@@ -117,7 +109,6 @@ module.exports = async (req, res) => {
           }
         }
 
-        // מחק מוצרים שהוסרו מהתרומה
         const donationSnap = await db.collection("donation").doc(donationId).get();
         const oldProductIds = donationSnap.data().products || [];
         const removedIds = oldProductIds.filter((id) => !finalProductIds.includes(id));
@@ -135,7 +126,6 @@ module.exports = async (req, res) => {
           await db.collection("product").doc(removedId).delete();
         }
 
-        // עדכן את מערך המוצרים בתרומה
         await db.collection("donation").doc(donationId).update({ products: finalProductIds });
       }
 

@@ -226,6 +226,7 @@ class _ReportDonationState extends State<ReportDonation> {
     return Scaffold(
       body: LayoutWrapper(
         decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
+        showDecorativeCircle: true,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25),
             child: Column(

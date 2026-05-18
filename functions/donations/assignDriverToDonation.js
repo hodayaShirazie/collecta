@@ -75,7 +75,7 @@ module.exports = async (req, res) => {
 
       return res.status(200).send({ status: "ok" });
     } catch (error) {
-      console.error("❌ Error in assignDriverToDonation:", error);
+      console.error("Error in assignDriverToDonation:", error);
       return res.status(500).send({ error: error.message });
     }
   });

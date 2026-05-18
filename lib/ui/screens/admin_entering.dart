@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/admin_service.dart';
 import '../../services/org_manager.dart';
 import '../widgets/custom_popup_dialog.dart';
+import '../theme/homepage_theme.dart';
 
 class AdminEnteringScreen extends StatefulWidget {
   const AdminEnteringScreen({super.key});
@@ -105,14 +106,30 @@ class _AdminEnteringScreenState extends State<AdminEnteringScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 420),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 36),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+      body: Container(
+        width: double.infinity,
+        decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
+        child: Stack(
+          children: [
+            Positioned(
+              top: -100, right: -80,
+              child: Container(width: 420, height: 420, decoration: HomepageTheme.decorativeCircle),
+            ),
+            Positioned(
+              bottom: -80, left: -70,
+              child: Container(width: 340, height: 340, decoration: HomepageTheme.decorativeCircle),
+            ),
+            Positioned(
+              top: 180, left: -60,
+              child: Container(width: 240, height: 240, decoration: HomepageTheme.decorativeCircle),
+            ),
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 420),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 36),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
                   width: 84,
@@ -190,6 +207,9 @@ class _AdminEnteringScreenState extends State<AdminEnteringScreen> {
               ],
             ),
           ),
+        ),
+      ),
+          ],
         ),
       ),
     );

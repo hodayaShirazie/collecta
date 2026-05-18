@@ -10,6 +10,7 @@ import '../widgets/donation_widgets/section_title.dart';
 import '../utils/validators/phone_validator.dart';
 import '../utils/validators/business_id_validator.dart';
 
+import '../theme/homepage_theme.dart';
 import '../../app/routes.dart';
 
 class DonorProfileCompletionScreen extends StatefulWidget {
@@ -89,59 +90,68 @@ class _State extends State<DonorProfileCompletionScreen> {
     final field = fields[step];
 
     return Scaffold(
-      appBar: AppBar(title: const Text("השלמת פרטים")),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-
-        child: Form(
-          key: _formKey,
-          child: Column(
+      body: Container(
+        width: double.infinity,
+        decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
+        child: SafeArea(
+          child: Stack(
             children: [
-
-              CardWidget(
-                child: Column(
-                  children: [
-
-                    const SectionTitleWidget(text: "השלמת פרטים"),
-
-                    const SizedBox(height: 20),
-
-                    _buildField(field),
-                  ],
+              Positioned(
+                top: -120,
+                right: -80,
+                child: Container(
+                  width: 300,
+                  height: 300,
+                  decoration: HomepageTheme.decorativeCircle,
                 ),
               ),
-
-              const Spacer(),
-
-              Row(
-                children: [
-
-                  TextButton(
-                    onPressed: () {
-                      if (step < fields.length - 1) {
-                        setState(() => step++);
-                      }
-                    },
-                    child: const Text("דלג"),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      const SizedBox(height: HomepageTheme.topPadding),
+                      CardWidget(
+                        child: Column(
+                          children: [
+                            const SectionTitleWidget(text: "השלמת פרטים"),
+                            const SizedBox(height: 20),
+                            _buildField(field),
+                          ],
+                        ),
+                      ),
+                      const Spacer(),
+                      Row(
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              if (step < fields.length - 1) {
+                                setState(() => step++);
+                              }
+                            },
+                            child: const Text("דלג"),
+                          ),
+                          const Spacer(),
+                          ElevatedButton(
+                            onPressed: _isLoading ? null : nextStep,
+                            child: _isLoading
+                                ? const SizedBox(
+                                    width: 22,
+                                    height: 22,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2.5,
+                                    ),
+                                  )
+                                : const Text("המשך"),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-
-                  const Spacer(),
-
-                  ElevatedButton(
-                    onPressed: _isLoading ? null : nextStep,
-                    child: _isLoading
-                        ? const SizedBox(
-                            width: 22,
-                            height: 22,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2.5,
-                            ),
-                          )
-                        : const Text("המשך"),
-                  ),
-                ],
-              )
+                ),
+              ),
             ],
           ),
         ),

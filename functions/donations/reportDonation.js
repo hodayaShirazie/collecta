@@ -4,7 +4,6 @@ const verifyFirebaseToken = require("../utils/verifyToken");
 const { isValidString } = require("../utils/validate");
 const db = admin.firestore();
 
-// Haversine formula – מחזיר מרחק בין שתי נקודות במטרים
 function getDistanceMeters(lat1, lng1, lat2, lng2) {
   const R = 6371000;
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -16,16 +15,12 @@ function getDistanceMeters(lat1, lng1, lat2, lng2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-// עובר נהג נהג ובודק אם כתובת התרומה נמצאת בטווח של אחד מאזורי הפעילות שלו.
-// מחזיר את ה-id של הנהג הראשון שנמצאה התאמה, או "" אם אין.
 async function resolveDriverId(businessAddressId, organizationId) {
-  // 1. שלוף את הלט/לנג של כתובת התרומה
   const addrDoc = await db.collection("address").doc(businessAddressId).get();
   if (!addrDoc.exists) {
     return "";
   }
   const { lat: donLat, lng: donLng } = addrDoc.data();
-  // 2. שלוף את כל המשתמשים של הארגון
   const usersSnap = await db.collection("user")
     .where("organization_id", "==", organizationId)
     .get();
@@ -35,7 +30,6 @@ async function resolveDriverId(businessAddressId, organizationId) {
   const uids = usersSnap.docs.map((d) => d.data().uid).filter(Boolean);
   if (uids.length === 0) return "";
 
-  // 3. שלוף את כל הנהגים ישירות לפי מזהה מסמך (UID = document ID)
   const driverDocs = [];
   for (let i = 0; i < uids.length; i += 30) {
     const chunk = uids.slice(i, i + 30);
@@ -48,7 +42,6 @@ async function resolveDriverId(businessAddressId, organizationId) {
     return "";
   }
 
-  // 4. אסוף את כל מזהי האזורים מכל הנהגים
   const driverZoneMap = {};
   const allZoneIds = new Set();
   for (const driverDoc of driverDocs) {
@@ -61,7 +54,6 @@ async function resolveDriverId(businessAddressId, organizationId) {
     return "";
   }
 
-  // 5. טען את כל מסמכי האזורים בבת אחת
   const zoneDocsArr = await Promise.all(
     [...allZoneIds].map((id) => db.collection("activityZone").doc(id).get())
   );
@@ -74,7 +66,6 @@ async function resolveDriverId(businessAddressId, organizationId) {
     }
   }
 
-  // 6. טען את כל כתובות מרכזי האזורים בבת אחת
   const zoneAddrDocsArr = await Promise.all(
     [...zoneAddressIds].map((id) => db.collection("address").doc(id).get())
   );
@@ -83,7 +74,6 @@ async function resolveDriverId(businessAddressId, organizationId) {
     if (zAddrDoc.exists) zoneAddressMap[zAddrDoc.id] = zAddrDoc.data();
   }
 
-  // 7. עבור נהג נהג ובדוק אם כתובת התרומה בטווח של אחד מאזוריו
   for (const driverDoc of driverDocs) {
     const driverData = driverDoc.data();
     const zoneIds = driverZoneMap[driverData.id] || [];
@@ -146,12 +136,10 @@ module.exports = async (req, res) => {
         return res.status(400).send({ error: "Invalid input parameters" });
       }
 
-      // שיוך אוטומטי של נהג לפי אזורי פעילות
       let driver_id = "";
       try {
         driver_id = await resolveDriverId(businessAddress, organization_id);
       } catch (assignErr) {
-        // שיוך נהג הוא לא-קריטי – ממשיך ללא שיוך
         console.warn("⚠️ Auto driver assignment failed:", assignErr.message);
       }
 

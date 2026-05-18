@@ -60,10 +60,8 @@ class ReportDonationTheme {
   static ButtonStyle simpleButton = ElevatedButton.styleFrom(
     backgroundColor: HomepageTheme.latetBlue,
     foregroundColor: Colors.white,
-    padding: const EdgeInsets.symmetric(vertical: 14),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(20),
-    ),
+    padding: const EdgeInsets.symmetric(vertical: 9),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     textStyle: const TextStyle(
       fontSize: 16,
       fontWeight: FontWeight.w600,

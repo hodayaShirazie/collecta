@@ -67,7 +67,49 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
       builder: (context, child) {
         return Directionality(
           textDirection: TextDirection.rtl,
-          child: child!,
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: const ColorScheme.light(
+                primary: Color(0xFF1E5DAA),
+                onPrimary: Colors.white,
+                surface: Colors.white,
+                onSurface: Color(0xFF1A2B4A),
+              ),
+              datePickerTheme: DatePickerThemeData(
+                backgroundColor: Colors.white,
+                headerBackgroundColor: Colors.white,
+                headerForegroundColor: const Color(0xFF1E5DAA),
+                rangePickerBackgroundColor: Colors.white,
+                rangePickerHeaderBackgroundColor: Colors.white,
+                rangePickerHeaderForegroundColor: const Color(0xFF1E5DAA),
+                rangeSelectionBackgroundColor: const Color(0xFFEDF2FB),
+                headerHeadlineStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Assistant'),
+                headerHelpStyle: const TextStyle(fontSize: 13, fontFamily: 'Assistant'),
+                todayForegroundColor: WidgetStateProperty.resolveWith((s) =>
+                    s.contains(WidgetState.selected) ? Colors.white : const Color(0xFF1E5DAA)),
+                dayForegroundColor: WidgetStateProperty.resolveWith((s) =>
+                    s.contains(WidgetState.selected) ? Colors.white : const Color(0xFF1A2B4A)),
+                dayBackgroundColor: WidgetStateProperty.resolveWith((s) =>
+                    s.contains(WidgetState.selected) ? const Color(0xFF1E5DAA) : null),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                rangePickerShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                elevation: 8,
+                shadowColor: Colors.black.withValues(alpha: 0.12),
+              ),
+              inputDecorationTheme: const InputDecorationTheme(
+                isDense: true,
+                contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              ),
+              textTheme: Theme.of(context).textTheme.apply(fontFamily: 'Assistant'),
+            ),
+            child: MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(0.9)),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 40),
+                child: child!,
+              ),
+            ),
+          ),
         );
       },
     );
@@ -349,17 +391,31 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: HomepageTheme.pageBackgroundStart,
         body: Container(
-          decoration:
-              const BoxDecoration(color: HomepageTheme.pageBackgroundStart),
+          width: double.infinity,
+          decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
           child: SafeArea(
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 650),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
+            child: Stack(
+              children: [
+                Positioned(
+                  top: -100, right: -80,
+                  child: Container(width: 420, height: 420, decoration: HomepageTheme.decorativeCircle),
+                ),
+                Positioned(
+                  bottom: -80, left: -70,
+                  child: Container(width: 340, height: 340, decoration: HomepageTheme.decorativeCircle),
+                ),
+                Positioned(
+                  top: 180, left: -60,
+                  child: Container(width: 240, height: 240, decoration: HomepageTheme.decorativeCircle),
+                ),
+                SizedBox.expand(
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 650),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
               children: [
                 const SizedBox(height: 20),
                 Row(
@@ -770,6 +826,9 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
             ),
                 ),
               ),
+            ),
+          ),
+              ],
             ),
           ),
         ),
