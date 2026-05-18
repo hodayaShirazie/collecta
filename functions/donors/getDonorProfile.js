@@ -14,18 +14,14 @@ module.exports = async (req, res) => {
     try {
       const uid = firebaseUser.uid;
 
-      // 1. קח את היוזר
       const userSnap = await db.collection("user").doc(uid).get();
       if (!userSnap.exists) return res.status(404).send({ error: "User not found" });
 
-      // 2. קח את התורם
       const donorSnap = await db.collection("donor").doc(uid).get();
       if (!donorSnap.exists) return res.status(404).send({ error: "Donor not found" });
 
       const donorData = donorSnap.data();
-      const addressId = donorData.businessAddress; // מזהה הכתובת
-
-      // 3. קח את כתובת העסק לפי businessAddress
+      const addressId = donorData.businessAddress; 
       let addressData = null;
       if (addressId) {
         const addressSnap = await db.collection("address").doc(addressId).get();

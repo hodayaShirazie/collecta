@@ -11,13 +11,13 @@ module.exports = async (req, res) => {
 
     try {
 
-      /// 1️⃣ user
+      // 1️user
       const userSnap = await db.collection("user").doc(uid).get();
       if (!userSnap.exists) {
         return res.status(404).send({ error: "User not found" });
       }
 
-      /// 2️⃣ driver
+      //driver
       const driverSnap = await db.collection("driver").doc(uid).get();
       if (!driverSnap.exists) {
         return res.status(404).send({ error: "Driver not found" });
@@ -27,7 +27,7 @@ module.exports = async (req, res) => {
 
       const destinationIds = driverData.destination || [];
 
-      /// 3️⃣ bring destinations
+      // bring destinations
       const destinations = [];
 
       for (const destId of destinationIds) {
@@ -37,7 +37,7 @@ module.exports = async (req, res) => {
 
         const destData = destSnap.data();
 
-        /// 4️⃣ bring address (only when an addressId exists)
+        // bring address (only when an addressId exists)
         const addressId = destData.addressId;
 
         let addressData = null;

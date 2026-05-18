@@ -10,6 +10,7 @@ import '../widgets/homepage_button.dart';
 import '../widgets/sign_out.dart';
 import 'package:collecta/app/routes.dart';
 import '../theme/homepage_theme.dart';
+import '../widgets/loading_indicator.dart';
 import '../widgets/donation_widgets/address_field.dart';
 import '../utils/validators/business_id_validator.dart';
 import '../utils/validators/phone_validator.dart';
@@ -181,7 +182,7 @@ class _DonorHomepageState extends State<DonorHomepage> {
         ]),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const LoadingIndicator();
           }
 
           if (snapshot.hasError) {
@@ -210,7 +211,8 @@ class _DonorHomepageState extends State<DonorHomepage> {
                         decoration: HomepageTheme.decorativeCircle,
                       ),
                     ),
-                    Padding(
+                    Positioned.fill(
+                      child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 25),
                       child: Column(
                         children: [
@@ -274,6 +276,7 @@ class _DonorHomepageState extends State<DonorHomepage> {
                           const SizedBox(height: 20),
                         ],
                       ),
+                    ),
                     ),
                   ],
                 ),

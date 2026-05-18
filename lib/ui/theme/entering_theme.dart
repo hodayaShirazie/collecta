@@ -12,7 +12,7 @@ class EnteringTheme {
     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
     minimumSize: const Size(0, 58),
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(40),
+      borderRadius: BorderRadius.circular(14),
     ),
     textStyle: const TextStyle(
       fontSize: 24,

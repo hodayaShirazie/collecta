@@ -403,9 +403,20 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
       body: Container(
         decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
         child: SafeArea(
-          child: isLoading
-              ? const LoadingIndicator()
-              : Column(
+          child: Stack(
+            children: [
+              Positioned(
+                top: -120,
+                right: -80,
+                child: Container(
+                  width: 300,
+                  height: 300,
+                  decoration: HomepageTheme.decorativeCircle,
+                ),
+              ),
+              isLoading
+                  ? const LoadingIndicator()
+                  : Column(
                   children: [
                     _buildHeader(),
                     Expanded(
@@ -420,6 +431,8 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
                     ),
                   ],
                 ),
+            ],
+          ),
         ),
       ),
     );

@@ -19,18 +19,15 @@ module.exports = async (req, res) => {
               return res.status(400).send({ error: "Invalid input parameters" });
             }
 
-            // 1. שליפת נתוני המשתמש הכלליים
             const userSnap = await db.collection("user").doc(donorId).get();
             if (!userSnap.exists) return res.status(404).send({ error: "User not found" });
 
-            // 2. שליפת נתוני התורם
             const donorSnap = await db.collection("donor").doc(donorId).get();
             if (!donorSnap.exists) return res.status(404).send({ error: "Donor info not found" });
 
             const donorData = donorSnap.data();
             const addressId = donorData.businessAddress;
 
-            // 3. שליפת כתובת העסק
             let addressData = null;
             if (addressId) {
                 const addressSnap = await db.collection("address").doc(addressId).get();

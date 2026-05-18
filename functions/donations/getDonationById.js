@@ -28,7 +28,6 @@ module.exports = async (req, res) => {
 
       const normalize = (ts) => ts?.toDate ? ts.toDate().toISOString() : ts;
 
-      // שלוף כתובת + כל המוצרים במקביל
       const [addressSnap, ...productSnaps] = await Promise.all([
         donationData.businessAddress
           ? db.collection("address").doc(donationData.businessAddress).get()
@@ -42,7 +41,6 @@ module.exports = async (req, res) => {
         ? { id: addressSnap.id, ...addressSnap.data() }
         : null;
 
-      // שלוף product types של כל המוצרים במקביל
       const productsData = await Promise.all(
         productSnaps
           .filter(snap => snap.exists)
@@ -63,7 +61,6 @@ module.exports = async (req, res) => {
           })
       );
 
-      // 🔹 החזר JSON מותאם למודל Dart
       return res.status(200).send({
         donation: {
           id: donationSnap.id,

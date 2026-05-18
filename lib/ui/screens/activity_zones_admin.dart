@@ -5,6 +5,7 @@ import '../../services/address_service.dart';
 import '../../data/models/activity_zone_model.dart';
 import '../../data/models/place_prediction.dart';
 import '../widgets/custom_popup_dialog.dart';
+import '../theme/homepage_theme.dart';
 
 class ActivityZonesAdmin extends StatefulWidget {
   final String organizationId;
@@ -87,19 +88,36 @@ class _ActivityZonesAdminState extends State<ActivityZonesAdmin> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: const Color(0xFFE8EDF6),
         floatingActionButton: FloatingActionButton(
           onPressed: _openAddDialog,
           backgroundColor: const Color(0xFF2C5AA0),
           child: const Icon(Icons.add, color: Colors.white),
         ),
-        body: SafeArea(
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 650),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
+        body: Container(
+          width: double.infinity,
+          decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
+          child: SafeArea(
+            child: Stack(
+              children: [
+                Positioned(
+                  top: -100, right: -80,
+                  child: Container(width: 420, height: 420, decoration: HomepageTheme.decorativeCircle),
+                ),
+                Positioned(
+                  bottom: -80, left: -70,
+                  child: Container(width: 340, height: 340, decoration: HomepageTheme.decorativeCircle),
+                ),
+                Positioned(
+                  top: 180, left: -60,
+                  child: Container(width: 240, height: 240, decoration: HomepageTheme.decorativeCircle),
+                ),
+                SizedBox.expand(
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 650),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
                   children: [
                     const SizedBox(height: 20),
                     Row(
@@ -190,6 +208,10 @@ class _ActivityZonesAdminState extends State<ActivityZonesAdmin> {
                   ],
                 ),
               ),
+            ),
+          ),
+        ),
+              ],
             ),
           ),
         ),

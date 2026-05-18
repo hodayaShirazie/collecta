@@ -16,6 +16,7 @@ import '../../services/org_manager.dart';
 import '../../services/admin_view_manager.dart';
 import '../../services/impersonation_manager.dart';
 import '../utils/org_utils.dart';
+import '../widgets/loading_indicator.dart';
 
 
 class EnteringScreen extends StatefulWidget {
@@ -148,9 +149,7 @@ class _EnteringScreenState extends State<EnteringScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isAdminViewMode) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: LoadingIndicator());
     }
 
     return Scaffold(
@@ -158,7 +157,7 @@ class _EnteringScreenState extends State<EnteringScreen> {
         future: _orgFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const LoadingIndicator();
           }
 
           if (!snapshot.hasData || snapshot.data == null) {
@@ -207,7 +206,7 @@ class _EnteringScreenState extends State<EnteringScreen> {
 
                     Padding(
                       padding:
-                          const EdgeInsets.symmetric(horizontal: 60),
+                          const EdgeInsets.symmetric(horizontal: 80),
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
@@ -243,7 +242,7 @@ class _EnteringScreenState extends State<EnteringScreen> {
 
                     Padding(
                       padding:
-                          const EdgeInsets.symmetric(horizontal: 60),
+                          const EdgeInsets.symmetric(horizontal: 80),
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(

@@ -53,7 +53,49 @@ class _MyDonationsState extends State<MyDonations> {
       builder: (context, child) {
         return Directionality(
           textDirection: TextDirection.rtl,
-          child: child!,
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: const ColorScheme.light(
+                primary: Color(0xFF1E5DAA),
+                onPrimary: Colors.white,
+                surface: Colors.white,
+                onSurface: Color(0xFF1A2B4A),
+              ),
+              datePickerTheme: DatePickerThemeData(
+                backgroundColor: Colors.white,
+                headerBackgroundColor: Colors.white,
+                headerForegroundColor: const Color(0xFF1E5DAA),
+                rangePickerBackgroundColor: Colors.white,
+                rangePickerHeaderBackgroundColor: Colors.white,
+                rangePickerHeaderForegroundColor: const Color(0xFF1E5DAA),
+                rangeSelectionBackgroundColor: const Color(0xFFEDF2FB),
+                headerHeadlineStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Assistant'),
+                headerHelpStyle: const TextStyle(fontSize: 13, fontFamily: 'Assistant'),
+                todayForegroundColor: WidgetStateProperty.resolveWith((s) =>
+                    s.contains(WidgetState.selected) ? Colors.white : const Color(0xFF1E5DAA)),
+                dayForegroundColor: WidgetStateProperty.resolveWith((s) =>
+                    s.contains(WidgetState.selected) ? Colors.white : const Color(0xFF1A2B4A)),
+                dayBackgroundColor: WidgetStateProperty.resolveWith((s) =>
+                    s.contains(WidgetState.selected) ? const Color(0xFF1E5DAA) : null),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                rangePickerShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                elevation: 8,
+                shadowColor: Colors.black.withValues(alpha: 0.12),
+              ),
+              inputDecorationTheme: const InputDecorationTheme(
+                isDense: true,
+                contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              ),
+              textTheme: Theme.of(context).textTheme.apply(fontFamily: 'Assistant'),
+            ),
+            child: MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(0.9)),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 40),
+                child: child!,
+              ),
+            ),
+          ),
         );
       },
     );
@@ -112,13 +154,29 @@ class _MyDonationsState extends State<MyDonations> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: HomepageTheme.pageBackgroundStart,
+        backgroundColor: Colors.white,
         body: Container(
-          decoration:
-              const BoxDecoration(color: HomepageTheme.pageBackgroundStart),
+          width: double.infinity,
+          height: double.infinity,
+          decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
           child: SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
+            child: Stack(
+              children: [
+                Positioned(
+                  top: -120,
+                  right: -80,
+                  child: Container(
+                    width: 300,
+                    height: 300,
+                    decoration: HomepageTheme.decorativeCircle,
+                  ),
+                ),
+                Positioned.fill(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) => SingleChildScrollView(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                        child: Column(
                 children: [
                   const SizedBox(height: 20),
                   Row(
@@ -225,7 +283,7 @@ class _MyDonationsState extends State<MyDonations> {
                     ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 25),
                       itemCount: filteredDonations.length,
                       itemBuilder: (context, index) {
                         final donation = filteredDonations[index];
@@ -345,7 +403,12 @@ class _MyDonationsState extends State<MyDonations> {
                     ),
                   const SizedBox(height: 20),
                 ],
+                ),
               ),
+            ),
+          ),
+        ),
+              ],
             ),
           ),
         ),

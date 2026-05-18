@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(grep -n \"^  }$\\\\|^    }$\\\\|^  \\\\}\\\\\\)\" lib/ui/screens/all_donation_admin.dart)"
+      "Bash(grep -n \"^  }$\\\\|^    }$\\\\|^  \\\\}\\\\\\)\" lib/ui/screens/all_donation_admin.dart)",
+      "Bash(dart analyze *)"
     ]
   }
 }

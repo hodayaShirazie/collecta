@@ -157,104 +157,120 @@ class _DonorDonationDetailState extends State<DonorDonationDetail> {
         textDirection: TextDirection.rtl,
         child: StatefulBuilder(
           builder: (ctx, setDialogState) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18)),
-              title: const Text(
-                "ביטול תרומה",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Text(
-                    "יש להזין סיבת ביטול:",
-                    textAlign: TextAlign.right,
-                    style: TextStyle(fontSize: 15),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: reasonCtrl,
-                    maxLines: 3,
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.right,
-                    decoration: InputDecoration(
-                      hintText: "סיבת הביטול...",
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                    ),
-                    onChanged: (_) => setDialogState(() {}),
-                  ),
-                ],
-              ),
-              actionsAlignment: MainAxisAlignment.center,
-              actions: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                  child: Row(
+            return Dialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              elevation: 8,
+              shadowColor: Colors.black.withValues(alpha: 0.12),
+              backgroundColor: Colors.white,
+              insetPadding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 300),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () => Navigator.pop(ctx),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 13),
-                            side: const BorderSide(color: Color(0xFF2C5AA0)),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                          ),
-                          child: const Text(
-                            "חזור",
-                            style: TextStyle(
-                                fontFamily: 'Assistant',
-                                fontSize: 15,
-                                color: Color(0xFF2C5AA0)),
-                          ),
+                      const Text(
+                        "ביטול תרומה",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1E5DAA),
+                          fontFamily: 'Assistant',
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: ValueListenableBuilder<bool>(
-                          valueListenable: _isCancellingNotifier,
-                          builder: (context, isCancelling, _) {
-                            return ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF2C5AA0),
-                                foregroundColor: Colors.white,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 13),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)),
-                              ),
-                              onPressed: (reasonCtrl.text.trim().isEmpty ||
-                                      isCancelling)
-                                  ? null
-                                  : () {
-                                      Navigator.pop(ctx);
-                                      _cancelDonation(
-                                          reasonCtrl.text.trim());
-                                    },
-                              child: isCancelling
-                                  ? const SizedBox(
-                                      height: 18,
-                                      width: 18,
-                                      child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: Colors.white),
-                                    )
-                                  : const Text("אישור",
-                                      style: TextStyle(
-                                          fontFamily: 'Assistant',
-                                          fontSize: 15)),
-                            );
-                          },
+                      const SizedBox(height: 6),
+                      Container(
+                        height: 2,
+                        width: 28,
+                        decoration: BoxDecoration(
+                          color: Color(0xFF1E5DAA).withValues(alpha: 0.25),
+                          borderRadius: BorderRadius.circular(2),
                         ),
+                      ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        "יש להזין סיבת ביטול:",
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFF555555),
+                          fontFamily: 'Assistant',
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: reasonCtrl,
+                        maxLines: 1,
+                        textDirection: TextDirection.rtl,
+                        textAlign: TextAlign.right,
+                        decoration: InputDecoration(
+                          hintText: "סיבת הביטול...",
+                          filled: true,
+                          fillColor: const Color(0xFFF8F9FB),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(color: Color(0xFF1E5DAA), width: 1.5),
+                          ),
+                        ),
+                        onChanged: (_) => setDialogState(() {}),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            style: TextButton.styleFrom(
+                              foregroundColor: const Color(0xFF888888),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            ),
+                            child: const Text("חזור",
+                                style: TextStyle(fontFamily: 'Assistant', fontSize: 14)),
+                          ),
+                          ValueListenableBuilder<bool>(
+                            valueListenable: _isCancellingNotifier,
+                            builder: (context, isCancelling, _) {
+                              return ElevatedButton(
+                                onPressed: (reasonCtrl.text.trim().isEmpty || isCancelling)
+                                    ? null
+                                    : () {
+                                        Navigator.pop(ctx);
+                                        _cancelDonation(reasonCtrl.text.trim());
+                                      },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF1E5DAA),
+                                  foregroundColor: Colors.white,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                                ),
+                                child: isCancelling
+                                    ? const SizedBox(
+                                        width: 16, height: 16,
+                                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                      )
+                                    : const Text("אישור",
+                                        style: TextStyle(fontFamily: 'Assistant', fontWeight: FontWeight.w600, fontSize: 14)),
+                              );
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
-              ],
+              ),
             );
           },
         ),
@@ -273,6 +289,7 @@ class _DonorDonationDetailState extends State<DonorDonationDetail> {
         decoration: const BoxDecoration(
           gradient: HomepageTheme.pageGradient,
         ),
+        showDecorativeCircle: true,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25),
             child: Column(
