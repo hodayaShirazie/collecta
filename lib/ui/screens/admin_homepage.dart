@@ -119,7 +119,7 @@ class _AdminHomepageState extends State<AdminHomepage> {
                     const Center(child: CircularProgressIndicator())
                   else
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 25),
+                      padding: const EdgeInsets.symmetric(horizontal: 250),
                       child: Column(
                         children: [
                           const SizedBox(height: HomepageTheme.topPadding),
@@ -219,7 +219,7 @@ class _AdminHomepageState extends State<AdminHomepage> {
             child: Align(
               alignment: Alignment.topLeft,
               child: Padding(
-                padding: const EdgeInsets.only(left: 16, top: 10),
+                padding: const EdgeInsets.only(left: 20, top: 16),
                 child: const NotificationBell(),
               ),
             ),

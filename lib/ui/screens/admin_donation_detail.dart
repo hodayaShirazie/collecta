@@ -490,7 +490,7 @@ class _AdminDonationDetailState extends State<AdminDonationDetail> {
         ),
         adminStyle: true,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 25),
+          padding: const EdgeInsets.symmetric(horizontal: 350),
             child: Column(
               children: [
                 const SizedBox(height: HomepageTheme.topPadding),

@@ -6,6 +6,7 @@ class LayoutWrapper extends StatelessWidget {
   final BoxDecoration? decoration;
   final bool showDecorativeCircle;
   final bool adminStyle;
+  final double? maxContentWidth;
 
   const LayoutWrapper({
     super.key,
@@ -13,16 +14,27 @@ class LayoutWrapper extends StatelessWidget {
     this.decoration,
     this.showDecorativeCircle = false,
     this.adminStyle = false,
+    this.maxContentWidth,
   });
 
   @override
   Widget build(BuildContext context) {
+    final effectiveChild = maxContentWidth != null
+        ? Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: maxContentWidth!),
+              child: child,
+            ),
+          )
+        : child;
+
     final scrollable = LayoutBuilder(
       builder: (context, constraints) {
         return SingleChildScrollView(
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: child,
+            child: effectiveChild,
           ),
         );
       },

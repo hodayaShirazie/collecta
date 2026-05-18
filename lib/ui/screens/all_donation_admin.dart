@@ -50,7 +50,7 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
         isLoading = false;
       });
     } catch (e) {
-      print("🔴 error loading data: $e");
+      print(" error loading data: $e");
       setState(() {
         isLoading = false;
       });
@@ -104,9 +104,11 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
             ),
             child: MediaQuery(
               data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(0.9)),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 40),
-                child: child!,
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 440, maxHeight: 620),
+                  child: child!,
+                ),
               ),
             ),
           ),
@@ -411,10 +413,8 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
                 ),
                 SizedBox.expand(
                   child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 650),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 350),
                         child: Column(
               children: [
                 const SizedBox(height: 20),
@@ -491,6 +491,9 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
                                 : "${selectedDateRange!.start.day}/${selectedDateRange!.start.month}/${selectedDateRange!.start.year} - "
                                     "${selectedDateRange!.end.day}/${selectedDateRange!.end.month}/${selectedDateRange!.end.year}",
                             style: MyDonationsTheme.dateFilterText,
+                            textDirection: selectedDateRange != null
+                                ? TextDirection.ltr
+                                : null,
                           ),
                         ),
                         if (selectedDateRange != null)
@@ -826,7 +829,6 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
             ),
                 ),
               ),
-            ),
           ),
               ],
             ),

@@ -218,6 +218,9 @@ class _MyDonationsState extends State<MyDonations> {
                                     : "${selectedDateRange!.start.day}/${selectedDateRange!.start.month}/${selectedDateRange!.start.year} - "
                                         "${selectedDateRange!.end.day}/${selectedDateRange!.end.month}/${selectedDateRange!.end.year}",
                                 style: MyDonationsTheme.dateFilterText,
+                                textDirection: selectedDateRange != null
+                                    ? TextDirection.ltr
+                                    : null,
                               ),
                             ),
                             if (selectedDateRange != null)

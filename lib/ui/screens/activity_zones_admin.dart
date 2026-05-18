@@ -113,10 +113,8 @@ class _ActivityZonesAdminState extends State<ActivityZonesAdmin> {
                 ),
                 SizedBox.expand(
                   child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 650),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 400),
                         child: Column(
                   children: [
                     const SizedBox(height: 20),
@@ -210,7 +208,6 @@ class _ActivityZonesAdminState extends State<ActivityZonesAdmin> {
               ),
             ),
           ),
-        ),
               ],
             ),
           ),

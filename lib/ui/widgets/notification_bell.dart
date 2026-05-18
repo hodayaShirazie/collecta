@@ -111,15 +111,16 @@ class _NotificationListDialogState extends State<_NotificationListDialog> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Dialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        elevation: 8,
+        shadowColor: Colors.black.withValues(alpha: 0.12),
+        backgroundColor: Colors.white,
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 420, maxHeight: 520),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               _buildHeader(context),
-              const Divider(height: 1),
               Flexible(child: _buildList()),
             ],
           ),
@@ -130,27 +131,43 @@ class _NotificationListDialogState extends State<_NotificationListDialog> {
 
   Widget _buildHeader(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 12, 16),
-      child: Row(
+      padding: const EdgeInsets.fromLTRB(20, 24, 12, 16),
+      child: Column(
         children: [
-          const Icon(Icons.notifications, color: Color(0xFF1E5DAA), size: 22),
-          const SizedBox(width: 8),
-          const Expanded(
-            child: Text(
-              'התראות',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF1E5DAA),
+          Row(
+            children: [
+              const Expanded(
+                child: Text(
+                  'התראות',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1E5DAA),
+                    fontFamily: 'Assistant',
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close, size: 20),
+                onPressed: () => Navigator.of(context).pop(),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Center(
+            child: Container(
+              height: 2,
+              width: 32,
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E5DAA).withValues(alpha: 0.25),
+                borderRadius: BorderRadius.circular(2),
               ),
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.close, size: 20),
-            onPressed: () => Navigator.of(context).pop(),
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
-          ),
+          const SizedBox(height: 8),
         ],
       ),
     );
@@ -162,7 +179,7 @@ class _NotificationListDialogState extends State<_NotificationListDialog> {
         padding: EdgeInsets.all(32),
         child: Text(
           'אין התראות',
-          style: TextStyle(color: Colors.black38, fontSize: 15),
+          style: TextStyle(color: Colors.black38, fontSize: 15, fontFamily: 'Assistant'),
           textAlign: TextAlign.center,
         ),
       );
@@ -171,7 +188,7 @@ class _NotificationListDialogState extends State<_NotificationListDialog> {
     return ListView.separated(
       shrinkWrap: true,
       itemCount: _notifications.length,
-      separatorBuilder: (_, __) => const Divider(height: 1),
+      separatorBuilder: (_, __) => Divider(height: 1, color: Colors.grey.shade200),
       itemBuilder: (context, index) =>
           _NotificationItem(notification: _notifications[index]),
     );
@@ -285,28 +302,29 @@ class _NotificationDetailsDialog extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Dialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        elevation: 8,
+        shadowColor: Colors.black.withValues(alpha: 0.12),
+        backgroundColor: Colors.white,
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 380),
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.cancel_outlined,
-                        color: Colors.red, size: 22),
-                    const SizedBox(width: 8),
                     const Expanded(
                       child: Text(
                         'פרטי ביטול תרומה',
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
-                          color: Colors.red,
+                          color: Color(0xFF1E5DAA),
+                          fontFamily: 'Assistant',
                         ),
                       ),
                     ),
@@ -318,9 +336,18 @@ class _NotificationDetailsDialog extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 14),
-                const Divider(height: 1),
-                const SizedBox(height: 14),
+                const SizedBox(height: 8),
+                Center(
+                  child: Container(
+                    height: 2,
+                    width: 32,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E5DAA).withValues(alpha: 0.25),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
                 _DetailRow(
                     label: 'שם עסק',
                     value: notification.businessName),

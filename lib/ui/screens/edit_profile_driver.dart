@@ -452,7 +452,12 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
                   decoration: HomepageTheme.decorativeCircle,
                 ),
               ),
-              SingleChildScrollView(
+              Positioned.fill(
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 520),
+                    child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 25),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -536,6 +541,9 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
               ],
             ),
           ),
+                ),
+              ),
+            ),
             ],
           ),
         ),
