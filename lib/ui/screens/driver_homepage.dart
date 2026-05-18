@@ -330,7 +330,11 @@ class _DriverHomepageState extends State<DriverHomepage> {
                 decoration: HomepageTheme.decorativeCircle,
               ),
             ),
-            Padding(
+            Positioned.fill(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 520),
+                  child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25),
               child: Column(
                 children: [
@@ -425,6 +429,9 @@ class _DriverHomepageState extends State<DriverHomepage> {
                     ),
                   const SizedBox(height: 20),
                 ],
+              ),
+            ),
+                ),
               ),
             ),
           ],

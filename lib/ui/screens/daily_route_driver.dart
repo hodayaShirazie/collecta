@@ -416,21 +416,28 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
               ),
               isLoading
                   ? const LoadingIndicator()
-                  : Column(
-                  children: [
-                    _buildHeader(),
-                    Expanded(
-                      child: donations.isEmpty
-                          ? _buildEmpty()
-                          : SingleChildScrollView(
-                              controller: _scrollController,
-                              padding: const EdgeInsets.fromLTRB(
-                                  _kEdgePad, 4, _kEdgePad, 0),
-                              child: _buildProgressMap(),
-                            ),
+                  : Positioned.fill(
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 520),
+                          child: Column(
+                            children: [
+                              _buildHeader(),
+                              Expanded(
+                                child: donations.isEmpty
+                                    ? _buildEmpty()
+                                    : SingleChildScrollView(
+                                        controller: _scrollController,
+                                        padding: const EdgeInsets.fromLTRB(
+                                            _kEdgePad, 4, _kEdgePad, 0),
+                                        child: _buildProgressMap(),
+                                      ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
-                  ],
-                ),
             ],
           ),
         ),
