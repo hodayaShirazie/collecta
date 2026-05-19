@@ -82,7 +82,7 @@ class _State extends State<DonorProfileCompletionScreen> {
   Widget build(BuildContext context) {
 
     if (fields.isEmpty) {
-      return const Scaffold(
+      return Scaffold(
         body: Center(child: Text("אין שדות חסרים")),
       );
     }
@@ -92,7 +92,7 @@ class _State extends State<DonorProfileCompletionScreen> {
     return Scaffold(
       body: Container(
         width: double.infinity,
-        decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
+        decoration: BoxDecoration(gradient: HomepageTheme.pageGradient),
         child: SafeArea(
           child: Stack(
             children: [

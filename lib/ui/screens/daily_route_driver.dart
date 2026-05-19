@@ -400,7 +400,7 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
+        decoration: BoxDecoration(gradient: HomepageTheme.pageGradient),
         child: SafeArea(
           child: Stack(
             children: [
@@ -454,11 +454,11 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
             textDirection: TextDirection.rtl,
             children: [
               IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                icon: Icon(Icons.arrow_back_ios_new_rounded,
                     color: HomepageTheme.latetBlue, size: 20),
                 onPressed: () => Navigator.pop(context),
               ),
-              const Expanded(
+              Expanded(
                 child: Text('המסלול היומי',
                     textAlign: TextAlign.center,
                     style: ReportDonationTheme.headerStyle),
@@ -467,7 +467,7 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
                 width: 40,
                 height: 40,
                 child: isOptimizing
-                    ? const Center(
+                    ? Center(
                         child: SizedBox(
                           width: 16,
                           height: 16,
@@ -490,7 +490,7 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
         ],
       ),
     );
@@ -540,7 +540,7 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
                   painter: _RouteMapPainter(centers: centers),
                 ),
               ),
-=              for (int di = 0; di < n; di++) ...[
+              for (int di = 0; di < n; di++) ...[
                 _buildPositionedCircle(di, centers[di], w),
                 _buildPositionedCard(di, centers[di], w),
               ],
@@ -587,7 +587,7 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
 
   Color _nodeColor(_StopData d) {
     if (d.isCollected) return Colors.grey.shade400;
-    if (d.isCurrent) return const Color(0xFFD32F2F);
+    if (d.isCurrent) return Color(0xFFD32F2F);
     return HomepageTheme.latetBlue;
   }
 
@@ -595,7 +595,7 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
     final d = _stopData(di);
     final color = _nodeColor(d);
     final bool isRegularStop = !d.isCollected && !d.isCurrent && !d.isDestination;
-    final Color circleBg = isRegularStop ? const Color(0xFFD0E8F8) : color;
+    final Color circleBg = isRegularStop ? Color(0xFFD0E8F8) : color;
     final Color circleIconColor = isRegularStop ? HomepageTheme.latetBlue : Colors.white;
 
     return Positioned(
@@ -719,7 +719,7 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
                         )),
                   ],
                 ),
-                const SizedBox(height: 2),
+                SizedBox(height: 2),
                 Text(
                   d.title,
                   textAlign: TextAlign.right,

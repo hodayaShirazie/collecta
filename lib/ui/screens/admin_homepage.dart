@@ -116,20 +116,20 @@ class _AdminHomepageState extends State<AdminHomepage> {
                   ),
 
                   if (loading)
-                    const Center(child: CircularProgressIndicator(color: HomepageTheme.latetBlue))
+                    Center(child: CircularProgressIndicator(color: HomepageTheme.latetBlue))
                   else
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 250),
                       child: Column(
                         children: [
                           const SizedBox(height: HomepageTheme.topPadding),
-                          const SizedBox(height: 30),
+                          SizedBox(height: 30),
 
                           Text(
                             'מרכז ניהול',
                             style: HomepageTheme.welcomeTextStyle,
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           Text(
                             'ברוכים הבאים למערכת הניהול',
                             style: HomepageTheme.subtitleTextStyle.copyWith(
@@ -234,7 +234,7 @@ class _StatItem extends StatelessWidget {
   final String title;
   final String value;
 
-  const _StatItem({
+  _StatItem({
     required this.title,
     required this.value,
   });
@@ -247,7 +247,7 @@ class _StatItem extends StatelessWidget {
           value,
           style: HomepageTheme.coinsTextStyle,
         ),
-        const SizedBox(height: 6),
+        SizedBox(height: 6),
         Text(
           title,
           style: HomepageTheme.subtitleTextStyle.copyWith(

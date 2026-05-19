@@ -428,7 +428,7 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
   Widget build(BuildContext context) {
 
     if (driver == null) {
-      return const Scaffold(
+      return Scaffold(
         body: LoadingIndicator(),
       );
     }
@@ -436,7 +436,7 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
     return Scaffold(
       body: Container(
         width: double.infinity,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: HomepageTheme.pageGradient,
         ),
         child: SafeArea(
@@ -468,11 +468,11 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
                   textDirection: TextDirection.rtl,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                      icon: Icon(Icons.arrow_back_ios_new_rounded,
                           color: HomepageTheme.latetBlue, size: 20),
                       onPressed: () => Navigator.pop(context),
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Text("עריכת פרטי נהג",
                           textAlign: TextAlign.center,
                           style: DonorEditProfileTheme.headerStyle),
@@ -511,7 +511,7 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
                         );
                       }),
 
-                      const SizedBox(height: 30),
+                      SizedBox(height: 30),
 
                       SizedBox(
                         width: 140,

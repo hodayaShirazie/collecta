@@ -22,7 +22,7 @@ class DonatedItemsSection extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.only(bottom: 25),
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(22),
@@ -30,7 +30,7 @@ class DonatedItemsSection extends StatelessWidget {
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 15,
-            offset: const Offset(0, 6),
+            offset: Offset(0, 6),
           )
         ],
       ),

@@ -106,7 +106,7 @@ class _AdminEnteringScreenState extends State<AdminEnteringScreen> {
     return Scaffold(
       body: Container(
         width: double.infinity,
-        decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
+        decoration: BoxDecoration(gradient: HomepageTheme.pageGradient),
         child: Stack(
           children: [
             Positioned(

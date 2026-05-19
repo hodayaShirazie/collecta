@@ -45,7 +45,7 @@ class DonatedItemTile extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   "${item["quantity"] ?? ""} ${item["unit"] ?? ""}",
-                  style: const TextStyle(fontSize: 12),
+                  style: TextStyle(fontSize: 12),
                   textAlign: TextAlign.right,
                 ),
               ],
@@ -66,7 +66,7 @@ class DonatedItemTile extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(width: 20),
+                SizedBox(width: 20),
 
                 GestureDetector(
                   onTap: onDelete,

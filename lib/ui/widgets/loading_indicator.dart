@@ -8,7 +8,7 @@ class LoadingIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox.expand(
       child: DecoratedBox(
-        decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
+        decoration: BoxDecoration(gradient: HomepageTheme.pageGradient),
         child: Stack(
           children: [
             Positioned(
@@ -20,7 +20,7 @@ class LoadingIndicator extends StatelessWidget {
                 decoration: HomepageTheme.decorativeCircle,
               ),
             ),
-            const Center(
+            Center(
               child: CircularProgressIndicator(color: HomepageTheme.latetBlue),
             ),
           ],

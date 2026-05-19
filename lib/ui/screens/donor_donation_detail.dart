@@ -286,7 +286,7 @@ class _DonorDonationDetailState extends State<DonorDonationDetail> {
 
     return Scaffold(
       body: LayoutWrapper(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: HomepageTheme.pageGradient,
         ),
         showDecorativeCircle: true,
@@ -299,11 +299,11 @@ class _DonorDonationDetailState extends State<DonorDonationDetail> {
                   textDirection: TextDirection.rtl,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                      icon: Icon(Icons.arrow_back_ios_new_rounded,
                           color: HomepageTheme.latetBlue, size: 20),
                       onPressed: () => Navigator.pop(context),
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Text("פרטי תרומה",
                           textAlign: TextAlign.center,
                           style: ReportDonationTheme.headerStyle),
@@ -371,7 +371,7 @@ class _DonorDonationDetailState extends State<DonorDonationDetail> {
                 if (donatedItems.isNotEmpty)
                   Container(
                     margin: const EdgeInsets.only(bottom: 25),
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(22),
@@ -379,7 +379,7 @@ class _DonorDonationDetailState extends State<DonorDonationDetail> {
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 15,
-                          offset: const Offset(0, 6),
+                          offset: Offset(0, 6),
                         )
                       ],
                     ),
@@ -557,7 +557,7 @@ class _DonorDonationDetailState extends State<DonorDonationDetail> {
                                     minimumSize: Size.zero,
                                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   ),
-                                  child: const Text(
+                                  child: Text(
                                     "ערוך תרומה",
                                     style: TextStyle(
                                       fontSize: 13,

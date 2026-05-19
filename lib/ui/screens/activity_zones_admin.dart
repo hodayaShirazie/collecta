@@ -90,12 +90,12 @@ class _ActivityZonesAdminState extends State<ActivityZonesAdmin> {
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: _openAddDialog,
-          backgroundColor: const Color(0xFF2C5AA0),
-          child: const Icon(Icons.add, color: Colors.white),
+          backgroundColor: Color(0xFF2C5AA0),
+          child: Icon(Icons.add, color: Colors.white),
         ),
         body: Container(
           width: double.infinity,
-          decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
+          decoration: BoxDecoration(gradient: HomepageTheme.pageGradient),
           child: SafeArea(
             child: Stack(
               children: [
@@ -170,12 +170,12 @@ class _ActivityZonesAdminState extends State<ActivityZonesAdmin> {
                       ),
                     ),
 
-                    const SizedBox(height: 35),
+                    SizedBox(height: 35),
 
                     // List
                     Expanded(
                       child: _isLoading
-                          ? const Center(child: CircularProgressIndicator(color: HomepageTheme.latetBlue))
+                          ? Center(child: CircularProgressIndicator(color: HomepageTheme.latetBlue))
                           : _errorMessage != null
                               ? Center(
                                   child: Padding(

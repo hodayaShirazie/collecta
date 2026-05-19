@@ -395,7 +395,7 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
       child: Scaffold(
         body: Container(
           width: double.infinity,
-          decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
+          decoration: BoxDecoration(gradient: HomepageTheme.pageGradient),
           child: SafeArea(
             child: Stack(
               children: [
@@ -422,17 +422,17 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
                   textDirection: TextDirection.rtl,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                      icon: Icon(Icons.arrow_back_ios_new_rounded,
                           color: HomepageTheme.latetBlue, size: 20),
                       onPressed: () => Navigator.pop(context),
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Text("כל התרומות",
                           textAlign: TextAlign.center,
                           style: MyDonationsTheme.headerStyle),
                     ),
                     _isExporting
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 48,
                             height: 48,
                             child: Center(
@@ -444,7 +444,7 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
                             ),
                           )
                         : IconButton(
-                            icon: const Icon(Icons.file_download_outlined,
+                            icon: Icon(Icons.file_download_outlined,
                                 color: HomepageTheme.latetBlue),
                             tooltip: 'ייצוא לאקסל',
                             onPressed: _exportToExcel,
@@ -527,7 +527,7 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
                             },
                             child: Container(
                               padding:
-                                  const EdgeInsets.symmetric(vertical: 10),
+                                  EdgeInsets.symmetric(vertical: 10),
                               alignment: Alignment.center,
                               decoration:
                                   MyDonationsTheme.statusChipDecoration(
@@ -543,11 +543,11 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
                   }).toList(),
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
                 Expanded(
                   child: isLoading
-                      ? const Center(child: CircularProgressIndicator(color: HomepageTheme.latetBlue))
+                      ? Center(child: CircularProgressIndicator(color: HomepageTheme.latetBlue))
                       : filteredDonations.isEmpty
                           ? const Center(child: Text("אין תרומות להצגה"))
                           : ListView.builder(

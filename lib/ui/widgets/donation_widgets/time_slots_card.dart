@@ -32,7 +32,7 @@ class TimeSlotsCard extends StatelessWidget {
                   child: GestureDetector(
                     onTap: () => toggleTime(slot),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      padding: EdgeInsets.symmetric(vertical: 8),
                       alignment: Alignment.center,
                       decoration: ReportDonationTheme.chipDecoration(selected),
                       child: Text(

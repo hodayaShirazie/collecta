@@ -52,11 +52,11 @@ class SupportContactCard extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: 4),
               ListTile(
-                leading: const Icon(Icons.open_in_new,
+                leading: Icon(Icons.open_in_new,
                     color: HomepageTheme.latetBlue),
-                title: const Text('פתח Gmail',
+                title: Text('פתח Gmail',
                     style: TextStyle(fontFamily: 'Assistant')),
                 onTap: () async {
                   Navigator.pop(sheetContext);
@@ -66,7 +66,7 @@ class SupportContactCard extends StatelessWidget {
               ),
               ListTile(
                 leading:
-                    const Icon(Icons.copy, color: HomepageTheme.latetBlue),
+                    Icon(Icons.copy, color: HomepageTheme.latetBlue),
                 title: const Text('העתק כתובת מייל',
                     style: TextStyle(fontFamily: 'Assistant')),
                 onTap: () {
@@ -90,11 +90,11 @@ class SupportContactCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (supportPhone == null && supportMail == null) return const SizedBox.shrink();
+    if (supportPhone == null && supportMail == null) return SizedBox.shrink();
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
         color: HomepageTheme.latetBlue.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(22),
@@ -104,7 +104,7 @@ class SupportContactCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Text(
+          Text(
             'צריך עזרה במילוי הטופס?',
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -166,8 +166,8 @@ class _ContactButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+        constraints: BoxConstraints(maxWidth: 200),
+        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 9),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
@@ -185,13 +185,13 @@ class _ContactButton extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(icon, size: 17, color: HomepageTheme.latetBlue),
-            const SizedBox(width: 6),
+            SizedBox(width: 6),
             Flexible(
               child: Text(
                 label,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: HomepageTheme.latetBlue,

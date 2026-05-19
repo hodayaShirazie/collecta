@@ -236,7 +236,7 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
 
     return Scaffold(
       body: LayoutWrapper(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: HomepageTheme.pageGradient,
         ),
         showDecorativeCircle: true,
@@ -250,13 +250,13 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
                 Stack(
                   alignment: Alignment.center,
                   children: [
-                    const Text("עריכת פרטי תורם",
+                    Text("עריכת פרטי תורם",
                         textAlign: TextAlign.center,
                         style: DonorEditProfileTheme.headerStyle),
                     Align(
                       alignment: Alignment.centerRight,
                       child: IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                        icon: Icon(Icons.arrow_back_ios_new_rounded,
                             color: HomepageTheme.latetBlue, size: 20),
                         onPressed: () => Navigator.pop(context),
                       ),
@@ -300,7 +300,7 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
                         contactPhone: contactPhoneCtrl,
                       ),
 
-                      const SizedBox(height: 30),
+                      SizedBox(height: 30),
 
                       SizedBox(
                         width: 140,

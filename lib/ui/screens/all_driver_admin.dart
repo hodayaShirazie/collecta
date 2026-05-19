@@ -255,12 +255,12 @@ class _AllDriverAdminState extends State<AllDriverAdmin> {
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: _showAddDriverDialog,
-          backgroundColor: const Color(0xFF2C5AA0),
-          child: const Icon(Icons.add, color: Colors.white),
+          backgroundColor: Color(0xFF2C5AA0),
+          child: Icon(Icons.add, color: Colors.white),
         ),
         body: Container(
           width: double.infinity,
-          decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
+          decoration: BoxDecoration(gradient: HomepageTheme.pageGradient),
           child: SafeArea(
             child: Stack(
               children: [
@@ -293,7 +293,7 @@ class _AllDriverAdminState extends State<AllDriverAdmin> {
                           onPressed: () => Navigator.pop(context),
                         ),
                         const Expanded(
-                          child: Text("נהגים שלי",
+                          child: Text("נהגים שליה",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 32,
@@ -344,7 +344,7 @@ class _AllDriverAdminState extends State<AllDriverAdmin> {
                     /// רשימה
                     Expanded(
                       child: isLoading
-                          ? const Center(
+                          ? Center(
                               child: CircularProgressIndicator(color: HomepageTheme.latetBlue),
                             )
                           : filteredDrivers.isEmpty

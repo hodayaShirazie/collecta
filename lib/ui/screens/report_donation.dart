@@ -216,14 +216,14 @@ class _ReportDonationState extends State<ReportDonation> {
   Widget build(BuildContext context) {
 
     if (donor == null) {
-      return const Scaffold(
+      return Scaffold(
         body: LoadingIndicator(),
       );
     }
 
     return Scaffold(
       body: LayoutWrapper(
-        decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
+        decoration: BoxDecoration(gradient: HomepageTheme.pageGradient),
         showDecorativeCircle: true,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25),
@@ -234,11 +234,11 @@ class _ReportDonationState extends State<ReportDonation> {
                   textDirection: TextDirection.rtl,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                      icon: Icon(Icons.arrow_back_ios_new_rounded,
                           color: HomepageTheme.latetBlue, size: 20),
                       onPressed: () => Navigator.pop(context),
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Text("דיווח תרומה",
                           textAlign: TextAlign.center,
                           style: ReportDonationTheme.headerStyle),

@@ -190,7 +190,7 @@ class _DonorHomepageState extends State<DonorHomepage> {
           }
 
           if (!snapshot.hasData) {
-            return const Center(child: Text("אין נתונים"));
+            return Center(child: Text("אין נתונים"));
           }
 
           final org = snapshot.data![0] as OrganizationModel;
@@ -230,16 +230,16 @@ class _DonorHomepageState extends State<DonorHomepage> {
                                       'assets/images/logo/coins_logo.png',
                                       height: HomepageTheme.coinLogoHeight,
                                     ),
-                                    const SizedBox(width: 6),
+                                    SizedBox(width: 6),
                                     Text(donor.coins.toString(), style: HomepageTheme.coinsTextStyle),
                                   ],
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 50),
+                          SizedBox(height: 50),
                           Text('היי, ${donor.user.name}', style: HomepageTheme.welcomeTextStyle),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           Text(
                             'שמחים לראות אותך שוב!',
                             style: HomepageTheme.subtitleTextStyle.copyWith(

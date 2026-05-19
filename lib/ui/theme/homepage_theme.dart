@@ -1,94 +1,90 @@
-
 import 'package:flutter/material.dart';
+import 'package:collecta/services/org_theme.dart';
 
 class HomepageTheme {
   // colors
-  static const Color latetBlue = Color(0xFF1E5DAA);
-  static const Color latetYellow = Color(0xFFFFF9C4);
-  static const Color pageBackgroundStart = Color(0xFFEAF2FF);
-  static const Color pageBackgroundEnd = Colors.white;
+  static Color get latetBlue => OrgTheme.primaryColor;
+  static Color get latetYellow => OrgTheme.accentColor;
+  static Color get pageBackgroundStart => OrgTheme.bgStartColor;
+  static Color get pageBackgroundEnd => Colors.white;
 
   // text styles
-  static const TextStyle buttonTextStyle = TextStyle(
-    fontSize: 20,
-    fontWeight: FontWeight.w600,
-    color: latetBlue,
-    fontFamily: 'Assistant',
-  );
+  static TextStyle get buttonTextStyle => TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        color: latetBlue,
+        fontFamily: 'Assistant',
+      );
 
-  static const TextStyle welcomeTextStyle = TextStyle(
-    fontSize: 34,
-    fontWeight: FontWeight.bold,
-    color: latetBlue,
-    fontFamily: 'Assistant',
-  );
+  static TextStyle get welcomeTextStyle => TextStyle(
+        fontSize: 34,
+        fontWeight: FontWeight.bold,
+        color: latetBlue,
+        fontFamily: 'Assistant',
+      );
 
-  static const TextStyle coinsTextStyle = TextStyle(
-    fontSize: 18,
-    fontWeight: FontWeight.bold,
-    color: latetBlue,
-    fontFamily: 'Assistant',
-  );
+  static TextStyle get coinsTextStyle => TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: latetBlue,
+        fontFamily: 'Assistant',
+      );
 
-  static const TextStyle subtitleTextStyle = TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.normal,
-    color: latetBlue,
-  );
+  static TextStyle get subtitleTextStyle => TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.normal,
+        color: latetBlue,
+      );
 
-  // Gradient 
-  static const LinearGradient pageGradient = LinearGradient(
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-    colors: [
-      pageBackgroundStart,
-      pageBackgroundEnd,
-    ],
-  );
+  // Gradient
+  static LinearGradient get pageGradient => LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [pageBackgroundStart, pageBackgroundEnd],
+      );
 
- 
-  static BoxDecoration buttonDecoration = BoxDecoration(
-    color: Colors.white,
-    borderRadius: BorderRadius.circular(22),
-    boxShadow: [
-      BoxShadow(
-        color: Colors.black.withOpacity(0.06),
-        blurRadius: 20,
-        offset: Offset(0, 8),
-      ),
-      BoxShadow(
-        color: latetYellow.withOpacity(0.35),
-        blurRadius: 30,
-        offset: Offset(0, 15),
-      ),
-    ],
-  );
+  static BoxDecoration get buttonDecoration => BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+          BoxShadow(
+            color: latetYellow.withOpacity(0.35),
+            blurRadius: 30,
+            offset: const Offset(0, 15),
+          ),
+        ],
+      );
 
-  // coins box decoration 
-  static BoxDecoration coinsBoxDecoration = BoxDecoration(
-    color: Colors.white,
-    borderRadius: BorderRadius.circular(20),
-    boxShadow: [
-      BoxShadow(
-        color: Colors.black.withOpacity(0.05),
-        blurRadius: 10,
-      ),
-    ],
-  );
+  // coins box decoration
+  static BoxDecoration get coinsBoxDecoration => BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+          ),
+        ],
+      );
 
   // decorative circle
-  static BoxDecoration decorativeCircle = BoxDecoration(
-    color: latetYellow.withOpacity(0.25),
-    shape: BoxShape.circle,
-  );
+  static BoxDecoration get decorativeCircle => BoxDecoration(
+        color: latetYellow.withOpacity(0.25),
+        shape: BoxShape.circle,
+      );
 
   // faint decorative circle (for admin extra circles)
-  static BoxDecoration decorativeCircleFaint = BoxDecoration(
-    color: latetYellow.withOpacity(0.14),
-    shape: BoxShape.circle,
-  );
+  static BoxDecoration get decorativeCircleFaint => BoxDecoration(
+        color: latetYellow.withOpacity(0.14),
+        shape: BoxShape.circle,
+      );
 
-  // sizes  
+  // sizes
   static const double logoHeight = 90;
   static const double deptLogoHeight = 50;
   static const double coinLogoHeight = 22;
