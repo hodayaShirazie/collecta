@@ -95,11 +95,11 @@ class _CancelledDonationPopup extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 380),
+          constraints: const BoxConstraints(maxWidth: 260),
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,

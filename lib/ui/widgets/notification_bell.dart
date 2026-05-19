@@ -116,7 +116,7 @@ class _NotificationListDialogState extends State<_NotificationListDialog> {
         shadowColor: Colors.black.withValues(alpha: 0.12),
         backgroundColor: Colors.white,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 420, maxHeight: 520),
+          constraints: const BoxConstraints(maxWidth: 350, maxHeight: 380),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -131,11 +131,12 @@ class _NotificationListDialogState extends State<_NotificationListDialog> {
 
   Widget _buildHeader(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 24, 12, 16),
+      padding: const EdgeInsets.fromLTRB(8, 24, 8, 16),
       child: Column(
         children: [
           Row(
             children: [
+              const SizedBox(width: 32),
               const Expanded(
                 child: Text(
                   'התראות',
@@ -152,19 +153,17 @@ class _NotificationListDialogState extends State<_NotificationListDialog> {
                 icon: const Icon(Icons.close, size: 20),
                 onPressed: () => Navigator.of(context).pop(),
                 padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
+                constraints: const BoxConstraints(minWidth: 32),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          Center(
-            child: Container(
-              height: 2,
-              width: 32,
-              decoration: BoxDecoration(
-                color: const Color(0xFF1E5DAA).withValues(alpha: 0.25),
-                borderRadius: BorderRadius.circular(2),
-              ),
+          Container(
+            height: 2,
+            width: 32,
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E5DAA).withValues(alpha: 0.25),
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
           const SizedBox(height: 8),

@@ -3,6 +3,7 @@ const verifyFirebaseToken = require("../utils/verifyToken");
 const axios = require("axios");
 const { defineJsonSecret } = require("firebase-functions/params");
 
+// TODO: is that a secrete?
 const LGCN_URL = "http://46.224.67.125:8000/compute-routes";
 const GMAPS_DISTANCE_MATRIX_URL =
   "https://maps.googleapis.com/maps/api/distancematrix/json";

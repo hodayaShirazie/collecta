@@ -152,6 +152,7 @@ import '../utils/profile_completion_flow.dart';
 import '../utils/validators/phone_validator.dart';
 import 'package:collecta/app/routes.dart';
 import '../widgets/custom_popup_dialog.dart';
+import '../widgets/loading_indicator.dart';
 
 const String kOrganizationId = 'xFKMWqidL2uZ5wnksdYX';
 
@@ -272,7 +273,7 @@ class _DriverHomepageState extends State<DriverHomepage> {
           future: orgService.fetchOrganization(widget.driver!.user.organizationId),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return const Scaffold(body: LoadingIndicator());
             }
             if (snapshot.hasError) {
               return Center(child: Text("שגיאה: ${snapshot.error}"));
@@ -293,7 +294,7 @@ class _DriverHomepageState extends State<DriverHomepage> {
         ]),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Scaffold(body: LoadingIndicator());
           }
           if (snapshot.hasError) {
             return Center(child: Text("שגיאה: ${snapshot.error}"));
@@ -542,7 +543,7 @@ class _activityZoneelectionDialogState extends State<_activityZoneelectionDialog
       content: zones == null
           ? const SizedBox(
               height: 80,
-              child: Center(child: CircularProgressIndicator()),
+              child: Center(child: CircularProgressIndicator(color: HomepageTheme.latetBlue)),
             )
           : Column(
               mainAxisSize: MainAxisSize.min,

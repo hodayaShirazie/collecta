@@ -116,7 +116,7 @@ class _AdminHomepageState extends State<AdminHomepage> {
                   ),
 
                   if (loading)
-                    const Center(child: CircularProgressIndicator())
+                    const Center(child: CircularProgressIndicator(color: HomepageTheme.latetBlue))
                   else
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 250),

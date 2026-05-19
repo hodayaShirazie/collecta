@@ -345,7 +345,7 @@ class _AllDriverAdminState extends State<AllDriverAdmin> {
                     Expanded(
                       child: isLoading
                           ? const Center(
-                              child: CircularProgressIndicator(),
+                              child: CircularProgressIndicator(color: HomepageTheme.latetBlue),
                             )
                           : filteredDrivers.isEmpty
                               ? const Center(

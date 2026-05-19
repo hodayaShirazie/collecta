@@ -175,7 +175,7 @@ class _ActivityZonesAdminState extends State<ActivityZonesAdmin> {
                     // List
                     Expanded(
                       child: _isLoading
-                          ? const Center(child: CircularProgressIndicator())
+                          ? const Center(child: CircularProgressIndicator(color: HomepageTheme.latetBlue))
                           : _errorMessage != null
                               ? Center(
                                   child: Padding(

@@ -21,7 +21,7 @@ module.exports = (req, res) => {
       }
 
       const GOOGLE_KEY = config.value().google.key;
-
+    // TODO: is that a secrete?
       const response = await axios.get(
         "https://maps.googleapis.com/maps/api/place/details/json",
         {
