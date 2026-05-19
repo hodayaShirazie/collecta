@@ -5,7 +5,6 @@ import '../data/models/donor_model.dart';
 class DonorService {
   final DonorRepository _repo = DonorRepository();
 
-  // Cache: פרופיל תורם
   static DonorProfile? _cachedProfile;
   static DateTime? _profileCacheTime;
   static const _profileTTL = Duration(minutes: 5);

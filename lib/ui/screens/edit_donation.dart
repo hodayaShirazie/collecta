@@ -246,7 +246,6 @@ class _EditDonationState extends State<EditDonation> {
   if (_isSubmitting) return;
   if (!_formKey.currentState!.validate()) return;
 
-  // בדיקת חלונות זמן
   if (selectedTimeSlots.isEmpty) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("יש לבחור לפחות חלון זמן אחד")),
@@ -254,7 +253,6 @@ class _EditDonationState extends State<EditDonation> {
     return;
   }
 
-  // בדיקת מוצרים
   if (donatedItems.isEmpty) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("יש להוסיף לפחות מוצר אחד לתרומה")),
@@ -309,11 +307,8 @@ class _EditDonationState extends State<EditDonation> {
       }).toList();
     }
 
-
-    // קריאה ל-Service לעדכון התרומה
     await DonationService().updateDonation(body);
 
-    // הודעה למשתמש
     await showDialog(
       context: context,
       builder: (context) => const CustomPopupDialog(
@@ -323,7 +318,7 @@ class _EditDonationState extends State<EditDonation> {
       ),
     );
 
-    Navigator.pop(context); // חזרה למסך הקודם
+    Navigator.pop(context); 
 
   } catch (e) {
     setState(() => _isSubmitting = false);
@@ -332,11 +327,6 @@ class _EditDonationState extends State<EditDonation> {
     );
   }
 }
-
-
-
-
-
 
   @override
   Widget build(BuildContext context) {

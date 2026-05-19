@@ -1,18 +1,15 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../../config/api_config.dart';
-// import 'auth_headers.dart';
 import 'api_source.dart';
 
 
 class UserApi extends ApiSource {
 
     Future<List<Map<String, dynamic>>> getUsers() async {
-        // final headers = await AuthHeaders.build();
 
         final response = await http.get(
             Uri.parse('${ApiConfig.baseUrl}/getUsers'),
-        // headers: headers,
             headers: await headers(),
         );
 
@@ -30,11 +27,9 @@ class UserApi extends ApiSource {
         required String role,
         required String organizationId,
     }) async {
-        // final headers = await AuthHeaders.build();
 
         final response = await http.post(
             Uri.parse('${ApiConfig.baseUrl}/syncUserWithRole'),
-            // headers: headers,
             headers: await headers(),   
             body: json.encode({
                 'name': name,
@@ -55,11 +50,9 @@ class UserApi extends ApiSource {
     }
 
     Future<Map<String, dynamic>> getMyProfile(String role) async {
-        // final headers = await AuthHeaders.build();
 
         final response = await http.get(
             Uri.parse('${ApiConfig.baseUrl}/getMyProfile?role=$role'),
-            // headers: headers,
             headers: await headers(),
         );
 
@@ -72,17 +65,13 @@ class UserApi extends ApiSource {
 
     Future<String> updateUserProfile({
         required String name,
-        // required String img,
     }) async {
-        // final headers = await AuthHeaders.build();
 
         final response = await http.put(
             Uri.parse('${ApiConfig.baseUrl}/updateUserProfile'),
-            // headers: headers,
             headers: await headers(),
             body: json.encode({
                 'name': name,
-                // 'img': img,
             }),
         );
 

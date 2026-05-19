@@ -109,10 +109,6 @@ class _EnteringScreenState extends State<EnteringScreen> {
         organizationId: await OrgUtils.getOrgId() ?? '',
       );
 
-      //TODO למחוק אחכ- הדפסה של הטוקן
-      // String? token = await FirebaseAuth.instance.currentUser?.getIdToken();
-      // print("FULL_TOKEN: $token");
-
       return result;
     } catch (e) {
       if (e is FirebaseAuthException &&

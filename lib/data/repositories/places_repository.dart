@@ -4,7 +4,6 @@ import '../models/place_prediction.dart';
 import '../models/lat_lng_model.dart';
 
 class PlacesRepository {
-  // final ApiSource _api = ApiSource();
   final PlacesApi _api = PlacesApi();
 
   Future<List<PlacePrediction>> autocomplete(String input) async {

@@ -313,7 +313,6 @@ class _DonorDonationDetailState extends State<DonorDonationDetail> {
                 ),
                 const SizedBox(height: 35),
 
-                // פרטי העסק
                 CardWidget(
                   child: Column(
                     children: [
@@ -343,8 +342,6 @@ class _DonorDonationDetailState extends State<DonorDonationDetail> {
                     ],
                   ),
                 ),
-
-                // פרטי איש קשר
                 CardWidget(
                   child: Column(
                     children: [
@@ -371,7 +368,6 @@ class _DonorDonationDetailState extends State<DonorDonationDetail> {
                   toggleTime: (_) {},
                 ),
 
-                // פריטים שנוספו
                 if (donatedItems.isNotEmpty)
                   Container(
                     margin: const EdgeInsets.only(bottom: 25),
@@ -442,14 +438,12 @@ class _DonorDonationDetailState extends State<DonorDonationDetail> {
                     ),
                   ),
 
-                // סטטוס + פעולות
                 CardWidget(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SectionTitleWidget(text: "פרטי תרומה"),
 
-                      // סטטוס
                       Padding(
                         padding: const EdgeInsets.only(bottom: 12),
                         child: Row(
@@ -476,7 +470,6 @@ class _DonorDonationDetailState extends State<DonorDonationDetail> {
                         ),
                       ),
 
-                      // סיבת ביטול
                       if (d.status == "cancelled" && d.cancelingReason.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.only(bottom: 12),
@@ -516,7 +509,6 @@ class _DonorDonationDetailState extends State<DonorDonationDetail> {
 
                       const Divider(height: 20, thickness: 0.5, color: Color(0xFFE8E8E8)),
 
-                      // כפתורי פעולה
                       Row(
                         textDirection: TextDirection.rtl,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

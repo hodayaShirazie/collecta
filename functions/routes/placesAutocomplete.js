@@ -22,7 +22,7 @@ exports.placesAutocomplete = functions.https.onRequest((req, res) => {
       if (!isValidString(input)) {
         return res.status(400).json({ error: "Invalid input parameters" });
       }
-
+    // TODO: is that a secrete?
       const GOOGLE_KEY = config.value().google.key;
       const response = await axios.get(
         "https://maps.googleapis.com/maps/api/place/autocomplete/json",

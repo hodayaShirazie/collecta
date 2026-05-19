@@ -5,11 +5,9 @@ import 'api_source.dart';
 
 class DonorApi extends ApiSource {
     Future<Map<String, dynamic>> getDonorProfile() async {
-        // final headers = await AuthHeaders.build();
 
         final response = await http.get(
             Uri.parse('${ApiConfig.baseUrl}/getDonorProfile'),
-            // headers: headers,
             headers: await headers(),
         );
 
@@ -28,7 +26,6 @@ class DonorApi extends ApiSource {
         required String contactPhone,
         required String crn,
     }) async {
-        // final headers = await AuthHeaders.build();
 
         // Build request body with only non-empty fields
         final body = <String, dynamic>{};
@@ -41,7 +38,6 @@ class DonorApi extends ApiSource {
 
         final response = await http.put(
         Uri.parse('${ApiConfig.baseUrl}/updateDonorProfile'),
-            // headers: headers,
             headers: await headers(),
             body: json.encode(body),
         );
@@ -57,7 +53,6 @@ class DonorApi extends ApiSource {
 
     Future<Map<String, dynamic>> getDonorProfileById(String donorId) async {
         final response = await http.get(
-            // שימי לב שאנחנו מעבירים את ה-ID כפרמטר ב-URL
             Uri.parse('${ApiConfig.baseUrl}/getDonorProfileById?donorId=$donorId'),
             headers: await headers(),
         );

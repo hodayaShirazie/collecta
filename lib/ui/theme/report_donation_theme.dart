@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'homepage_theme.dart';
 
 class ReportDonationTheme {
-  // כותרת
   static const TextStyle headerStyle = TextStyle(
     fontSize: 30,
     fontWeight: FontWeight.bold,

@@ -29,4 +29,3 @@ async function createAdmin(uid, role) {
 }
 
 module.exports = { createUser, createAdmin };
-// module.exports = { createAdmin };

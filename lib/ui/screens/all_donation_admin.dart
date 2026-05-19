@@ -439,7 +439,7 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
                               child: SizedBox(
                                 width: 20,
                                 height: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(strokeWidth: 2, color: HomepageTheme.latetBlue),
                               ),
                             ),
                           )
@@ -547,7 +547,7 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
 
                 Expanded(
                   child: isLoading
-                      ? const Center(child: CircularProgressIndicator())
+                      ? const Center(child: CircularProgressIndicator(color: HomepageTheme.latetBlue))
                       : filteredDonations.isEmpty
                           ? const Center(child: Text("אין תרומות להצגה"))
                           : ListView.builder(

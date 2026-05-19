@@ -116,7 +116,7 @@ class _AdminHomepageState extends State<AdminHomepage> {
                   ),
 
                   if (loading)
-                    const Center(child: CircularProgressIndicator())
+                    const Center(child: CircularProgressIndicator(color: HomepageTheme.latetBlue))
                   else
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 250),
@@ -230,7 +230,6 @@ class _AdminHomepageState extends State<AdminHomepage> {
   }
 }
 
-// ===== STAT ITEM =====
 class _StatItem extends StatelessWidget {
   final String title;
   final String value;
@@ -368,7 +367,6 @@ class _DonutChartState extends State<_DonutChart> {
 }
 
 
-// ===== LEGEND ITEM =====
 class _LegendItem extends StatelessWidget {
   final Color color;
   final String label;

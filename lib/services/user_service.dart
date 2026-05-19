@@ -4,7 +4,6 @@ import '../data/models/user_model.dart';
 class UserService {
   final UserRepository _repo = UserRepository();
 
-  // Cache: פרופיל משתמש
   static Map<String, dynamic>? _cachedProfile;
   static String? _cachedProfileRole;
   static DateTime? _profileCacheTime;

@@ -30,7 +30,6 @@ class DonatedItemTile extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
 
-            /// צד ימין - שם וכמות
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,7 +53,6 @@ class DonatedItemTile extends StatelessWidget {
             ),
           
 
-            /// צד שמאל - אייקונים
             Row(
               children: [
 
@@ -64,7 +62,7 @@ class DonatedItemTile extends StatelessWidget {
                     "assets/images/category_icons/edit.png",
                     width: 18,
                     height: 18,
-                    color: HomepageTheme.latetBlue, // צביעה כחולה
+                    color: HomepageTheme.latetBlue,
                   ),
                 ),
 

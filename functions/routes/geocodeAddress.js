@@ -19,7 +19,7 @@ exports.geocodeAddress = functions.https.onRequest((req, res) => {
       if (!isValidString(address)) {
         return res.status(400).json({ error: "Invalid address" });
       }
-
+      // TODO: is that a secrete?
       const response = await axios.get(
         "https://nominatim.openstreetmap.org/search",
         {

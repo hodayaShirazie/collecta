@@ -175,7 +175,7 @@ class _ActivityZonesAdminState extends State<ActivityZonesAdmin> {
                     // List
                     Expanded(
                       child: _isLoading
-                          ? const Center(child: CircularProgressIndicator())
+                          ? const Center(child: CircularProgressIndicator(color: HomepageTheme.latetBlue))
                           : _errorMessage != null
                               ? Center(
                                   child: Padding(
@@ -217,9 +217,6 @@ class _ActivityZonesAdminState extends State<ActivityZonesAdmin> {
   }
 }
 
-// ────────────────────────────────────────────
-// Zone list tile
-// ────────────────────────────────────────────
 class _ZoneTile extends StatelessWidget {
   final ActivityZoneModel zone;
   final VoidCallback onEdit;
@@ -304,9 +301,6 @@ class _ZoneTile extends StatelessWidget {
   }
 }
 
-// ────────────────────────────────────────────
-// Add / Edit dialog
-// ────────────────────────────────────────────
 class _ActivityZoneDialog extends StatefulWidget {
   final String organizationId;
   final ActivityZoneModel? existing;

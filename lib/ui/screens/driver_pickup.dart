@@ -312,7 +312,6 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // שם המוצר או שדה עריכה לסוג "אחר"
           if (isOther)
             Directionality(
               textDirection: TextDirection.rtl,
@@ -352,11 +351,9 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
 
           const SizedBox(height: 12),
 
-          // שורה תחתונה: בורר כמות + כפתורי אשר/בטל
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // כפתורי אשר / בטל
               Row(
                 children: [
                   _buildChoiceButton(
@@ -374,8 +371,6 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
                   ),
                 ],
               ),
-
-              // בורר כמות
               Opacity(
                 opacity: isCancelled ? 0.3 : 1.0,
                 child: AbsorbPointer(

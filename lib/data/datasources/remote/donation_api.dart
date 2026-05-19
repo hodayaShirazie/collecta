@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../../config/api_config.dart';
-// import 'auth_headers.dart';
 import 'api_source.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:dio/dio.dart';
@@ -10,11 +9,8 @@ import '../../../services/org_manager.dart';
 
 class DonationApi extends ApiSource {
     Future<String> reportDonationRaw(Map<String, dynamic> body) async {
-        // final headers = await AuthHeaders.build();
-
         final response = await http.post(
             Uri.parse('${ApiConfig.baseUrl}/reportDonation'),
-            // headers: headers,
             headers: await headers(),
             body: json.encode(body),
         );
@@ -45,11 +41,8 @@ class DonationApi extends ApiSource {
     }
 
     Future<Map<String, dynamic>> getDonationById(String donationId) async {
-      // final headers = await AuthHeaders.build();
-
       final response = await http.get(
         Uri.parse('${ApiConfig.baseUrl}/getDonationById?donationId=$donationId'),
-        // headers: headers,
         headers: await headers(),
       );
 
@@ -62,12 +55,8 @@ class DonationApi extends ApiSource {
 
 
     Future<List<Map<String, dynamic>>> getDonationsByOrganization(String organizationId) async {
-
-        // final headers = await AuthHeaders.build();
-
         final response = await http.get(
             Uri.parse('${ApiConfig.baseUrl}/getAllDonationsByOrganization?organizationId=$organizationId'),
-            // headers: headers,
             headers: await headers(),
         );
 
@@ -81,11 +70,8 @@ class DonationApi extends ApiSource {
     }
 
     Future<int> getDonationsCount(String organizationId) async {
-        // final headers = await AuthHeaders.build();
-
         final response = await http.get(
             Uri.parse('${ApiConfig.baseUrl}/getDonationsCount?organizationId=$organizationId'),
-            // headers: headers,
             headers: await headers(),
         );
 
@@ -98,11 +84,8 @@ class DonationApi extends ApiSource {
     }
 
     Future<int> getDonationsPendingCount(String organizationId) async {
-        // final headers = await AuthHeaders.build();
-
         final response = await http.get(
             Uri.parse('${ApiConfig.baseUrl}/getDonationsPendingCount?organizationId=$organizationId'),
-            // headers: headers,
             headers: await headers(),
         );
 
@@ -118,11 +101,8 @@ class DonationApi extends ApiSource {
         required String organizationId,
         required int monthOffset,
     }) async {
-        // final headers = await AuthHeaders.build();
-
         final response = await http.get(
             Uri.parse('${ApiConfig.baseUrl}/getDonationsCountByMonth?organizationId=$organizationId&monthOffset=$monthOffset'),
-            // headers: headers,
             headers: await headers(),
         );
 
@@ -135,11 +115,8 @@ class DonationApi extends ApiSource {
     }
 
     Future<int> getDonationsCanceledCount(String organizationId) async {
-        // final headers = await AuthHeaders.build();
-
         final response = await http.get(
             Uri.parse('${ApiConfig.baseUrl}/getDonationsCanceledCount?organizationId=$organizationId',),
-            // headers: headers,
             headers: await headers(),
         );
 
@@ -153,11 +130,9 @@ class DonationApi extends ApiSource {
 
 
     Future<int> getDonationsConfirmedCount(String organizationId) async {
-        // final headers = await AuthHeaders.build();
 
         final res = await http.get(
             Uri.parse("${ApiConfig.baseUrl}/getDonationsConfirmedCount?organizationId=$organizationId"),
-            // headers: headers,
             headers: await headers(),
         );
 
