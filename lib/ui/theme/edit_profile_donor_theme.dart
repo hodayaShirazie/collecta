@@ -1,70 +1,13 @@
-// import 'package:flutter/material.dart';
-
-// class DonorEditProfileTheme {
-//   static const Color latetBlue = Color(0xFF1E5DAA);
-  
-//   // כותרת עמוד
-//   static const TextStyle headerStyle = TextStyle(
-//     fontSize: 28,
-//     fontWeight: FontWeight.bold,
-//     color: latetBlue,
-//     fontFamily: 'Assistant',
-//     fontStyle: FontStyle.italic,
-//   );
-
-//   // כותרות מעל שדות הקלט
-//   static const TextStyle labelStyle = TextStyle(
-//     fontSize: 16,
-//     fontWeight: FontWeight.bold,
-//     color: latetBlue,
-//   );
-
-//   // עיצוב שדות הקלט
-//   static InputDecoration inputDecoration = InputDecoration(
-//     isDense: true,
-//     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-//     border: OutlineInputBorder(
-//       borderRadius: BorderRadius.circular(15),
-//       borderSide: const BorderSide(color: Colors.black, width: 1),
-//     ),
-//     enabledBorder: OutlineInputBorder(
-//       borderRadius: BorderRadius.circular(15),
-//       borderSide: const BorderSide(color: Colors.black, width: 1),
-//     ),
-//   );
-
-//   // עיצוב המסגרת המרכזית הכחולה
-//   static BoxDecoration containerDecoration = BoxDecoration(
-//     border: Border.all(color: latetBlue, width: 2),
-//     color: Colors.white,
-//   );
-
-//   // עיצוב כפתור "שמור"
-//   static ButtonStyle saveButtonStyle = ElevatedButton.styleFrom(
-//     backgroundColor: latetBlue,
-//     foregroundColor: Colors.white,
-//     padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-//     shape: RoundedRectangleBorder(
-//       borderRadius: BorderRadius.circular(20),
-//     ),
-//     textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-//   );
-// }
-
-
-
 import 'package:flutter/material.dart';
 import 'homepage_theme.dart';
 
 class DonorEditProfileTheme {
-  // צבעים עיקריים
   static const Color primaryBlue = Color(0xFF1E5DAA);
   static const Color lightBlue = Color(0xFFE6F0FA);
   static const Color inputBorderColor = Color(0xFFB0C4DE);
   static const Color buttonTextColor = Colors.white;
   static const Color labelTextColor = Color(0xFF1E5DAA);
 
-  // כותרת עמוד
   static const TextStyle headerStyle = TextStyle(
     fontSize: 28,
     fontWeight: FontWeight.bold,
@@ -72,14 +15,12 @@ class DonorEditProfileTheme {
     fontFamily: 'Assistant',
   );
 
-  // כותרות מעל שדות הקלט
   static const TextStyle labelStyle = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w600,
     color: labelTextColor,
   );
 
-  // עיצוב שדות הקלט
   static InputDecoration inputDecoration = InputDecoration(
     isDense: true,
     filled: true,
@@ -99,7 +40,6 @@ class DonorEditProfileTheme {
     ),
   );
 
-  // עיצוב המסגרת המרכזית של הטופס
   static BoxDecoration containerDecoration = BoxDecoration(
     border: Border.all(color: primaryBlue, width: 2),
     borderRadius: BorderRadius.circular(20),
@@ -113,7 +53,6 @@ class DonorEditProfileTheme {
     ],
   );
 
-  // עיצוב כפתור "שמור"
   static ButtonStyle saveButtonStyle = ElevatedButton.styleFrom(
     backgroundColor: primaryBlue,
     foregroundColor: buttonTextColor,

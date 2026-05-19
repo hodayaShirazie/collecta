@@ -217,9 +217,6 @@ class _ActivityZonesAdminState extends State<ActivityZonesAdmin> {
   }
 }
 
-// ────────────────────────────────────────────
-// Zone list tile
-// ────────────────────────────────────────────
 class _ZoneTile extends StatelessWidget {
   final ActivityZoneModel zone;
   final VoidCallback onEdit;
@@ -304,9 +301,6 @@ class _ZoneTile extends StatelessWidget {
   }
 }
 
-// ────────────────────────────────────────────
-// Add / Edit dialog
-// ────────────────────────────────────────────
 class _ActivityZoneDialog extends StatefulWidget {
   final String organizationId;
   final ActivityZoneModel? existing;

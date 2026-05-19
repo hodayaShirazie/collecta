@@ -21,7 +21,6 @@ class _AdminEnteringScreenState extends State<AdminEnteringScreen> {
     _tryAutoLogin();
   }
 
-  // אם המשתמש כבר מחובר ויש orgId שמור — עובר ישירות לדף האדמין
   Future<void> _tryAutoLogin() async {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) return;
@@ -36,7 +35,6 @@ class _AdminEnteringScreenState extends State<AdminEnteringScreen> {
       return;
     }
 
-    // מחובר ל-Firebase אבל אין orgId שמור — מאמת דרך ה-Service
     setState(() => _isSigningIn = true);
     await _verifyAndNavigate();
   }

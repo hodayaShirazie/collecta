@@ -11,15 +11,12 @@ class LogoutButton extends StatelessWidget {
   Future<void> _signOut() async {
     try {
       if (!kIsWeb) {
-        // התנתקות ממובייל
         final googleSignIn = GoogleSignIn();
         await googleSignIn.signOut();
       }
       
-      // התנתקות מ-Firebase
       await FirebaseAuth.instance.signOut();
 
-      // נווט חזרה לדף הכניסה ומחק את ההיסטוריה
       Navigator.of(parentContext)
           .pushNamedAndRemoveUntil('/entering', (route) => false);
     } catch (e) {

@@ -402,7 +402,6 @@ class _AllDriverAdminState extends State<AllDriverAdmin> {
                                           child: Row(
                                             children: [
 
-                                              /// 👤 אייקון נהג (במקום תמונה)
                                               Container(
                                                 width: 52,
                                                 height: 52,
@@ -419,13 +418,11 @@ class _AllDriverAdminState extends State<AllDriverAdmin> {
 
                                               const SizedBox(width: 16),
 
-                                              /// פרטים
                                               Expanded(
                                                 child: Column(
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
 
-                                                    /// שם הנהג – מודגש ויפה
                                                     Text(
                                                       driver.user.name,
                                                       style: const TextStyle(
@@ -438,7 +435,6 @@ class _AllDriverAdminState extends State<AllDriverAdmin> {
 
                                                     const SizedBox(height: 6),
 
-                                                    /// טלפון
                                                     Text(
                                                       driver.phone.isEmpty
                                                           ? "אין מספר טלפון"
@@ -456,7 +452,6 @@ class _AllDriverAdminState extends State<AllDriverAdmin> {
                                                 ),
                                               ),
 
-                                              /// ➜ חץ כמו בקוד הישן
                                               const Icon(
                                                 Icons.chevron_right,
                                                 color: Colors.blueGrey,

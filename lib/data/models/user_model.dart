@@ -42,7 +42,6 @@ class UserModel {
     };
   }
 
-  /// 🔹 תוספת – מאפשר לעדכן שדות בקלות
   UserModel copyWith({
     String? name,
     String? mail,

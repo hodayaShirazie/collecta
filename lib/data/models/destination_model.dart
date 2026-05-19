@@ -39,7 +39,6 @@ class DestinationModel {
     };
   }
 
-  /// 🔹 עדכון שדות
   DestinationModel copyWith({
     String? id,
     String? name,

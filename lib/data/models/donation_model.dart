@@ -105,8 +105,8 @@ class DonationModel {
       'crn': crn,
       'contactName': contactName,
       'contactPhone': contactPhone,
-      'created_at': createdAt.toIso8601String(), // תאריך בפורמט ISO
-      'businessAddress': businessAddress.toJson(), // ממיר ל־Map
+      'created_at': createdAt.toIso8601String(), 
+      'businessAddress': businessAddress.toJson(),
       'pickupTimes': pickupTimes.map((e) => e.toJson()).toList(),
       'products': products.map((e) => e.toJson()).toList(),
     };

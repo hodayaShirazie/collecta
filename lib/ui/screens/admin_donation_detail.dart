@@ -160,7 +160,7 @@ class _AdminDonationDetailState extends State<AdminDonationDetail> {
     try {
       await _service.cancelDonation(widget.donationId, reason);
       if (!mounted) return;
-      Navigator.pop(context); // חזור לרשימה (תרענן)
+      Navigator.pop(context); 
     } catch (e) {
       _isCancellingNotifier.value = false;
       if (!mounted) return;
@@ -543,7 +543,6 @@ class _AdminDonationDetailState extends State<AdminDonationDetail> {
                   ),
                 ),
 
-                // פרטי איש קשר (read-only)
                 CardWidget(
                   child: Column(
                     children: [
@@ -563,14 +562,12 @@ class _AdminDonationDetailState extends State<AdminDonationDetail> {
                   ),
                 ),
 
-                // חלונות זמן (read-only)
                 TimeSlotsCard(
                   timeSlots: DonationConstants.timeSlots,
                   selectedTimeSlots: selectedTimeSlots,
                   toggleTime: (_) {},
                 ),
 
-                // פריטים שנוספו (read-only, ללא כפתורי עריכה/מחיקה)
                 if (donatedItems.isNotEmpty)
                   Container(
                     margin: const EdgeInsets.only(bottom: 25),
@@ -642,14 +639,12 @@ class _AdminDonationDetailState extends State<AdminDonationDetail> {
                     ),
                   ),
 
-                // קטע ניהול
                 CardWidget(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SectionTitleWidget(text: "פרטי ניהול"),
 
-                      // סטטוס
                       Padding(
                         padding: const EdgeInsets.only(bottom: 12),
                         child: Row(
@@ -678,7 +673,6 @@ class _AdminDonationDetailState extends State<AdminDonationDetail> {
                         ),
                       ),
 
-                      // סיבת ביטול
                       if (d.status == "cancelled" && d.cancelingReason.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.only(bottom: 12),
@@ -716,7 +710,6 @@ class _AdminDonationDetailState extends State<AdminDonationDetail> {
                           ),
                         ),
 
-                      // נהג
                       Row(
                         children: [
                           const Icon(Icons.local_shipping_outlined,
@@ -753,7 +746,6 @@ class _AdminDonationDetailState extends State<AdminDonationDetail> {
 
                       const Divider(height: 20, thickness: 0.5, color: Color(0xFFE8E8E8)),
 
-                      // קבלה + ביטול
                       Row(
                         textDirection: TextDirection.rtl,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

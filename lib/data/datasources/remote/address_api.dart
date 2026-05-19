@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../../config/api_config.dart';
-// import 'auth_headers.dart';
 import 'api_source.dart';
 
 class AddressApi extends ApiSource {
@@ -11,11 +10,8 @@ class AddressApi extends ApiSource {
         required double lat,
         required double lng,
     }) async {
-        // final headers = await AuthHeaders.build();
-
         final response = await http.put(
             Uri.parse('${ApiConfig.baseUrl}/updateAddress'),
-            // headers: headers,
             headers: await headers(),
             body: json.encode({
                 'id': id,
@@ -39,11 +35,9 @@ class AddressApi extends ApiSource {
         required double lat,
         required double lng,
     }) async {
-        // final headers = await AuthHeaders.build();
 
         final response = await http.post(
             Uri.parse('${ApiConfig.baseUrl}/createAddress'),
-            // headers: headers,
             headers: await headers(),
             body: json.encode({
                 'name': name,

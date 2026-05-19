@@ -4,7 +4,6 @@ import '../data/models/driver_model.dart';
 class DriverService {
   final DriverRepository _repo = DriverRepository();
 
-  // Cache: פרופיל נהג
   static DriverProfile? _cachedProfile;
   static DateTime? _profileCacheTime;
   static const _profileTTL = Duration(minutes: 5);
@@ -42,8 +41,6 @@ class DriverService {
     invalidateProfileCache();
   }
 
-  /// Creates the driver account. The backend automatically creates 5 empty
-  /// destinations (one per weekday: ראשון–חמישי) linked to the new driver.
   Future<String> addDriverByAdmin({
     required String name,
     required String email,

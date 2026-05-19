@@ -5,17 +5,14 @@ import '../data/models/donation_list_item_model.dart';
 class DonationService {
   final DonationRepository _repo = DonationRepository();
 
-  // Cache: רשימת תרומות אדמין
   static List<DonationModel>? _cachedOrgDonations;
   static DateTime? _orgDonationsCacheTime;
   static const _orgDonationsTTL = Duration(minutes: 2);
 
-  // Cache: תרומות תורם
   static List<DonationListItemModel>? _cachedMyDonations;
   static DateTime? _myDonationsCacheTime;
   static const _myDonationsTTL = Duration(minutes: 2);
 
-  // Cache: תרומות נהג
   static List<DonationModel>? _cachedDriverDonations;
   static DateTime? _driverDonationsCacheTime;
   static const _driverDonationsTTL = Duration(minutes: 2);

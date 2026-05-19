@@ -78,7 +78,6 @@ class MyDonationsTheme {
     ),
   );
 
-  /// 🟢 כרטיס תרומה
   static BoxDecoration donationCardDecoration = BoxDecoration(
     color: Colors.white,
     borderRadius: BorderRadius.circular(16),

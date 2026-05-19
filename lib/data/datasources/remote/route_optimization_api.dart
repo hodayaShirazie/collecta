@@ -4,8 +4,6 @@ import '../../../config/api_config.dart';
 import 'api_source.dart';
 
 class RouteOptimizationApi extends ApiSource {
-  /// שולח רשימת נקודות לפונקציה שמפעילה את שרת LGCN.
-  /// מחזיר רשימת אינדקסים לפי הסדר האופטימלי.
   Future<List<int>> computeOptimalRoute(List<List<double>> points) async {
     final response = await http
         .post(
@@ -29,7 +27,6 @@ class RouteOptimizationApi extends ApiSource {
 
     final rawRoute = (data['routes']['0'] as List).cast<int>();
 
-    // הסר depot כפול בסוף אם קיים
     if (rawRoute.length > 1 && rawRoute.first == rawRoute.last) {
       return rawRoute.sublist(0, rawRoute.length - 1);
     }

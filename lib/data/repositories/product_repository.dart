@@ -2,7 +2,6 @@
 import '../datasources/remote/product_api.dart';
 
 class ProductRepository {
-  // final ApiSource _source = ApiSource();
   final ProductApi _source = ProductApi();
 
   Future<String> createProduct({

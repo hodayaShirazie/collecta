@@ -1,16 +1,14 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../../config/api_config.dart';
-// import 'auth_headers.dart';
+
 import 'api_source.dart';
 
 class PlacesApi extends ApiSource {
     Future<List<Map<String, dynamic>>> placesAutocomplete(String input) async {
-        // final headers = await AuthHeaders.build();
 
         final response = await http.get(
             Uri.parse('${ApiConfig.baseUrl}/placesAutocomplete?input=$input'),
-            // headers: headers,
             headers: await headers(),
         );
 

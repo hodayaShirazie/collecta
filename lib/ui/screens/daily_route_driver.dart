@@ -256,7 +256,7 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
       setState(() => isOptimizing = false);
     }
   }
-
+//TODO link? secrete?
   Future<void> _navigateWithWaze(double lat, double lng) async {
     final wazeUri = Uri.parse('waze://?ll=$lat,$lng&navigate=yes');
     final fallbackUri = Uri.parse('https://waze.com/ul?ll=$lat,$lng&navigate=yes');
@@ -395,7 +395,6 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
     );
   }
 
-  // ── UI ──────────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -513,7 +512,6 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
     );
   }
 
-  // ── Progress map (Stack-based) ───────────────────────────────────────────────
 
   Widget _buildProgressMap() {
     final int n = _itemCount;
@@ -537,14 +535,12 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
           height: totalH,
           child: Stack(
             children: [
-              // ── Winding route path ──
               Positioned.fill(
                 child: CustomPaint(
                   painter: _RouteMapPainter(centers: centers),
                 ),
               ),
-              // ── Stops ──
-              for (int di = 0; di < n; di++) ...[
+=              for (int di = 0; di < n; di++) ...[
                 _buildPositionedCircle(di, centers[di], w),
                 _buildPositionedCard(di, centers[di], w),
               ],
@@ -555,7 +551,6 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
     );
   }
 
-  // ── Stop helpers ─────────────────────────────────────────────────────────────
 
   _StopData _stopData(int di) {
     final int dataIdx = _itemCount - 1 - di;
@@ -774,7 +769,6 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
   }
 }
 
-// ── Data class ────────────────────────────────────────────────────────────────
 
 class _StopData {
   final String label, title, subtitle;

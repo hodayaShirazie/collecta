@@ -50,7 +50,6 @@ class _AddressFieldWidgetState extends State<AddressFieldWidget> {
             final service = PlacesService();
             final results = await service.autocomplete(value.text);
 
-            // אם גוגל לא מצא כלום — מציעים למשתמש להשתמש בטקסט שהוא הקליד
             if (results.isEmpty) {
               return [
                 PlacePrediction(

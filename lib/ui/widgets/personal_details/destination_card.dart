@@ -5,7 +5,6 @@ import '../../widgets/donation_widgets/address_field.dart';
 
 class DestinationCard extends StatelessWidget {
 
-  /// The weekday label displayed as a read-only header (e.g. "ראשון").
   final String dayLabel;
 
   final TextEditingController name;

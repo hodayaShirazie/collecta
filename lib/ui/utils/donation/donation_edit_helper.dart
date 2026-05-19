@@ -18,8 +18,6 @@ class DonationEditHelper {
     String unit = item["unit"] ?? "";
 
     if (name.startsWith("אחר")) {
-      // פריט "אחר" – פתיחת dialog של תיאור
-      // final result = await showOtherItemDialog(context: context);
       final result = await showOtherItemDialog(
         context: context,
         initialText: item["name"] ?? "",
@@ -34,7 +32,6 @@ class DonationEditHelper {
         refresh();
       }
     } else {
-      // פריט רגיל – פתיחת dialog של כמות
       int currentQuantity = int.tryParse(quantity) ?? 1;
       final result = await showQuantityDialog(
         context: context,

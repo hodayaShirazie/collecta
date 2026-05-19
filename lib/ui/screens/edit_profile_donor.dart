@@ -274,13 +274,7 @@ class _DonorEditProfileScreenState extends State<DonorEditProfileScreen> {
                       DonorDetailsCard(
                         donorName: nameCtrl,
                       ),
-
-                      // InputFieldWidget(
-                      //   controller: nameCtrl,
-                      //   hint: "שם בעל העסק",
-                      // ),
-                      // const SizedBox(height: 20),
-
+                      
                       BusinessDetailsCard(
                         businessName: businessNameCtrl,
                         address: businessAddressCtrl,

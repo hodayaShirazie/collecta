@@ -61,7 +61,6 @@ class _DriverEditProfileScreenState extends State<DriverEditProfileScreen> {
   List<ActivityZoneModel> _allZones = [];
   List<String> _selectedAreaIds = [];
 
-  /// Destinations sorted by day (ראשון first).
   List<DestinationModel> _sortedDestinations = [];
 
   final nameCtrl = TextEditingController();
