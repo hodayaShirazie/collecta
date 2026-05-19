@@ -10,7 +10,7 @@ class SectionTitleWidget extends StatelessWidget {
     return Align(
       alignment: Alignment.centerRight,
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 15),
+        padding: EdgeInsets.only(bottom: 15),
         child: Text(
           text,
           style: ReportDonationTheme.labelStyle,

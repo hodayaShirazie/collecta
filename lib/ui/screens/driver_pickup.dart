@@ -140,11 +140,11 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) return const Scaffold(body: LoadingIndicator());
-    if (donation == null) return const Scaffold(body: Center(child: Text("תרומה לא נמצאה")));
+    if (donation == null) return Scaffold(body: Center(child: Text("תרומה לא נמצאה")));
 
     return Scaffold(
       body: LayoutWrapper(
-        decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
+        decoration: BoxDecoration(gradient: HomepageTheme.pageGradient),
         showDecorativeCircle: true,
         maxContentWidth: 520,
         child: Padding(
@@ -157,11 +157,11 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
                   textDirection: TextDirection.rtl,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                      icon: Icon(Icons.arrow_back_ios_new_rounded,
                           color: HomepageTheme.latetBlue, size: 20),
                       onPressed: () => Navigator.pop(context),
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Text("איסוף תרומה",
                           textAlign: TextAlign.center,
                           style: ReportDonationTheme.headerStyle),
@@ -170,7 +170,7 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
                   ],
                 ),
                 const SizedBox(height: 6),
-                const Center(
+                Center(
                   child: Text(
                     "פרטי התחנה",
                     style: TextStyle(
@@ -202,7 +202,7 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
                   ),
                 ),
 
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
 
                 Center(
                   child: SizedBox(
@@ -255,7 +255,7 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
           Align(
             alignment: Alignment.centerRight,
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 15),
+              padding: EdgeInsets.only(bottom: 15),
               child: Text(title, style: ReportDonationTheme.labelStyle),
             ),
           ),
@@ -297,8 +297,8 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
         color: isCancelled
             ? Colors.grey.shade50
             : isApproved
-                ? const Color(0xFFEBF3FF)
-                : const Color(0xFFF5F8FF),
+                ? Color(0xFFEBF3FF)
+                : Color(0xFFF5F8FF),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isApproved
@@ -329,7 +329,7 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
                   fillColor: isCancelled ? Colors.grey.shade100 : Colors.white,
                   suffixIcon: isCancelled
                       ? null
-                      : const Padding(
+                      : Padding(
                           padding: EdgeInsets.only(left: 10),
                           child: Icon(Icons.edit_outlined, size: 18, color: HomepageTheme.latetBlue),
                         ),
@@ -362,7 +362,7 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
                     isCancelled ? Colors.white : Colors.black54,
                     () => setState(() => productStatus[productId] = false),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   _buildChoiceButton(
                     "אשר",
                     isApproved ? HomepageTheme.latetBlue : Colors.grey.shade200,
@@ -386,7 +386,7 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
                       const SizedBox(width: 10),
                       Text(
                         "$currentQty",
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
                           color: HomepageTheme.latetBlue,

@@ -1,14 +1,13 @@
-
 import 'package:flutter/material.dart';
 import 'homepage_theme.dart';
 
 class MyDonationsTheme {
-  static const TextStyle headerStyle = TextStyle(
-    fontSize: 28,
-    fontWeight: FontWeight.bold,
-    color: HomepageTheme.latetBlue,
-    fontFamily: 'Assistant',
-  );
+  static TextStyle get headerStyle => TextStyle(
+        fontSize: 28,
+        fontWeight: FontWeight.bold,
+        color: HomepageTheme.latetBlue,
+        fontFamily: 'Assistant',
+      );
 
   static const TextStyle titleStyle = TextStyle(
     fontSize: 16,
@@ -59,20 +58,21 @@ class MyDonationsTheme {
     );
   }
 
-  static const TextStyle statusChipText = TextStyle(
-    fontSize: 13,
-    fontWeight: FontWeight.w600,
-    color: HomepageTheme.latetBlue,
-    fontFamily: 'Assistant',
-  );
+  static TextStyle get statusChipText => TextStyle(
+        fontSize: 13,
+        fontWeight: FontWeight.w600,
+        color: HomepageTheme.latetBlue,
+        fontFamily: 'Assistant',
+      );
 
   static InputDecoration searchDecoration = InputDecoration(
     hintText: "חיפוש לפי שם עסק...",
-    prefixIcon: Icon(Icons.search),
+    prefixIcon: const Icon(Icons.search),
     filled: true,
     fillColor: Colors.white,
-    contentPadding: EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-    border: OutlineInputBorder(
+    contentPadding:
+        const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+    border: const OutlineInputBorder(
       borderRadius: BorderRadius.all(Radius.circular(20)),
       borderSide: BorderSide.none,
     ),
@@ -81,7 +81,7 @@ class MyDonationsTheme {
   static BoxDecoration donationCardDecoration = BoxDecoration(
     color: Colors.white,
     borderRadius: BorderRadius.circular(16),
-    boxShadow: [
+    boxShadow: const [
       BoxShadow(
         color: Colors.black12,
         blurRadius: 8,
@@ -89,7 +89,6 @@ class MyDonationsTheme {
       ),
     ],
   );
-
 
   static Color statusColor(String status) {
     switch (status) {
@@ -117,7 +116,6 @@ class MyDonationsTheme {
     }
   }
 
-
   static const TextStyle donationTitle = TextStyle(
     fontSize: 18,
     fontWeight: FontWeight.bold,
@@ -125,20 +123,17 @@ class MyDonationsTheme {
     fontFamily: 'Assistant',
   );
 
-
   static TextStyle donationDate = TextStyle(
     fontSize: 13,
     color: Colors.grey[600],
     fontFamily: 'Assistant',
   );
 
-
   static const TextStyle dateFilterText = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w500,
     fontFamily: 'Assistant',
   );
-
 
   static BoxDecoration dateFilterDecoration = BoxDecoration(
     color: Colors.white,
@@ -147,7 +142,7 @@ class MyDonationsTheme {
       BoxShadow(
         color: Colors.black.withValues(alpha: 0.05),
         blurRadius: 10,
-        offset: Offset(0, 4),
+        offset: const Offset(0, 4),
       )
     ],
   );

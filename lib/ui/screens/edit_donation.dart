@@ -334,7 +334,7 @@ class _EditDonationState extends State<EditDonation> {
 
     return Scaffold(
       body: LayoutWrapper(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: HomepageTheme.pageGradient,
         ),
         showDecorativeCircle: true,
@@ -347,11 +347,11 @@ class _EditDonationState extends State<EditDonation> {
                   textDirection: TextDirection.rtl,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                      icon: Icon(Icons.arrow_back_ios_new_rounded,
                           color: HomepageTheme.latetBlue, size: 20),
                       onPressed: () => Navigator.pop(context),
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Text("עריכת תרומה",
                           textAlign: TextAlign.center,
                           style: ReportDonationTheme.headerStyle),

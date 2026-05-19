@@ -5,6 +5,9 @@
       "Bash(grep -E \"\\\\.js$|^d\")",
       "Bash(grep -n \"^      \\),$\\\\|^        \\),$\\\\|^    \\);\" /Users/hilashirazi/Documents/collecta/lib/ui/screens/edit_profile_donor.dart)",
       "Bash(grep -n \"^            \\),$\\\\|^          \\),$\\\\|^        \\),$\\\\|^      \\),$\" /Users/hilashirazi/Documents/collecta/lib/ui/screens/admin_homepage.dart)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\Student\\.claude\\projects\\c--Users-Student-Desktop-sami-FinalProject-collecta\\memory"
     ]
   }
 }

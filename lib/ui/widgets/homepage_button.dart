@@ -55,7 +55,7 @@ class _HomepageButtonState extends State<HomepageButton>
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 30),
+      padding: EdgeInsets.symmetric(horizontal: 30),
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: GestureDetector(
@@ -70,7 +70,7 @@ class _HomepageButtonState extends State<HomepageButton>
             child: Container(
               height: 70,
               decoration: HomepageTheme.buttonDecoration,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: [
                   Transform(
@@ -79,7 +79,7 @@ class _HomepageButtonState extends State<HomepageButton>
                         ? (Matrix4.identity()..scale(-1.0, 1.0, 1.0))
                         : Matrix4.identity(),
                     child: Container(
-                      padding: const EdgeInsets.all(10),
+                      padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: HomepageTheme.latetYellow.withOpacity(0.25),
                         shape: BoxShape.circle,
@@ -88,7 +88,7 @@ class _HomepageButtonState extends State<HomepageButton>
                           color: HomepageTheme.latetBlue, size: 24),
                     ),
                   ),
-                  const SizedBox(width: 20),
+                  SizedBox(width: 20),
                   Expanded(
                     child: Text(
                       widget.title,

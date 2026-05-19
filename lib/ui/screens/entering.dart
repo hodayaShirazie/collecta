@@ -202,7 +202,7 @@ class _EnteringScreenState extends State<EnteringScreen> {
 
                     Padding(
                       padding:
-                          const EdgeInsets.symmetric(horizontal: 80),
+                          EdgeInsets.symmetric(horizontal: 80),
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
@@ -221,7 +221,7 @@ class _EnteringScreenState extends State<EnteringScreen> {
                           },
                           style: EnteringTheme.actionButtonStyle,
                           child: _isSigningIn
-                              ? const SizedBox(
+                              ? SizedBox(
                                   width: 24,
                                   height: 24,
                                   child: CircularProgressIndicator(
@@ -238,7 +238,7 @@ class _EnteringScreenState extends State<EnteringScreen> {
 
                     Padding(
                       padding:
-                          const EdgeInsets.symmetric(horizontal: 80),
+                          EdgeInsets.symmetric(horizontal: 80),
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
@@ -257,7 +257,7 @@ class _EnteringScreenState extends State<EnteringScreen> {
                           },
                           style: EnteringTheme.actionButtonStyle,
                           child: _isSigningIn
-                              ? const SizedBox(
+                              ? SizedBox(
                                   width: 24,
                                   height: 24,
                                   child: CircularProgressIndicator(

@@ -485,7 +485,7 @@ class _AdminDonationDetailState extends State<AdminDonationDetail> {
 
     return Scaffold(
       body: LayoutWrapper(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: HomepageTheme.pageGradient,
         ),
         adminStyle: true,
@@ -498,11 +498,11 @@ class _AdminDonationDetailState extends State<AdminDonationDetail> {
                   textDirection: TextDirection.rtl,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                      icon: Icon(Icons.arrow_back_ios_new_rounded,
                           color: HomepageTheme.latetBlue, size: 20),
                       onPressed: () => Navigator.pop(context),
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Text("פרטי תרומה",
                           textAlign: TextAlign.center,
                           style: ReportDonationTheme.headerStyle),
@@ -571,7 +571,7 @@ class _AdminDonationDetailState extends State<AdminDonationDetail> {
                 if (donatedItems.isNotEmpty)
                   Container(
                     margin: const EdgeInsets.only(bottom: 25),
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(22),
@@ -579,7 +579,7 @@ class _AdminDonationDetailState extends State<AdminDonationDetail> {
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 15,
-                          offset: const Offset(0, 6),
+                          offset: Offset(0, 6),
                         )
                       ],
                     ),

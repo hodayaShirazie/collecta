@@ -37,8 +37,8 @@ class ProductChipWidget extends StatelessWidget {
           child: Column(
             children: [
               AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.all(14),
+                duration: Duration(milliseconds: 200),
+                padding: EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: bgColor,
@@ -51,7 +51,7 @@ class ProductChipWidget extends StatelessWidget {
                 ),
                 child: iconPath != null
                     ? Image.asset(iconPath!, width: 28, height: 28, color: HomepageTheme.latetBlue)
-                    : const Icon(Icons.category, color: HomepageTheme.latetBlue, size: 28),
+                    : Icon(Icons.category, color: HomepageTheme.latetBlue, size: 28),
               ),
               const SizedBox(height: 6),
               Text(

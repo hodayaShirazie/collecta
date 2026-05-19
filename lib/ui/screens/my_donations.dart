@@ -158,7 +158,7 @@ class _MyDonationsState extends State<MyDonations> {
         body: Container(
           width: double.infinity,
           height: double.infinity,
-          decoration: const BoxDecoration(gradient: HomepageTheme.pageGradient),
+          decoration: BoxDecoration(gradient: HomepageTheme.pageGradient),
           child: SafeArea(
             child: Stack(
               children: [
@@ -183,11 +183,11 @@ class _MyDonationsState extends State<MyDonations> {
                     textDirection: TextDirection.rtl,
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                        icon: Icon(Icons.arrow_back_ios_new_rounded,
                             color: HomepageTheme.latetBlue, size: 20),
                         onPressed: () => Navigator.pop(context),
                       ),
-                      const Expanded(
+                      Expanded(
                         child: Text("התרומות שלי",
                             textAlign: TextAlign.center,
                             style: MyDonationsTheme.headerStyle),
@@ -252,7 +252,7 @@ class _MyDonationsState extends State<MyDonations> {
                                   setState(() => selectedStatus = status),
                               child: Container(
                                 padding:
-                                    const EdgeInsets.symmetric(vertical: 8),
+                                    EdgeInsets.symmetric(vertical: 8),
                                 alignment: Alignment.center,
                                 decoration:
                                     MyDonationsTheme.statusChipDecoration(

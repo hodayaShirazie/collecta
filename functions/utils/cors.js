@@ -6,7 +6,8 @@ const allowedOrigins = [
 ];
 module.exports = cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    const isLocalhost = !origin || /^http:\/\/localhost(:\d+)?$/.test(origin);
+    if (isLocalhost || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));

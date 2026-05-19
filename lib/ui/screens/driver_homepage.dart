@@ -214,8 +214,8 @@ class _DriverHomepageState extends State<DriverHomepage> {
                   ),
                   if (widget.isAdminImpersonating) ...[
                     Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                      margin: EdgeInsets.only(bottom: 12),
+                      padding: EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                       decoration: BoxDecoration(
                         color: HomepageTheme.latetBlue.withValues(alpha: 0.07),
                         borderRadius: BorderRadius.circular(20),
@@ -231,7 +231,7 @@ class _DriverHomepageState extends State<DriverHomepage> {
                           Icon(Icons.visibility_outlined,
                               color: HomepageTheme.latetBlue.withValues(alpha: 0.6),
                               size: 14),
-                          const SizedBox(width: 6),
+                          SizedBox(width: 6),
                           Flexible(
                             child: Text(
                               'צופה בפרופיל של ${driver.user.name}',
@@ -248,12 +248,12 @@ class _DriverHomepageState extends State<DriverHomepage> {
                       ),
                     ),
                   ],
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   Text(
                     'היי, ${driver.user.name}',
                     style: HomepageTheme.welcomeTextStyle,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     'שמחים לראות אותך שוב!',
                     style: HomepageTheme.subtitleTextStyle.copyWith(
@@ -402,7 +402,7 @@ class _activityZoneelectionDialogState extends State<_activityZoneelectionDialog
       buttonText: "שמור",
       isLoading: isSaving,
       content: zones == null
-          ? const SizedBox(
+          ? SizedBox(
               height: 80,
               child: Center(child: CircularProgressIndicator(color: HomepageTheme.latetBlue)),
             )
