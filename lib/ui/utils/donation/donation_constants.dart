@@ -17,4 +17,21 @@ class DonationConstants {
     "10:00-12:00",
     "12:00-14:00"
   ];
+
+  static int _timeToMinutes(String time) {
+    final parts = time.split(':');
+    return int.parse(parts[0]) * 60 + int.parse(parts[1]);
+  }
+
+  // Expands a merged range (e.g. "8:00"→"12:00") back to individual slot chips.
+  static List<String> expandPickupTimeToSlots(String from, String to) {
+    final fromMin = _timeToMinutes(from);
+    final toMin = _timeToMinutes(to);
+    return timeSlots.where((slot) {
+      final parts = slot.split('-');
+      final slotFrom = _timeToMinutes(parts[0]);
+      final slotTo = _timeToMinutes(parts[1]);
+      return slotFrom >= fromMin && slotTo <= toMin;
+    }).toList();
+  }
 }

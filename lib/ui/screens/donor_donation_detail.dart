@@ -68,7 +68,9 @@ class _DonorDonationDetailState extends State<DonorDonationDetail> {
       contactNameCtrl.text = d.contactName;
       contactPhoneCtrl.text = d.contactPhone;
 
-      selectedTimeSlots = d.pickupTimes.map((e) => "${e.from}-${e.to}").toList();
+      selectedTimeSlots = d.pickupTimes
+          .expand((e) => DonationConstants.expandPickupTimeToSlots(e.from, e.to))
+          .toList();
 
       donatedItems = d.products.map<Map<String, dynamic>>((p) {
         final typeId = p.type.id;
