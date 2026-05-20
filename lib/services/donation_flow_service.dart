@@ -63,10 +63,14 @@ class DonationFlowService {
       productIds.add(id);
     }
 
-    final pickupTimes = selectedTimeSlots.map((slot) {
-      final parts = slot.split('-');
-      return {"from": parts[0], "to": parts[1]};
-    }).toList();
+    final sortedSlots = [...selectedTimeSlots]..sort((a, b) {
+      final aHour = int.parse(a.split('-')[0].split(':')[0]);
+      final bHour = int.parse(b.split('-')[0].split(':')[0]);
+      return aHour.compareTo(bHour);
+    });
+    final pickupTimes = [
+      {"from": sortedSlots.first.split('-')[0], "to": sortedSlots.last.split('-')[1]}
+    ];
 
     final body = {
       "businessName": businessName,

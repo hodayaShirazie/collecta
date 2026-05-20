@@ -132,7 +132,9 @@ class _EditDonationState extends State<EditDonation> {
           : donor?.businessAddress.lng;
 
 
-      selectedTimeSlots = donation.pickupTimes.map((e) => "${e.from}-${e.to}").toList();
+      selectedTimeSlots = donation.pickupTimes
+          .expand((e) => DonationConstants.expandPickupTimeToSlots(e.from, e.to))
+          .toList();
 
 
       donatedItems = (donation.products ?? []).map<Map<String, dynamic>>((p) {
@@ -207,6 +209,15 @@ class _EditDonationState extends State<EditDonation> {
     });
   }
 
+  bool _areTimeSlotsConsecutive() {
+    final allSlots = DonationConstants.timeSlots;
+    final indices = selectedTimeSlots.map((s) => allSlots.indexOf(s)).toList()..sort();
+    for (int i = 1; i < indices.length; i++) {
+      if (indices[i] != indices[i - 1] + 1) return false;
+    }
+    return true;
+  }
+
   Future<void> toggleProduct(Map<String, dynamic> product) async {
   final safeProduct = Map<String, dynamic>.from(product);
 
@@ -253,6 +264,18 @@ class _EditDonationState extends State<EditDonation> {
     return;
   }
 
+  if (!_areTimeSlotsConsecutive()) {
+    await showDialog(
+      context: context,
+      builder: (context) => const CustomPopupDialog(
+        title: "שים לב",
+        message: "יש לבחור חלונות זמן רצופים בלבד",
+        buttonText: "סגור",
+      ),
+    );
+    return;
+  }
+
   if (donatedItems.isEmpty) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("יש להוסיף לפחות מוצר אחד לתרומה")),
@@ -288,10 +311,14 @@ class _EditDonationState extends State<EditDonation> {
     final timeSlotsChanged = selectedTimeSlots.length != _origTimeSlots.length ||
         selectedTimeSlots.any((s) => !_origTimeSlots.contains(s));
     if (timeSlotsChanged) {
-      body["pickupTimes"] = selectedTimeSlots.map((slot) {
-        final parts = slot.split("-");
-        return {"from": parts[0], "to": parts[1]};
-      }).toList();
+      final sortedSlots = [...selectedTimeSlots]..sort((a, b) {
+        final aHour = int.parse(a.split('-')[0].split(':')[0]);
+        final bHour = int.parse(b.split('-')[0].split(':')[0]);
+        return aHour.compareTo(bHour);
+      });
+      body["pickupTimes"] = [
+        {"from": sortedSlots.first.split('-')[0], "to": sortedSlots.last.split('-')[1]}
+      ];
     }
 
     if (jsonEncode(donatedItems) != _origDonatedItemsJson) {

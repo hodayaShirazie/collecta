@@ -104,6 +104,14 @@ class _ReportDonationState extends State<ReportDonation> {
     });
   }
 
+  bool _areTimeSlotsConsecutive() {
+    final indices = selectedTimeSlots.map((s) => timeSlots.indexOf(s)).toList()..sort();
+    for (int i = 1; i < indices.length; i++) {
+      if (indices[i] != indices[i - 1] + 1) return false;
+    }
+    return true;
+  }
+
   Future<void> _editDonatedItem(int index) async {
     await DonationEditHelper.editDonatedItem(
       context: context,
@@ -143,6 +151,18 @@ class _ReportDonationState extends State<ReportDonation> {
         builder: (context) => const CustomPopupDialog(
           title: "שים לב",
           message: "יש לבחור לפחות חלון זמן אחד",
+          buttonText: "סגור",
+        ),
+      );
+      return false;
+    }
+
+    if (!_areTimeSlotsConsecutive()) {
+      await showDialog(
+        context: context,
+        builder: (context) => const CustomPopupDialog(
+          title: "שים לב",
+          message: "יש לבחור חלונות זמן רצופים בלבד",
           buttonText: "סגור",
         ),
       );
