@@ -275,7 +275,7 @@ class _MyDonationsState extends State<MyDonations> {
                   if (isLoading)
                     const Padding(
                       padding: EdgeInsets.all(40.0),
-                      child: CircularProgressIndicator(),
+                      child: CircularProgressIndicator(color: Color(0xFF1E5DAA)),
                     )
                   else if (filteredDonations.isEmpty)
                     const Padding(
