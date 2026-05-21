@@ -14,9 +14,13 @@ Future<void> main() async {
 
   await dotenv.load(fileName: "assets/config/.env");
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } on FirebaseException catch (e) {
+    if (e.code != 'duplicate-app') rethrow;
+  }
 
   // Web: OrgManager.init() reads orgId from Uri.base (the browser URL)
   // Mobile: also reads from SharedPreferences (previously saved)
