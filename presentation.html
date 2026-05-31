@@ -1,0 +1,343 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COLLECTA — מצגת</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:#1A2D5A; --navy-dark:#0f1e3d; --teal:#3BBFB8; --teal-dark:#2a9990;
+      --teal-light:#7DD8D3; --teal-bg:#E6F8F7; --yellow:#F5C842; --yellow-dark:#C9A01E;
+      --yellow-light:#FFF7D0; --white:#FFFFFF; --gray-light:#F4F7FA; --gray:#8892A4;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Heebo','Arial Hebrew',Arial,sans-serif; background:var(--navy-dark);
+      overflow:hidden; direction:rtl; user-select:none; height:100vh; width:100vw; }
+    .slide { width:100vw; height:100vh; position:absolute; inset:0; display:none; align-items:center; justify-content:center; }
+    .slide.active { display:flex; animation:fadeUp .4s ease both; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+    #prog { position:fixed; top:0; left:0; height:4px; background:linear-gradient(90deg,var(--teal),var(--yellow)); transition:width .4s ease; z-index:999; border-radius:0 2px 2px 0; }
+    .nav { position:fixed; bottom:28px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:14px; z-index:998; background:rgba(15,30,61,.6); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,.12); padding:8px 22px; border-radius:50px; }
+    .nav button { background:transparent; border:1.5px solid rgba(255,255,255,.3); color:white; width:36px; height:36px; border-radius:50%; cursor:pointer; font-size:18px; transition:all .2s; display:flex; align-items:center; justify-content:center; }
+    .nav button:hover { background:var(--teal); border-color:var(--teal); }
+    .nav .ctr { color:rgba(255,255,255,.7); font-size:13px; min-width:52px; text-align:center; font-weight:500; }
+    /* S1 Title */
+    .s1 { background:linear-gradient(145deg,var(--navy) 0%,var(--navy-dark) 55%,#08112a 100%); flex-direction:column; text-align:center; position:relative; overflow:hidden; }
+    .s1-dots { position:absolute; inset:0; background-image:radial-gradient(rgba(255,255,255,.06) 1px,transparent 1px); background-size:38px 38px; pointer-events:none; }
+    .s1-glow-t { position:absolute; width:600px; height:600px; background:radial-gradient(circle,rgba(59,191,184,.18) 0%,transparent 65%); top:-180px; right:-120px; pointer-events:none; }
+    .s1-glow-y { position:absolute; width:500px; height:500px; background:radial-gradient(circle,rgba(245,200,66,.12) 0%,transparent 65%); bottom:-150px; left:-100px; pointer-events:none; }
+    .s1-logo { position:relative; z-index:1; font-size:clamp(56px,8vw,96px); font-weight:900; letter-spacing:8px; background:linear-gradient(135deg,var(--teal-light) 0%,var(--teal) 50%,var(--yellow) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:10px; }
+    .s1-line { width:80px; height:4px; background:linear-gradient(90deg,var(--teal),var(--yellow)); border-radius:2px; margin:0 auto 36px; position:relative; z-index:1; }
+    .s1-authors { position:relative; z-index:1; color:rgba(255,255,255,.5); font-size:18px; font-weight:300; }
+    .s1-authors span { color:rgba(255,255,255,.85); font-weight:600; }
+    /* S2 What */
+    .s2 { background:white; padding:0; flex-direction:row; }
+    .s2-left { width:42%; height:100%; background:linear-gradient(155deg,var(--navy) 0%,#243868 100%); display:flex; flex-direction:column; justify-content:center; align-items:center; padding:60px 50px; position:relative; overflow:hidden; }
+    .s2-qmark { position:absolute; font-size:300px; font-weight:900; color:var(--teal); opacity:.07; bottom:-60px; left:10px; line-height:1; }
+    .s2-brand { position:relative; z-index:1; font-size:60px; font-weight:900; letter-spacing:4px; color:var(--teal); text-align:center; }
+    .s2-brand-sub { color:rgba(255,255,255,.45); font-size:14px; letter-spacing:3px; margin-top:8px; font-weight:300; }
+    .s2-right { width:58%; height:100%; display:flex; flex-direction:column; justify-content:center; padding:80px; }
+    .chip { display:inline-block; color:var(--teal); font-size:12px; font-weight:700; letter-spacing:3px; text-transform:uppercase; margin-bottom:18px; }
+    .hbar { width:56px; height:5px; background:linear-gradient(90deg,var(--teal),var(--yellow)); border-radius:3px; margin-bottom:32px; }
+    .big-heading { font-size:clamp(32px,3.5vw,52px); font-weight:800; color:var(--navy); line-height:1.2; margin-bottom:24px; }
+    .body-text { font-size:22px; color:#4A5568; line-height:1.65; }
+    .body-text strong { color:var(--navy); font-weight:700; }
+    /* Problems */
+    .sprob { flex-direction:column; text-align:center; padding:60px 100px; position:relative; overflow:hidden; }
+    .s3{background:#FFF8F8;} .s4{background:#FFFDF5;} .s5{background:#F5FFF8;}
+    .prob-wm { position:absolute; font-size:280px; font-weight:900; opacity:.04; color:var(--navy); top:50%; left:50%; transform:translate(-50%,-55%); line-height:1; pointer-events:none; }
+    .prob-icon { width:110px; height:110px; border-radius:28px; display:flex; align-items:center; justify-content:center; margin:0 auto 40px; font-size:50px; position:relative; z-index:1; box-shadow:0 10px 40px rgba(0,0,0,.08); }
+    .s3 .prob-icon{background:linear-gradient(135deg,#FFECEC,#FFD6D6);} .s4 .prob-icon{background:linear-gradient(135deg,#FFF3D6,#FFE0A0);} .s5 .prob-icon{background:linear-gradient(135deg,#E0FFF0,#B8F0D0);}
+    .prob-title { font-size:clamp(40px,5vw,68px); font-weight:900; color:var(--navy); margin-bottom:28px; position:relative; z-index:1; }
+    .prob-desc { font-size:clamp(18px,1.8vw,24px); color:#4A5568; max-width:680px; line-height:1.75; margin:0 auto; position:relative; z-index:1; }
+    .prob-tag { display:inline-block; background:rgba(59,191,184,.12); color:var(--teal-dark); border:1px solid rgba(59,191,184,.25); border-radius:20px; padding:6px 20px; font-size:13px; font-weight:700; margin-top:36px; position:relative; z-index:1; }
+    /* S6 Solution */
+    .s6 { background:linear-gradient(140deg,var(--teal-dark) 0%,var(--teal) 60%,#5ECFC8 100%); flex-direction:column; text-align:center; position:relative; overflow:hidden; }
+    .s6-dots { position:absolute; inset:0; background-image:radial-gradient(rgba(255,255,255,.1) 1px,transparent 1px); background-size:42px 42px; pointer-events:none; }
+    .s6-glow { position:absolute; width:700px; height:700px; background:radial-gradient(circle,rgba(255,255,255,.12) 0%,transparent 60%); top:-200px; left:50%; transform:translateX(-50%); pointer-events:none; }
+    .s6-badge { position:relative; z-index:1; font-size:clamp(52px,7vw,90px); font-weight:900; letter-spacing:8px; color:white; text-shadow:0 4px 30px rgba(0,0,0,.15); margin-bottom:24px; }
+    .s6-line { width:80px; height:5px; background:rgba(255,255,255,.4); border-radius:3px; margin:0 auto 32px; position:relative; z-index:1; }
+    .s6-sub { position:relative; z-index:1; font-size:clamp(20px,2.5vw,34px); color:rgba(255,255,255,.9); font-weight:300; }
+    .s6-sub strong { font-weight:800; color:var(--yellow); }
+    /* Roles */
+    .srole { background:white; padding:0; flex-direction:row; }
+    .role-text { width:44%; height:100%; display:flex; flex-direction:column; justify-content:center; padding:60px 64px; order:1; }
+    .role-visual { width:56%; height:100%; display:flex; align-items:center; justify-content:center; background:var(--gray-light); order:2; position:relative; overflow:hidden; }
+    .role-visual::before { content:''; position:absolute; width:400px; height:400px; background:radial-gradient(circle,rgba(59,191,184,.1) 0%,transparent 65%); top:50%; left:50%; transform:translate(-50%,-50%); }
+    .role-emoji { font-size:64px; margin-bottom:20px; }
+    .role-title { font-size:clamp(50px,6vw,80px); font-weight:900; color:var(--navy); margin-bottom:20px; line-height:1; }
+    .role-desc { font-size:17px; color:#4A5568; line-height:1.75; margin-bottom:30px; }
+    .tags { display:flex; flex-wrap:wrap; gap:10px; }
+    .tag { background:var(--teal-bg); color:var(--teal-dark); padding:7px 18px; border-radius:20px; font-size:13px; font-weight:700; }
+    .tag.y { background:var(--yellow-light); color:var(--yellow-dark); }
+    /* Phone */
+    .phone { width:220px; background:var(--navy-dark); border-radius:36px; border:6px solid #243060; box-shadow:0 24px 70px rgba(0,0,0,.28); overflow:hidden; display:flex; flex-direction:column; position:relative; z-index:1; }
+    .phone-notch { width:70px; height:18px; background:var(--navy-dark); border-radius:0 0 12px 12px; margin:0 auto 6px; }
+    .phone-screen { background:#F9FAFB; margin:0 5px 5px; border-radius:0 0 26px 26px; overflow:hidden; flex:1; }
+    .pheader { padding:10px 14px; font-size:11px; font-weight:700; text-align:center; color:white; }
+    .pheader.navy{background:var(--navy);} .pheader.teal{background:var(--teal-dark);}
+    .pbody { padding:10px; }
+    .pcard { background:white; border-radius:8px; padding:7px 10px; margin-bottom:7px; font-size:9px; color:var(--navy); line-height:1.5; box-shadow:0 1px 4px rgba(0,0,0,.06); }
+    .pcard .hl { color:var(--teal-dark); font-weight:700; }
+    .pbtn { background:var(--navy); color:white; border-radius:8px; padding:9px; text-align:center; font-size:10px; font-weight:700; margin-top:6px; }
+    .stop-row { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+    .stop-dot { width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:8px; font-weight:800; color:white; flex-shrink:0; }
+    .sd-navy{background:var(--navy);} .sd-teal{background:var(--teal-dark);} .sd-red{background:#E53E3E;} .sd-gray{background:#CBD5E0;}
+    .stop-card { flex:1; background:white; border-radius:7px; padding:6px 8px; font-size:9px; color:var(--navy); font-weight:500; box-shadow:0 1px 3px rgba(0,0,0,.06); }
+    .stop-card.alert { border:1.5px solid #E53E3E; }
+    .stop-row.done { opacity:.38; }
+    /* Admin */
+    .admin-box { width:360px; background:white; border-radius:16px; box-shadow:0 24px 70px rgba(0,0,0,.18); overflow:hidden; border:1px solid #E2E8F0; position:relative; z-index:1; }
+    .admin-hdr { background:var(--navy); color:white; text-align:center; padding:14px; font-size:13px; font-weight:700; }
+    .admin-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:14px; background:var(--gray-light); }
+    .astat { background:white; border-radius:8px; padding:8px 4px; text-align:center; }
+    .astat-n { font-size:18px; font-weight:900; color:var(--navy); }
+    .astat-l { font-size:8px; color:var(--gray); }
+    .admin-list { padding:10px 14px 14px; }
+    .alist-t { font-size:10px; font-weight:700; color:var(--navy); margin-bottom:8px; }
+    .aitem { display:flex; justify-content:space-between; align-items:center; background:var(--gray-light); border-radius:8px; padding:7px 10px; margin-bottom:6px; }
+    .aitem-txt { font-size:9px; color:var(--navy); font-weight:500; }
+    .abadge { font-size:8px; font-weight:800; padding:3px 8px; border-radius:10px; }
+    .ab-g{background:#C6F6D5;color:#276749;} .ab-y{background:#FEFCBF;color:#7B5F00;} .ab-r{background:#FED7D7;color:#9B2C2C;}
+    /* S10 LGCN */
+    .s10 { background:linear-gradient(145deg,var(--navy-dark) 0%,#1f3668 100%); flex-direction:column; padding:50px 90px; gap:44px; }
+    .lgcn-hdr { text-align:center; font-size:clamp(36px,5vw,64px); font-weight:900; letter-spacing:6px; color:var(--teal); }
+    .lgcn-grid { display:grid; grid-template-columns:1fr 1fr; gap:28px; width:100%; }
+    .lgcn-col-t { font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.35); margin-bottom:16px; }
+    .lstep { display:flex; align-items:center; gap:16px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.09); border-radius:12px; padding:14px 18px; margin-bottom:12px; }
+    .lstep-n { width:34px; height:34px; background:var(--teal); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:15px; color:white; flex-shrink:0; }
+    .lstep-n.y { background:var(--yellow); color:var(--navy); }
+    .lstep-txt { color:white; font-size:16px; font-weight:500; }
+    .lstep-txt small { color:rgba(255,255,255,.4); font-size:13px; }
+    .llevel { border-radius:12px; padding:18px 22px; margin-bottom:12px; }
+    .llevel.macro{background:linear-gradient(135deg,rgba(59,191,184,.18),rgba(59,191,184,.05));border:1px solid rgba(59,191,184,.28);}
+    .llevel.mezo{background:linear-gradient(135deg,rgba(245,200,66,.16),rgba(245,200,66,.04));border:1px solid rgba(245,200,66,.28);}
+    .llevel.micro{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);}
+    .ll-label { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:6px; }
+    .llevel.macro .ll-label{color:var(--teal-light);} .llevel.mezo .ll-label{color:var(--yellow);} .llevel.micro .ll-label{color:rgba(255,255,255,.4);}
+    .ll-name { font-size:18px; font-weight:700; color:white; }
+    /* S11 Vision */
+    .s11 { background:white; flex-direction:row; padding:60px 80px; gap:60px; }
+    .vis-left { width:35%; display:flex; flex-direction:column; justify-content:center; }
+    .vis-right { width:65%; display:flex; flex-direction:column; justify-content:center; gap:14px; }
+    .vis-h { font-size:clamp(42px,5vw,68px); font-weight:900; color:var(--navy); line-height:1.1; margin-bottom:16px; }
+    .vis-sub { font-size:16px; color:var(--gray); line-height:1.6; }
+    .vitem { display:flex; align-items:center; gap:18px; background:var(--gray-light); border-radius:14px; padding:18px 26px; border-right:5px solid transparent; }
+    .vitem:nth-child(odd){border-right-color:var(--teal);} .vitem:nth-child(even){border-right-color:var(--yellow);}
+    .varrow { font-size:20px; font-weight:900; color:var(--navy); }
+    .vtext { font-size:19px; font-weight:700; color:var(--navy); }
+    /* S12 Questions */
+    .s12 { background:linear-gradient(145deg,var(--navy) 0%,var(--navy-dark) 100%); flex-direction:column; text-align:center; position:relative; overflow:hidden; }
+    .s12-glow { position:absolute; inset:0; background:radial-gradient(ellipse at 50% 60%,rgba(59,191,184,.15) 0%,transparent 60%); pointer-events:none; }
+    .s12-q { position:relative; z-index:1; font-size:clamp(140px,18vw,220px); font-weight:900; line-height:.9; background:linear-gradient(135deg,var(--teal-light) 0%,var(--teal) 40%,var(--yellow) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:20px; }
+    .s12-text { position:relative; z-index:1; font-size:clamp(36px,5vw,60px); font-weight:800; color:white; }
+    .s12-byline { position:relative; z-index:1; font-size:16px; color:rgba(255,255,255,.3); margin-top:20px; font-weight:300; letter-spacing:1px; }
+  </style>
+</head>
+<body>
+<div id="prog"></div>
+
+<!-- SLIDE 1 -->
+<div class="slide s1 active">
+  <div class="s1-dots"></div><div class="s1-glow-t"></div><div class="s1-glow-y"></div>
+  <div class="s1-logo">COLLECTA</div>
+  <div class="s1-line"></div>
+  <div class="s1-authors"><span>הודיה שירזי</span> &nbsp;|&nbsp; <span>שולמית מור יוסף</span></div>
+</div>
+
+<!-- SLIDE 2 -->
+<div class="slide s2">
+  <div class="s2-left">
+    <div class="s2-qmark">?</div>
+    <div style="position:relative;z-index:1;text-align:center">
+      <div class="s2-brand">COLLECTA</div>
+      <div class="s2-brand-sub">מה זה?</div>
+    </div>
+  </div>
+  <div class="s2-right">
+    <div class="chip">ABOUT</div>
+    <div class="hbar"></div>
+    <div class="big-heading">אפליקציה חכמה<br>לניהול מערך תרומות</div>
+    <div class="body-text">עבור <strong>ארגוני חסד</strong></div>
+  </div>
+</div>
+
+<!-- SLIDE 3 -->
+<div class="slide sprob s3">
+  <div class="prob-wm">1</div>
+  <div class="prob-icon">⚙️</div>
+  <div class="prob-title">תהליכים ידניים</div>
+  <div class="prob-desc">תיאום האיסוף והחלוקה מבוסס על עבודה ידנית ומעקב אנושי</div>
+  <div class="prob-tag">בעיה #1</div>
+</div>
+
+<!-- SLIDE 4 -->
+<div class="slide sprob s4">
+  <div class="prob-wm">2</div>
+  <div class="prob-icon">📦</div>
+  <div class="prob-title">עומס לוגיסטי</div>
+  <div class="prob-desc">ריבוי תהליכי איסוף יוצר עומס לוגיסטי ומקשה על התפעול השוטף</div>
+  <div class="prob-tag">בעיה #2</div>
+</div>
+
+<!-- SLIDE 5 -->
+<div class="slide sprob s5">
+  <div class="prob-wm">3</div>
+  <div class="prob-icon">📈</div>
+  <div class="prob-title">הגבלת צמיחה</div>
+  <div class="prob-desc">הסתמכות על תהליכים מסורתיים מגבילה את יכולת הצמיחה וההתרחבות</div>
+  <div class="prob-tag">בעיה #3</div>
+</div>
+
+<!-- SLIDE 6 -->
+<div class="slide s6">
+  <div class="s6-dots"></div><div class="s6-glow"></div>
+  <div class="s6-badge">COLLECTA</div>
+  <div class="s6-line"></div>
+  <div class="s6-sub"><strong>מערכת אחת</strong> לכל שלבי התרומה</div>
+</div>
+
+<!-- SLIDE 7 — Donor -->
+<div class="slide srole">
+  <div class="role-text">
+    <div class="role-emoji">🧑</div>
+    <div class="role-title">תורם</div>
+    <div class="role-desc">דיווח קל ומהיר על תרומות, בחירת חלונות זמן נוחים לאיסוף ומעקב אחר סטטוס התרומה בכל שלב.</div>
+    <div class="tags">
+      <div class="tag">דיווח תרומה</div><div class="tag y">חלונות זמן</div><div class="tag">מעקב סטטוס</div>
+    </div>
+  </div>
+  <div class="role-visual">
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="pheader navy">דיווח תרומה</div>
+        <div class="pbody">
+          <div class="pcard">📍 <strong>כתובת</strong><br>תפסיה של אלדם, חולון, ישראל</div>
+          <div class="pcard">⏰ <strong>חלונות זמן לאיסוף</strong><br><span class="hl">12:00–14:00 &nbsp; 10:00–12:00 &nbsp; 8:00–10:00</span></div>
+          <div class="pcard">📋 <strong>פריטי התרומה</strong><br>👕 בגדים &nbsp;📚 ספרים &nbsp;🍽️ כלים</div>
+          <div class="pbtn">אשר תרומה</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8 — Driver -->
+<div class="slide srole">
+  <div class="role-text">
+    <div class="role-emoji">🚚</div>
+    <div class="role-title">נהג</div>
+    <div class="role-desc">מסלול יומי מותאם אישית, ניווט חכם בין תחנות האיסוף ועדכון סטטוס בזמן אמת לכל לקיחה.</div>
+    <div class="tags">
+      <div class="tag">מסלול יומי</div><div class="tag y">ניווט חכם</div><div class="tag">עדכון בזמן אמת</div>
+    </div>
+  </div>
+  <div class="role-visual">
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="pheader teal">המסלול היומי</div>
+        <div class="pbody">
+          <div class="stop-row"><div class="stop-dot sd-navy">1</div><div class="stop-card">עיר הגפן, תחנה 1<br><span style="color:#8892A4;font-size:8px">8 דקות נסיעה</span></div></div>
+          <div class="stop-row"><div class="stop-dot sd-teal">2</div><div class="stop-card">שכונת הלוי, תחנה 2<br><span style="color:#8892A4;font-size:8px">5 דקות נסיעה</span></div></div>
+          <div class="stop-row"><div class="stop-dot sd-red">3</div><div class="stop-card alert">שלום מרלי ⚠️<br><span style="color:#E53E3E;font-size:8px">דחוף — חלון זמן מסתיים</span></div></div>
+          <div class="stop-row done"><div class="stop-dot sd-gray">✓</div><div class="stop-card">תחנה 4 — סיום מסלול</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9 — Manager -->
+<div class="slide srole">
+  <div class="role-text">
+    <div class="role-emoji">💼</div>
+    <div class="role-title">מנהל</div>
+    <div class="role-desc">מבט-על מלא על פעילות הארגון, ניהול נהגים ואזורים, מעקב תרומות ונתוני ביצוע בזמן אמת.</div>
+    <div class="tags">
+      <div class="tag">לוח בקרה</div><div class="tag y">ניהול נהגים</div><div class="tag">דוחות ונתונים</div>
+    </div>
+  </div>
+  <div class="role-visual">
+    <div class="admin-box">
+      <div class="admin-hdr">מרכז ניהול</div>
+      <div class="admin-stats">
+        <div class="astat"><div class="astat-n">100%</div><div class="astat-l">אחוז גידול</div></div>
+        <div class="astat"><div class="astat-n">3</div><div class="astat-l">בוטל</div></div>
+        <div class="astat"><div class="astat-n">6</div><div class="astat-l">מתוכנות</div></div>
+        <div class="astat"><div class="astat-n">26</div><div class="astat-l">תרומות</div></div>
+      </div>
+      <div class="admin-list">
+        <div class="alist-t">כל התרומות</div>
+        <div class="aitem"><span class="abadge ab-g">נאסף</span><span class="aitem-txt">הבר 5, גן יבנה, ישראל</span></div>
+        <div class="aitem"><span class="abadge ab-y">ממתין</span><span class="aitem-txt">רבי מאיר בעל הנס, אשדוד</span></div>
+        <div class="aitem"><span class="abadge ab-y">ממתין</span><span class="aitem-txt">התאנה, בני עי&quot;ט</span></div>
+        <div class="aitem"><span class="abadge ab-r">בוטל</span><span class="aitem-txt">רחוב הרצל, תל אביב</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10 — LGCN -->
+<div class="slide s10">
+  <div class="lgcn-hdr">LGCN</div>
+  <div class="lgcn-grid">
+    <div>
+      <div class="lgcn-col-t">שלבי האלגוריתם</div>
+      <div class="lstep"><div class="lstep-n">1</div><div class="lstep-txt">קורה שינוני</div></div>
+      <div class="lstep"><div class="lstep-n">2</div><div class="lstep-txt">עדכון מקומי</div></div>
+      <div class="lstep"><div class="lstep-n">3</div><div class="lstep-txt">הפצת עדכון חכמה</div></div>
+      <div class="lstep"><div class="lstep-n y">4</div><div class="lstep-txt">השפעה גלובלית &nbsp;<small>(אם נדרש)</small></div></div>
+    </div>
+    <div>
+      <div class="lgcn-col-t">רמות הייצוג</div>
+      <div class="llevel macro"><div class="ll-label">רמת המאקרו</div><div class="ll-name">קפסולת מסלול מלא</div></div>
+      <div class="llevel mezo"><div class="ll-label">רמת המזו</div><div class="ll-name">קפסולת תת-מסלול</div></div>
+      <div class="llevel micro"><div class="ll-label">רמת המיקרו</div><div class="ll-name">קפסולת צומת</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11 — Vision -->
+<div class="slide s11">
+  <div class="vis-left">
+    <div class="chip">VISION</div>
+    <div class="hbar"></div>
+    <div class="vis-h">החזון<br>שלנו</div>
+    <div class="vis-sub">לשנות את עולם<br>ארגוני החסד</div>
+  </div>
+  <div class="vis-right">
+    <div class="vitem"><div class="varrow">←</div><div class="vtext">נגישות טכנולוגית</div></div>
+    <div class="vitem"><div class="varrow">←</div><div class="vtext">פוטנציאל הרחבה</div></div>
+    <div class="vitem"><div class="varrow">←</div><div class="vtext">הגדלת התרומות</div></div>
+    <div class="vitem"><div class="varrow">←</div><div class="vtext">סיוע מורחב</div></div>
+    <div class="vitem"><div class="varrow">←</div><div class="vtext">אימפקט חברתי</div></div>
+  </div>
+</div>
+
+<!-- SLIDE 12 — Questions -->
+<div class="slide s12">
+  <div class="s12-glow"></div>
+  <div class="s12-q">?</div>
+  <div class="s12-text">שאלות?</div>
+  <div class="s12-byline">COLLECTA &nbsp;·&nbsp; הודיה שירזי &amp; שולמית מור יוסף</div>
+</div>
+
+<!-- Nav -->
+<div class="nav">
+  <button onclick="go(-1)">›</button>
+  <div class="ctr" id="ctr">1 / 12</div>
+  <button onclick="go(1)">‹</button>
+</div>
+
+<script>
+  const slides=document.querySelectorAll('.slide'),total=slides.length;let cur=0;
+  function go(d){slides[cur].classList.remove('active');cur=(cur+d+total)%total;slides[cur].classList.add('active');document.getElementById('ctr').textContent=(cur+1)+' / '+total;document.getElementById('prog').style.width=((cur+1)/total*100)+'%';}
+  document.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowDown',' '].includes(e.key)){e.preventDefault();go(1);}if(['ArrowRight','ArrowUp'].includes(e.key)){e.preventDefault();go(-1);}});
+  document.getElementById('prog').style.width=(1/total*100)+'%';
+</script>
+</body>
+</html>
