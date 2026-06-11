@@ -49,7 +49,14 @@ module.exports = async(req, res) => {
         return res.status(200).send({ status: "success" });
 
       } else {
-        // User does not exist → create user and role
+        // Driver must be pre-registered by admin — block self-registration
+        if (role === "driver") {
+          return res.status(403).send({
+            error: "driver not pre-registered"
+          });
+        }
+
+        // Other roles (donor, admin) → create user and role
         const uid = await createUser(firebaseUser, name, img, organizationId);
 
         await createRoleObject(uid, role, organizationId);

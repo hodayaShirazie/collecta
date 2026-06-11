@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8">
@@ -8,15 +8,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --navy:#1A2D5A; --navy-mid:#243868; --navy-light:#2f4a8a;
-      --gold:#C9A520; --gold-light:#E8C94A; --gold-pale:#FBF5DC;
-      --bg:#EBF2F8; --bg2:#E4EFF7; --bg3:#D8E8F3;
+      --navy:#1A3070; --navy-mid:#1E3A80; --navy-light:#2850A0;
+      --gold:#D8BC50; --gold-light:#E8CE70; --gold-pale:#FAF5DC;
+      --bg:#E8F4FD; --bg2:#DFF0F8; --bg3:#D0E8F5;
       --white:#FFFFFF; --gray:#8892A4; --gray-light:#F0F6FB;
-      --teal:#3BBFB8; --circuit:#B8CFE0;
+      --teal:#5AAEE8; --circuit:#A8C8E0;
     }
     *{margin:0;padding:0;box-sizing:border-box;}
     body{font-family:'Heebo','Arial Hebrew',Arial,sans-serif;
-      background:linear-gradient(175deg,#dce9f7 0%,#e8f3fb 35%,#f4f8fd 65%,#f9fbff 100%);
+      background:linear-gradient(175deg,#c8e2f5 0%,#d8eef8 35%,#edf5fb 65%,#f5faff 100%);
       overflow:hidden;direction:rtl;user-select:none;height:100vh;width:100vw;}
 
     /* ── Circuit SVG background ── */
@@ -30,7 +30,7 @@
     /* ── Nav ── */
     .nav{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
       display:flex;align-items:center;gap:12px;z-index:998;
-      background:rgba(26,45,90,.85);backdrop-filter:blur(12px);
+      background:rgba(26,48,112,.85);backdrop-filter:blur(12px);
       border:1px solid rgba(255,255,255,.15);padding:7px 20px;border-radius:50px;}
     .nav button{background:transparent;border:1.5px solid rgba(255,255,255,.3);
       color:white;width:32px;height:32px;border-radius:50%;cursor:pointer;
@@ -43,7 +43,7 @@
       display:flex;gap:8px;z-index:997;}
     .dot{width:8px;height:8px;border-radius:50%;background:rgba(26,45,90,.18);
       transition:all .3s;cursor:pointer;}
-    .dot.active{background:var(--gold);box-shadow:0 0 8px rgba(201,165,32,.5);}
+    .dot.active{background:var(--gold);box-shadow:0 0 6px rgba(216,188,80,.3);}
 
     /* ── Slides ── */
     .slide{width:100vw;height:100vh;position:absolute;inset:0;display:none;
@@ -56,27 +56,27 @@
     ════════════════════════════════ */
     .s1{background:transparent;flex-direction:column;text-align:center;}
     .s1-logo{position:relative;z-index:1;
-      font-size:clamp(64px,9vw,110px);font-weight:900;letter-spacing:10px;
-      color:var(--navy);margin-bottom:16px;}
-    .s1-authors{position:relative;z-index:1;color:var(--navy);font-size:20px;
-      font-weight:400;opacity:.65;margin-top:12px;}
+      font-size:clamp(70px,11vw,148px);font-weight:500;letter-spacing:14px;
+      color:var(--navy);margin-bottom:32px;}
+    .s1-authors{position:relative;z-index:1;color:var(--navy);font-size:38px;
+      font-weight:400;opacity:.65;margin-top:28px;}
     .s1-authors span{font-weight:700;opacity:1;}
     .s1-rule{width:90px;height:3px;
       background:linear-gradient(90deg,var(--navy),var(--gold));
-      border-radius:2px;margin:0 auto 20px;position:relative;z-index:1;}
+      border-radius:2px;margin:0 auto 28px;position:relative;z-index:1;}
 
     /* ════════════════════════════════
        SLIDE 2 — What is Collecta
     ════════════════════════════════ */
     .s2{background:transparent;flex-direction:column;text-align:center;}
     .s2-q{position:relative;z-index:1;
-      font-size:clamp(36px,4.5vw,58px);font-weight:900;color:var(--navy);margin-bottom:24px;}
-    .s2-q span{color:var(--gold);}
-    .s2-rule{width:70px;height:3px;background:linear-gradient(90deg,var(--navy),var(--gold));
-      border-radius:2px;margin:0 auto 28px;position:relative;z-index:1;}
-    .s2-body{position:relative;z-index:1;font-size:clamp(20px,2.2vw,28px);
-      color:var(--navy);font-weight:400;opacity:.75;max-width:600px;line-height:1.6;}
-    .s2-body strong{font-weight:800;opacity:1;color:var(--navy);}
+      font-size:clamp(64px,8vw,110px);font-weight:300;color:var(--navy);margin-bottom:20px;}
+    .s2-q span{color:var(--navy);text-shadow:0 0 28px rgba(216,188,80,.7),0 0 56px rgba(216,188,80,.3);}
+    .s2-rule{width:80px;height:3px;background:linear-gradient(90deg,var(--navy),var(--gold));
+      border-radius:2px;margin:0 auto 26px;position:relative;z-index:1;}
+    .s2-body{position:relative;z-index:1;font-size:clamp(26px,2.8vw,38px);
+      color:var(--navy);font-weight:400;opacity:.62;max-width:640px;line-height:1.9;}
+    .s2-body strong{font-weight:700;opacity:1;color:var(--navy);}
 
     /* ════════════════════════════════
        PROBLEM slides
@@ -91,7 +91,7 @@
       font-size:46px;margin:0 auto 28px;}
     .prob-title{position:relative;z-index:1;
       font-size:clamp(44px,5.5vw,72px);font-weight:900;color:var(--navy);margin-bottom:20px;}
-    .prob-title span{color:var(--gold);}
+    .prob-title span{color:var(--navy);text-shadow:0 0 28px rgba(216,188,80,.7),0 0 56px rgba(216,188,80,.3);}
     .prob-rule{width:60px;height:3px;background:linear-gradient(90deg,var(--navy),var(--gold));
       border-radius:2px;margin:0 auto 22px;position:relative;z-index:1;}
     .prob-desc{position:relative;z-index:1;font-size:clamp(17px,1.8vw,22px);
@@ -102,13 +102,13 @@
     ════════════════════════════════ */
     .s6{background:transparent;flex-direction:column;text-align:center;}
     .s6-logo{position:relative;z-index:1;
-      font-size:clamp(56px,8vw,100px);font-weight:900;letter-spacing:10px;
-      color:var(--navy);margin-bottom:18px;}
+      font-size:clamp(72px,10vw,130px);font-weight:500;letter-spacing:10px;
+      color:var(--navy);margin-bottom:32px;}
     .s6-rule{width:80px;height:3px;background:linear-gradient(90deg,var(--navy),var(--gold));
-      border-radius:2px;margin:0 auto 24px;position:relative;z-index:1;}
+      border-radius:2px;margin:0 auto 36px;position:relative;z-index:1;}
     .s6-sub{position:relative;z-index:1;
-      font-size:clamp(20px,2.4vw,32px);color:var(--navy);opacity:.7;font-weight:400;}
-    .s6-sub strong{color:var(--navy);opacity:1;font-weight:800;}
+      font-size:clamp(44px,5.5vw,72px);color:var(--navy);opacity:.62;font-weight:300;}
+    .s6-sub strong{color:var(--navy);opacity:1;font-weight:700;}
 
     /* ════════════════════════════════
        ROLE slides (7,8,9)
@@ -234,12 +234,23 @@
     .ab-r{background:#FED7D7;color:#9B2C2C;}
 
     /* ════════════════════════════════
+       SLIDE 9 — Manager (column layout)
+    ════════════════════════════════ */
+    .s-mgr{background:transparent;flex-direction:column;align-items:center;
+      text-align:center;padding:48px 80px 40px;gap:36px;justify-content:center;}
+    .mgr-top{display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;}
+    .mgr-bottom{display:flex;gap:48px;align-items:flex-start;justify-content:center;
+      position:relative;z-index:1;width:100%;}
+    .mgr-img{width:52%;border-radius:12px;
+      box-shadow:0 12px 40px rgba(26,45,90,.18);}
+
+    /* ════════════════════════════════
        SLIDE 10 — LGCN
     ════════════════════════════════ */
     .s10{background:transparent;flex-direction:column;align-items:center;padding:48px 80px;gap:36px;}
     .s10-hdr{position:relative;z-index:1;text-align:center;}
-    .s10-title{font-size:clamp(40px,5.5vw,68px);font-weight:900;
-      letter-spacing:8px;color:var(--navy);}
+    .s10-title{font-size:clamp(88px,11vw,148px);font-weight:300;
+      letter-spacing:10px;color:var(--navy);}
     .s10-rule{width:70px;height:3px;background:linear-gradient(90deg,var(--navy),var(--gold));
       border-radius:2px;margin:10px auto 0;}
     .lgcn-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;width:100%;position:relative;z-index:1;}
@@ -255,7 +266,7 @@
     .lstep-n.gold{background:var(--gold);color:white;}
     .lstep-txt{color:var(--navy);font-size:15px;font-weight:600;}
     .lstep-txt small{color:var(--gray);font-size:12px;font-weight:400;}
-    .llevel{border-radius:12px;padding:16px 20px;margin-bottom:10px;
+    .llevel{border-radius:12px;padding:16px 20px;margin-bottom:0;
       border:1px solid transparent;}
     .llevel.macro{background:rgba(26,45,90,.06);border-color:rgba(26,45,90,.12);}
     .llevel.mezo{background:rgba(201,165,32,.08);border-color:rgba(201,165,32,.2);}
@@ -281,7 +292,7 @@
       border-radius:20px;margin-bottom:16px;}
     .vis-rule{width:56px;height:3px;background:linear-gradient(90deg,var(--navy),var(--gold));
       border-radius:2px;margin-bottom:22px;}
-    .vis-h{font-size:clamp(46px,5.5vw,72px);font-weight:900;color:var(--navy);
+    .vis-h{font-size:clamp(62px,8vw,108px);font-weight:300;color:var(--navy);
       line-height:1.1;margin-bottom:12px;}
     .vis-sub{font-size:15px;color:var(--navy);opacity:.5;line-height:1.6;}
     .vitem{display:flex;align-items:center;gap:16px;
@@ -298,20 +309,77 @@
     ════════════════════════════════ */
     .s12{background:transparent;flex-direction:column;text-align:center;}
     .s12-q{position:relative;z-index:1;
-      font-size:clamp(130px,17vw,200px);font-weight:900;line-height:.9;
-      color:var(--gold);margin-bottom:16px;}
+      font-size:clamp(240px,30vw,360px);font-weight:300;line-height:.9;
+      color:var(--gold);margin-bottom:28px;
+      text-shadow:0 0 60px rgba(216,188,80,.7),0 0 120px rgba(216,188,80,.35);}
     .s12-text{position:relative;z-index:1;
-      font-size:clamp(34px,5vw,58px);font-weight:800;color:var(--navy);}
-    .s12-byline{position:relative;z-index:1;
-      font-size:15px;color:rgba(26,45,90,.4);margin-top:18px;
-      font-weight:300;letter-spacing:1px;}
+      font-size:clamp(70px,8.5vw,114px);font-weight:300;color:var(--navy);
+      text-shadow:0 0 30px rgba(216,188,80,.4);}
 
     /* ════════════════════════════════
        Glowing node dots (circuit)
     ════════════════════════════════ */
     .glow-dot{position:absolute;border-radius:50%;pointer-events:none;z-index:0;}
-    .gd-gold{background:radial-gradient(circle,rgba(201,165,32,.85) 0%,rgba(201,165,32,.0) 70%);}
-    .gd-navy{background:radial-gradient(circle,rgba(26,45,90,.35) 0%,rgba(26,45,90,.0) 70%);}
+    .gd-gold{background:radial-gradient(circle,rgba(216,188,80,.30) 0%,rgba(216,188,80,.0) 70%);}
+    .gd-navy{background:radial-gradient(circle,rgba(26,48,112,.35) 0%,rgba(26,48,112,.0) 70%);}
+
+    /* ── Print / PDF export ── */
+    @media print {
+      @page { size: 297mm 210mm; margin: 0; }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      html, body { overflow: visible; height: auto; background: none !important; margin: 0; padding: 0; }
+      #prog, .nav, .dots { display: none !important; }
+
+      .slide {
+        display: flex !important;
+        position: relative !important;
+        inset: unset !important;
+        width: 297mm;
+        height: 210mm;
+        page-break-after: always;
+        break-after: page;
+        page-break-inside: avoid;
+        overflow: hidden;
+        background: linear-gradient(175deg,#c8e2f5 0%,#d8eef8 35%,#edf5fb 65%,#f5faff 100%) !important;
+      }
+
+      /* Role slides */
+      .srole { align-items: stretch; }
+      .role-phone-col {
+        width: 40% !important;
+        overflow: hidden !important;
+        position: relative !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+      /* Donor / Driver — single phone image */
+      .role-phone-col > img {
+        height: 178mm !important;
+        width: auto !important;
+        max-width: 95% !important;
+        object-fit: contain !important;
+        position: relative !important;
+      }
+      /* Manager — two overlapping screenshots */
+      .mgr-wrap {
+        height: 182mm !important;
+        width: 95% !important;
+        flex-shrink: 0;
+      }
+      .mgr-wrap img {
+        height: auto !important;
+        width: 90% !important;
+      }
+      .role-info-col {
+        width: 60% !important;
+        padding: 36px 50px !important;
+        box-sizing: border-box;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -320,11 +388,11 @@
 <!-- ══ Global background blobs (fixed, behind all slides) ══ -->
 <div style="position:fixed;inset:0;pointer-events:none;z-index:0;">
   <div style="position:absolute;width:26vw;height:26vw;top:8vh;left:-7vw;border-radius:50%;
-    background:radial-gradient(circle,rgba(244,231,158,.52) 0%,rgba(244,231,158,.18) 55%,transparent 75%);"></div>
+    background:radial-gradient(circle,rgba(216,188,80,.18) 0%,rgba(216,188,80,.06) 55%,transparent 75%);"></div>
   <div style="position:absolute;width:30vw;height:30vw;top:50vh;left:-9vw;border-radius:50%;
-    background:radial-gradient(circle,rgba(244,231,158,.50) 0%,rgba(244,231,158,.16) 55%,transparent 75%);"></div>
+    background:radial-gradient(circle,rgba(216,188,80,.16) 0%,rgba(216,188,80,.05) 55%,transparent 75%);"></div>
   <div style="position:absolute;width:27vw;height:27vw;top:-7vh;right:-7vw;border-radius:50%;
-    background:radial-gradient(circle,rgba(244,231,158,.45) 0%,rgba(244,231,158,.14) 55%,transparent 75%);"></div>
+    background:radial-gradient(circle,rgba(216,188,80,.14) 0%,rgba(216,188,80,.04) 55%,transparent 75%);"></div>
 </div>
 
 <!-- ══════════════════════════════════════
@@ -441,22 +509,18 @@
 <div class="slide sprob">
   <svg class="circuit-bg" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="url(#cpat)"/></svg>
   <div class="glow-dot gd-gold" style="width:200px;height:200px;top:80px;left:140px;"></div>
-  <div class="prob-chip">בעיה #2</div>
-  <div class="prob-icon-wrap">📦</div>
-  <div class="prob-title">עומס <span>לוגיסטי</span></div>
-  <div class="prob-rule"></div>
-  <div class="prob-desc">ריבוי תהליכי איסוף יוצר עומס לוגיסטי ומקשה על התפעול השוטף</div>
+  <div class="prob-title" style="font-weight:300;font-size:clamp(80px,10vw,132px);">עומס <span>לוגיסטי</span></div>
+  <div class="prob-rule" style="width:80px;margin:0 auto 52px;"></div>
+  <div class="prob-desc" style="font-size:clamp(32px,3.5vw,48px);max-width:720px;line-height:1.75;">ריבוי תהליכי איסוף יוצר עומס לוגיסטי ומקשה על התפעול השוטף</div>
 </div>
 
 <!-- ══════════════════════════════════════  SLIDE 5 — Problem 3 -->
 <div class="slide sprob">
   <svg class="circuit-bg" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="url(#cpat)"/></svg>
   <div class="glow-dot gd-gold" style="width:240px;height:240px;bottom:-40px;left:80px;"></div>
-  <div class="prob-chip">בעיה #3</div>
-  <div class="prob-icon-wrap">📈</div>
-  <div class="prob-title">הגבלת <span>צמיחה</span></div>
-  <div class="prob-rule"></div>
-  <div class="prob-desc">הסתמכות על תהליכים מסורתיים מגבילה את יכולת הצמיחה וההתרחבות</div>
+  <div class="prob-title" style="font-weight:300;font-size:clamp(80px,10vw,132px);">הגבלת <span>צמיחה</span></div>
+  <div class="prob-rule" style="width:80px;margin:0 auto 52px;"></div>
+  <div class="prob-desc" style="font-size:clamp(32px,3.5vw,48px);max-width:720px;line-height:1.75;">הסתמכות על תהליכים מסורתיים מגבילה את יכולת הצמיחה וההתרחבות</div>
 </div>
 
 <!-- ══════════════════════════════════════  SLIDE 6 — Solution -->
@@ -470,9 +534,9 @@
 <div class="slide srole">
   <!-- text RIGHT — 75% -->
   <div class="role-info-col" style="width:75%;align-items:center;text-align:center;padding:60px 80px;">
-    <div class="role-title-big" style="font-weight:300;font-size:clamp(64px,8vw,110px);">תורם</div>
+    <div class="role-title-big" style="font-weight:300;font-size:clamp(80px,10vw,132px);">תורם</div>
     <div class="role-rule" style="margin:0 auto 26px;width:80px;"></div>
-    <div class="role-desc" style="text-align:center;font-size:clamp(26px,2.8vw,38px);max-width:640px;line-height:1.9;">דיווח קל ומהיר על תרומות, בחירת חלונות זמן נוחים לאיסוף ומעקב אחר סטטוס התרומה בכל שלב.</div>
+    <div class="role-desc" style="text-align:center;font-size:clamp(26px,2.8vw,38px);max-width:640px;line-height:1.9;">דיווח תרומות בקלות ומעקב בזמן אמת אחר תהליך האיסוף והיסטוריית התרומות.</div>
     <div class="tags" style="justify-content:center;margin-top:32px;gap:12px;">
       <div class="tag gold" style="font-size:15px;padding:9px 22px;">דיווח תרומה</div>
       <div class="tag" style="font-size:15px;padding:9px 22px;">מסלול אופטימלי</div>
@@ -480,17 +544,10 @@
     </div>
   </div>
   <!-- phone image LEFT — 25% -->
-  <div class="role-phone-col" style="width:25%;background:transparent;">
-    <!-- soft fade over the boundary line -->
-    <div style="position:absolute;inset:0;right:-80px;left:auto;width:160px;
-      background:linear-gradient(to left,
-        rgba(225,238,250,1) 0%,
-        rgba(225,238,250,0.7) 40%,
-        rgba(225,238,250,0) 100%);
-      z-index:3;pointer-events:none;"></div>
+  <div class="role-phone-col" style="width:32%;background:transparent;">
     <img src="assets/images/presentation/donorReport.png" alt="דיווח תרומה"
-      style="height:100vh;max-height:780px;width:auto;object-fit:contain;
-             position:relative;z-index:1;filter:drop-shadow(0 24px 60px rgba(26,45,90,.25));"/>
+      style="max-height:80vh;width:auto;object-fit:contain;
+             filter:drop-shadow(0 24px 60px rgba(26,45,90,.25));"/>
   </div>
 </div>
 
@@ -498,9 +555,9 @@
 <div class="slide srole">
   <!-- text RIGHT — 75% -->
   <div class="role-info-col" style="width:75%;align-items:center;text-align:center;padding:60px 80px;">
-    <div class="role-title-big" style="font-weight:300;font-size:clamp(64px,8vw,110px);">נהג</div>
+    <div class="role-title-big" style="font-weight:300;font-size:clamp(80px,10vw,132px);">נהג</div>
     <div class="role-rule" style="margin:0 auto 26px;width:80px;"></div>
-    <div class="role-desc" style="text-align:center;font-size:clamp(26px,2.8vw,38px);max-width:640px;line-height:1.9;">מסלול יומי מותאם אישית, ניווט חכם בין תחנות האיסוף ועדכון סטטוס בזמן אמת לכל לקיחה.</div>
+    <div class="role-desc" style="text-align:center;font-size:clamp(26px,2.8vw,38px);max-width:640px;line-height:1.9;">מסלול יומי מותאם אישית לאיסוף ופריקת תרומות, בהתאם לאזור הפעילות ולנקודות היעד.</div>
     <div class="tags" style="justify-content:center;margin-top:32px;gap:12px;">
       <div class="tag" style="font-size:15px;padding:9px 22px;">דיווח תרומה</div>
       <div class="tag gold" style="font-size:15px;padding:9px 22px;">מסלול אופטימלי</div>
@@ -508,56 +565,74 @@
     </div>
   </div>
   <!-- phone image LEFT — 25% -->
-  <div class="role-phone-col" style="width:25%;background:transparent;">
-    <!-- soft fade over the boundary line -->
-    <div style="position:absolute;inset:0;right:-80px;left:auto;width:160px;
-      background:linear-gradient(to left,
-        rgba(225,238,250,1) 0%,
-        rgba(225,238,250,0.7) 40%,
-        rgba(225,238,250,0) 100%);
-      z-index:3;pointer-events:none;"></div>
+  <div class="role-phone-col" style="width:32%;background:transparent;">
     <img src="assets/images/presentation/driverRoute.png" alt="מסלול נהג"
-      style="height:100vh;max-height:780px;width:auto;object-fit:contain;
-             position:relative;z-index:1;filter:drop-shadow(0 24px 60px rgba(26,45,90,.25));"/>
+      style="max-height:80vh;width:auto;object-fit:contain;
+             filter:drop-shadow(0 24px 60px rgba(26,45,90,.25));"/>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════  SLIDE 9 — Manager -->
-<div class="slide srole">
-  <!-- text RIGHT — 62% -->
-  <div class="role-info-col" style="width:62%;align-items:center;text-align:center;padding:60px 60px;">
-    <div class="role-title-big" style="font-weight:300;font-size:clamp(64px,8vw,110px);">מנהל</div>
-    <div class="role-rule" style="margin:0 auto 26px;width:80px;"></div>
-    <div class="role-desc" style="text-align:center;font-size:clamp(26px,2.8vw,38px);max-width:640px;line-height:1.9;">מבט-על מלא על פעילות הארגון, ניהול נהגים ואזורים, מעקב תרומות ונתוני ביצוע בזמן אמת.</div>
-    <div class="tags" style="justify-content:center;margin-top:32px;gap:12px;">
-      <div class="tag" style="font-size:15px;padding:9px 22px;">דיווח תרומה</div>
-      <div class="tag" style="font-size:15px;padding:9px 22px;">מסלול אופטימלי</div>
-      <div class="tag gold" style="font-size:15px;padding:9px 22px;">ניטור ומעקב</div>
+<div class="slide s-mgr">
+  <svg class="circuit-bg" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="url(#cpat)"/></svg>
+  <div class="glow-dot gd-gold" style="width:200px;height:200px;bottom:-40px;right:40px;"></div>
+  <!-- text TOP -->
+  <div class="mgr-top">
+    <div class="role-title-big" style="font-weight:300;font-size:clamp(56px,7vw,90px);margin-bottom:14px;">מנהל</div>
+    <div class="role-rule" style="margin:0 auto 36px;width:80px;"></div>
+    <div style="font-size:clamp(24px,2.6vw,36px);color:var(--navy);opacity:.62;line-height:1.75;margin-bottom:36px;">פיקוח ובקרה בזמן אמת על מערך התרומות, ניהול משאבים ועדכון שיבוצים ומשימות באופן דינמי.</div>
+    <div class="tags" style="justify-content:center;gap:12px;">
+      <div class="tag" style="font-size:14px;padding:7px 18px;">דיווח תרומה</div>
+      <div class="tag" style="font-size:14px;padding:7px 18px;">מסלול אופטימלי</div>
+      <div class="tag gold" style="font-size:14px;padding:7px 18px;">ניטור ומעקב</div>
     </div>
   </div>
-  <!-- images LEFT — 38% with overlapping screenshots -->
-  <div class="role-phone-col" style="width:38%;background:transparent;">
-    <!-- soft fade over the boundary line -->
-    <div style="position:absolute;inset:0;right:-80px;left:auto;width:160px;
-      background:linear-gradient(to left,rgba(225,238,250,1) 0%,rgba(225,238,250,.7) 40%,rgba(225,238,250,0) 100%);
-      z-index:4;pointer-events:none;"></div>
-    <!-- staggered images wrapper -->
-    <div style="position:relative;width:92%;height:78%;margin:auto;">
-      <!-- back image — top-right -->
-      <img src="assets/images/presentation/צילום מסך 2026-05-31 175644.png" alt="מנהל 1"
-        style="position:absolute;width:82%;top:0;right:0;z-index:1;
-               border-radius:10px;
-               box-shadow:0 10px 36px rgba(26,45,90,.18);"/>
-      <!-- front image — bottom-left, overlapping -->
-      <img src="assets/images/presentation/צילום מסך 2026-05-31 175732.png" alt="מנהל 2"
-        style="position:absolute;width:82%;bottom:0;left:0;z-index:2;
-               border-radius:10px;
-               box-shadow:0 16px 48px rgba(26,45,90,.24);"/>
+  <!-- images BOTTOM -->
+  <div class="mgr-bottom">
+    <img src="assets/images/presentation/צילום מסך 2026-05-31 175644.png" alt="מנהל 1" class="mgr-img"/>
+    <img src="assets/images/presentation/צילום מסך 2026-05-31 175732.png" alt="מנהל 2" class="mgr-img"/>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════  SLIDE 10 — LGCN Capsules -->
+<div class="slide s10" style="justify-content:center;align-items:center;padding:32px 80px;" id="lgcn-caps">
+  <svg class="circuit-bg" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="url(#cpat)"/></svg>
+  <div class="glow-dot gd-gold" style="width:300px;height:300px;top:-60px;right:-60px;"></div>
+  <div class="glow-dot gd-gold" style="width:220px;height:220px;bottom:-40px;left:-40px;"></div>
+  <div class="s10-hdr">
+    <div class="s10-title">LGCN</div>
+    <div class="s10-rule"></div>
+  </div>
+  <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:56px;direction:ltr;">
+    <img src="assets/images/presentation/capsulesHirarcy.png" alt="LGCN Capsules"
+         style="max-height:66vh;width:auto;flex-shrink:0;filter:drop-shadow(0 16px 48px rgba(26,45,90,.18));"/>
+    <div style="display:flex;flex-direction:column;justify-content:space-between;height:60vh;max-height:440px;direction:ltr;padding:44px 0;">
+      <div style="display:flex;align-items:center;gap:18px;">
+        <svg width="52" height="16" viewBox="0 0 52 16" style="flex-shrink:0;transform:scaleX(-1);"><defs><marker id="a1" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#1A3070" opacity=".7"/></marker></defs><line x1="0" y1="8" x2="46" y2="8" stroke="#1A3070" stroke-width="2" marker-end="url(#a1)" opacity=".65"/></svg>
+        <div>
+          <div style="font-size:clamp(20px,2vw,28px);font-weight:700;color:var(--navy);">רמת המיקרו</div>
+          <div style="font-size:clamp(14px,1.4vw,19px);color:var(--navy);opacity:.52;margin-top:3px;">קפסולת צומת</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:18px;">
+        <svg width="52" height="16" viewBox="0 0 52 16" style="flex-shrink:0;transform:scaleX(-1);"><defs><marker id="a2" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#1A3070" opacity=".7"/></marker></defs><line x1="0" y1="8" x2="46" y2="8" stroke="#1A3070" stroke-width="2" marker-end="url(#a2)" opacity=".65"/></svg>
+        <div>
+          <div style="font-size:clamp(20px,2vw,28px);font-weight:700;color:var(--navy);">רמת המזו</div>
+          <div style="font-size:clamp(14px,1.4vw,19px);color:var(--navy);opacity:.52;margin-top:3px;">קפסולת מסלול</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:18px;">
+        <svg width="52" height="16" viewBox="0 0 52 16" style="flex-shrink:0;transform:scaleX(-1);"><defs><marker id="a3" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#1A3070" opacity=".7"/></marker></defs><line x1="0" y1="8" x2="46" y2="8" stroke="#1A3070" stroke-width="2" marker-end="url(#a3)" opacity=".65"/></svg>
+        <div>
+          <div style="font-size:clamp(20px,2vw,28px);font-weight:700;color:var(--navy);">רמת המאקרו</div>
+          <div style="font-size:clamp(14px,1.4vw,19px);color:var(--navy);opacity:.52;margin-top:3px;">קפסולת מסלול מלא</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════  SLIDE 10 — LGCN -->
+<!-- ══════════════════════════════════════  SLIDE 10 — LGCN Steps -->
 <div class="slide s10">
   <svg class="circuit-bg" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="url(#cpat)"/></svg>
   <div class="glow-dot gd-gold" style="width:260px;height:260px;top:-40px;right:60px;"></div>
@@ -565,77 +640,163 @@
     <div class="s10-title">LGCN</div>
     <div class="s10-rule"></div>
   </div>
-  <div class="lgcn-grid">
-    <div>
-      <div class="lgcn-col-label">שלבי האלגוריתם</div>
-      <div class="lstep"><div class="lstep-n">1</div><div class="lstep-txt">קורה שינוני</div></div>
-      <div class="lstep"><div class="lstep-n">2</div><div class="lstep-txt">עדכון מקומי</div></div>
-      <div class="lstep"><div class="lstep-n">3</div><div class="lstep-txt">הפצת עדכון חכמה</div></div>
-      <div class="lstep"><div class="lstep-n gold">4</div><div class="lstep-txt">השפעה גלובלית &nbsp;<small>(אם נדרש)</small></div></div>
-    </div>
-    <div>
-      <div class="lgcn-col-label">רמות הייצוג</div>
-      <div class="llevel macro"><div class="ll-label">רמת המאקרו</div><div class="ll-name">קפסולת מסלול מלא</div></div>
-      <div class="llevel mezo"><div class="ll-label">רמת המזו</div><div class="ll-name">קפסולת תת-מסלול</div></div>
-      <div class="llevel micro"><div class="ll-label">רמת המיקרו</div><div class="ll-name">קפסולת צומת</div></div>
-    </div>
+  <div style="width:100%;max-width:1300px;position:relative;z-index:1;direction:ltr;">
+
+    <svg viewBox="0 0 1100 240" style="width:100%;height:auto;overflow:visible;">
+  <defs>
+    <marker id="arw-st" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0,8 3,0 6" fill="#1A3070" opacity=".5"/>
+    </marker>
+    <filter id="csh" x="-8%" y="-8%" width="116%" height="130%">
+      <feDropShadow dx="0" dy="5" stdDeviation="9" flood-color="rgba(14,28,72,.12)"/>
+    </filter>
+  </defs>
+
+  <!-- Card 1 — #0E1C48 -->
+  <rect x="15" y="22" width="215" height="190" rx="14" fill="white" filter="url(#csh)"/>
+  <rect x="15" y="22" width="215" height="190" rx="14" fill="rgba(14,28,72,.05)"/>
+  <rect x="15" y="22" width="215" height="5" rx="3" fill="#0E1C48"/>
+  <circle cx="122" cy="68" r="20" fill="rgba(14,28,72,.10)" stroke="#0E1C48" stroke-width="1.5"/>
+  <text x="122" y="74" font-size="15" font-weight="700" fill="#0E1C48" font-family="Heebo,Arial" text-anchor="middle">01</text>
+  <path d="M 109,100 A 13,13 0 1,1 135,100" fill="none" stroke="#0E1C48" stroke-width="2.2" stroke-linecap="round"/>
+  <polygon points="135,94 135,106 143,100" fill="#0E1C48"/>
+  <text x="122" y="148" font-size="21" font-weight="700" fill="#0E1C48" font-family="Heebo,Arial Hebrew,Arial" text-anchor="middle">קורה שינוי</text>
+  <text x="122" y="172" font-size="13" fill="#0E1C48" font-family="Heebo,Arial Hebrew,Arial" text-anchor="middle" opacity=".5">טריגר ראשוני</text>
+
+  <line x1="233" y1="117" x2="296" y2="117" stroke="#1A3070" stroke-width="2" marker-end="url(#arw-st)" opacity=".38"/>
+
+  <!-- Card 2 — #142258 -->
+  <rect x="300" y="22" width="215" height="190" rx="14" fill="white" filter="url(#csh)"/>
+  <rect x="300" y="22" width="215" height="190" rx="14" fill="rgba(20,34,88,.05)"/>
+  <rect x="300" y="22" width="215" height="5" rx="3" fill="#142258"/>
+  <circle cx="407" cy="68" r="20" fill="rgba(20,34,88,.10)" stroke="#142258" stroke-width="1.5"/>
+  <text x="407" y="74" font-size="15" font-weight="700" fill="#142258" font-family="Heebo,Arial" text-anchor="middle">02</text>
+  <circle cx="407" cy="100" r="5"  fill="#142258"/>
+  <circle cx="407" cy="100" r="11" fill="none" stroke="#142258" stroke-width="1.5" opacity=".5"/>
+  <circle cx="407" cy="100" r="17" fill="none" stroke="#142258" stroke-width="1"   opacity=".25"/>
+  <text x="407" y="148" font-size="21" font-weight="700" fill="#0E1C48" font-family="Heebo,Arial Hebrew,Arial" text-anchor="middle">עדכון מקומי</text>
+  <text x="407" y="172" font-size="13" fill="#0E1C48" font-family="Heebo,Arial Hebrew,Arial" text-anchor="middle" opacity=".5">עדכון ברמת הצומת</text>
+
+  <line x1="518" y1="117" x2="581" y2="117" stroke="#1A3070" stroke-width="2" marker-end="url(#arw-st)" opacity=".38"/>
+
+  <!-- Card 3 — #1A2A68 -->
+  <rect x="585" y="22" width="215" height="190" rx="14" fill="white" filter="url(#csh)"/>
+  <rect x="585" y="22" width="215" height="190" rx="14" fill="rgba(26,42,104,.05)"/>
+  <rect x="585" y="22" width="215" height="5" rx="3" fill="#1A2A68"/>
+  <circle cx="692" cy="68" r="20" fill="rgba(26,42,104,.10)" stroke="#1A2A68" stroke-width="1.5"/>
+  <text x="692" y="74" font-size="15" font-weight="700" fill="#1A2A68" font-family="Heebo,Arial" text-anchor="middle">03</text>
+  <circle cx="692" cy="99" r="4.5" fill="#1A2A68"/>
+  <line x1="692" y1="84" x2="692" y2="79" stroke="#1A2A68" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+  <line x1="703" y1="88" x2="707" y2="84" stroke="#1A2A68" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+  <line x1="706" y1="99" x2="712" y2="99" stroke="#1A2A68" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+  <line x1="681" y1="88" x2="677" y2="84" stroke="#1A2A68" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+  <line x1="678" y1="99" x2="672" y2="99" stroke="#1A2A68" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+  <text x="692" y="140" font-size="20" font-weight="700" fill="#0E1C48" font-family="Heebo,Arial Hebrew,Arial" text-anchor="middle">הפצת עדכון</text>
+  <text x="692" y="162" font-size="20" font-weight="700" fill="#0E1C48" font-family="Heebo,Arial Hebrew,Arial" text-anchor="middle">חכמה</text>
+  <text x="692" y="182" font-size="12" fill="#0E1C48" font-family="Heebo,Arial Hebrew,Arial" text-anchor="middle" opacity=".45">הפצה חכמה לשכנים</text>
+
+  <line x1="803" y1="117" x2="866" y2="117" stroke="#1A3070" stroke-width="2" marker-end="url(#arw-st)" opacity=".38"/>
+
+  <!-- Card 4 — #203278 -->
+  <rect x="870" y="22" width="215" height="190" rx="14" fill="white" filter="url(#csh)"/>
+  <rect x="870" y="22" width="215" height="190" rx="14" fill="rgba(32,50,120,.05)"/>
+  <rect x="870" y="22" width="215" height="5" rx="3" fill="#203278"/>
+  <rect x="870" y="22" width="215" height="190" rx="14" fill="none" stroke="rgba(32,50,120,.22)" stroke-width="1.5"/>
+  <circle cx="977" cy="68" r="20" fill="rgba(32,50,120,.10)" stroke="#203278" stroke-width="1.5"/>
+  <text x="977" y="74" font-size="15" font-weight="700" fill="#203278" font-family="Heebo,Arial" text-anchor="middle">04</text>
+  <circle cx="977" cy="99" r="16" fill="none" stroke="#203278" stroke-width="2"/>
+  <ellipse cx="977" cy="99" rx="8" ry="16" fill="none" stroke="#203278" stroke-width="1" opacity=".55"/>
+  <line x1="961" y1="99" x2="993" y2="99" stroke="#203278" stroke-width="1"   opacity=".55"/>
+  <line x1="963" y1="89" x2="991" y2="89" stroke="#203278" stroke-width="0.8" opacity=".35"/>
+  <line x1="963" y1="109" x2="991" y2="109" stroke="#203278" stroke-width="0.8" opacity=".35"/>
+  <text x="977" y="148" font-size="21" font-weight="700" fill="#0E1C48" font-family="Heebo,Arial Hebrew,Arial" text-anchor="middle">השפעה גלובלית</text>
+  <text x="977" y="172" font-size="13" fill="#0E1C48" font-family="Heebo,Arial Hebrew,Arial" text-anchor="middle" opacity=".5">השפעה ברחבי הרשת</text>
+</svg>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════  SLIDE 11 — Vision -->
-<div class="slide s11">
+<div class="slide s11" style="padding:0;">
   <svg class="circuit-bg" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="url(#cpat)"/></svg>
   <div class="glow-dot gd-gold" style="width:280px;height:280px;top:-60px;right:40px;"></div>
   <div class="glow-dot gd-gold" style="width:180px;height:180px;bottom:-40px;left:80px;"></div>
-  <div class="vis-left">
-    <div class="vis-chip">VISION</div>
-    <div class="vis-rule"></div>
-    <div class="vis-h">החזון<br>שלנו</div>
-    <div class="vis-sub">לשנות את עולם<br>ארגוני החסד</div>
+
+  <!-- Title — top right -->
+  <div style="position:absolute;top:90px;right:220px;z-index:2;text-align:right;">
+    <div class="vis-h">החזון שלנו</div>
+    <div class="vis-rule" style="margin:14px auto 0;"></div>
   </div>
-  <div class="vis-right">
-    <div class="vitem"><div class="varrow">←</div><div class="vtext">נגישות טכנולוגית</div></div>
-    <div class="vitem"><div class="varrow">←</div><div class="vtext">פוטנציאל הרחבה</div></div>
-    <div class="vitem"><div class="varrow">←</div><div class="vtext">הגדלת התרומות</div></div>
-    <div class="vitem"><div class="varrow">←</div><div class="vtext">סיוע מורחב</div></div>
-    <div class="vitem"><div class="varrow">←</div><div class="vtext">אימפקט חברתי</div></div>
-  </div>
+
+  <!-- Full-screen LGCN-style scattered diagram -->
+  <svg viewBox="0 0 1400 760" preserveAspectRatio="xMidYMid meet"
+       style="position:absolute;inset:0;width:100%;height:100%;z-index:1;overflow:visible;">
+    <defs>
+      <marker id="arw-vis" markerWidth="6" markerHeight="5" refX="5" refY="2.5" orient="auto">
+        <polygon points="0 0, 6 2.5, 0 5" fill="rgba(26,48,112,.38)"/>
+      </marker>
+      <radialGradient id="vis-aura">
+        <stop offset="0%"   stop-color="rgba(216,188,80,.3)"/>
+        <stop offset="50%"  stop-color="rgba(216,188,80,.12)"/>
+        <stop offset="100%" stop-color="rgba(216,188,80,0)"/>
+      </radialGradient>
+      <mask id="vm1"><rect width="1400" height="760" fill="white"/><ellipse cx="290" cy="190" rx="130" ry="65" fill="black"/></mask>
+      <mask id="vm2"><rect width="1400" height="760" fill="white"/><ellipse cx="580" cy="360" rx="130" ry="65" fill="black"/></mask>
+      <mask id="vm3"><rect width="1400" height="760" fill="white"/><ellipse cx="240" cy="580" rx="130" ry="65" fill="black"/></mask>
+      <mask id="vm4"><rect width="1400" height="760" fill="white"/><ellipse cx="760" cy="615" rx="130" ry="65" fill="black"/></mask>
+      <mask id="vm5"><rect width="1400" height="760" fill="white"/><ellipse cx="1140" cy="430" rx="130" ry="65" fill="black"/></mask>
+    </defs>
+
+    <!-- Gold aura — only outside each ellipse -->
+    <ellipse cx="290" cy="190" rx="170" ry="98" fill="url(#vis-aura)" mask="url(#vm1)"/>
+    <ellipse cx="580" cy="360" rx="170" ry="98" fill="url(#vis-aura)" mask="url(#vm2)"/>
+    <ellipse cx="240" cy="580" rx="170" ry="98" fill="url(#vis-aura)" mask="url(#vm3)"/>
+    <ellipse cx="760" cy="615" rx="170" ry="98" fill="url(#vis-aura)" mask="url(#vm4)"/>
+    <ellipse cx="1140" cy="430" rx="170" ry="98" fill="url(#vis-aura)" mask="url(#vm5)"/>
+
+    <!-- Arrows (cubic bezier, flowing) -->
+    <!-- מעל נגישות טכנולוגית → מעל פוטנציאל הרחבה -->
+    <path d="M 292,126 C 450,20 480,220 578,296" fill="none" stroke="rgba(26,48,112,.35)" stroke-width="1.5" marker-end="url(#arw-vis)"/>
+    <!-- מתחת פוטנציאל הרחבה → מעל הגדלת התרומות -->
+    <path d="M 578,424 C 660,530 140,430 242,514" fill="none" stroke="rgba(26,48,112,.35)" stroke-width="1.5" marker-end="url(#arw-vis)"/>
+    <!-- מתחת הגדלת התרומות → צד שמאלי של סיוע מורחב -->
+    <path d="M 242,644 C 150,740 480,615 628,616" fill="none" stroke="rgba(26,48,112,.35)" stroke-width="1.5" marker-end="url(#arw-vis)"/>
+    <!-- צד ימין של סיוע מורחב → מתחת אימפקט חברתי -->
+    <path d="M 888,614 C 1020,700 1100,560 1138,496" fill="none" stroke="rgba(26,48,112,.35)" stroke-width="1.5" marker-end="url(#arw-vis)"/>
+
+    <!-- Ellipses -->
+    <ellipse cx="290" cy="190" rx="130" ry="65" fill="none" stroke="rgba(26,48,112,.55)" stroke-width="2.5"/>
+    <ellipse cx="580" cy="360" rx="130" ry="65" fill="none" stroke="rgba(26,48,112,.55)" stroke-width="2.5"/>
+    <ellipse cx="240" cy="580" rx="130" ry="65" fill="none" stroke="rgba(26,48,112,.55)" stroke-width="2.5"/>
+    <ellipse cx="760" cy="615" rx="130" ry="65" fill="none" stroke="rgba(26,48,112,.55)" stroke-width="2.5"/>
+    <ellipse cx="1140" cy="430" rx="130" ry="65" fill="none" stroke="rgba(26,48,112,.55)" stroke-width="2.5"/>
+
+    <!-- Text inside ellipses -->
+    <text x="290" y="194" font-size="24" font-weight="700" fill="#1A3070" font-family="Heebo,Arial Hebrew,Arial" text-anchor="middle">נגישות טכנולוגית</text>
+    <text x="580" y="364" font-size="24" font-weight="700" fill="#1A3070" font-family="Heebo,Arial Hebrew,Arial" text-anchor="middle">פוטנציאל הרחבה</text>
+    <text x="240" y="584" font-size="24" font-weight="700" fill="#1A3070" font-family="Heebo,Arial Hebrew,Arial" text-anchor="middle">הגדלת התרומות</text>
+    <text x="760" y="619" font-size="24" font-weight="700" fill="#1A3070" font-family="Heebo,Arial Hebrew,Arial" text-anchor="middle">סיוע מורחב</text>
+    <text x="1140" y="434" font-size="24" font-weight="700" fill="#D8BC50" font-family="Heebo,Arial Hebrew,Arial" text-anchor="middle">אימפקט חברתי</text>
+  </svg>
 </div>
 
 <!-- ══════════════════════════════════════  SLIDE 12 — Questions -->
 <div class="slide s12">
-  <svg class="circuit-bg" style="opacity:.12" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="url(#cpat)"/></svg>
+  <svg class="circuit-bg" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="url(#cpat)"/></svg>
+  <div class="glow-dot gd-gold" style="width:300px;height:300px;top:-60px;right:-60px;"></div>
+  <div class="glow-dot gd-gold" style="width:220px;height:220px;bottom:-40px;left:-40px;"></div>
   <div class="s12-q">?</div>
-  <div class="s12-text">שאלות?</div>
-  <div class="s12-byline">COLLECTA &nbsp;·&nbsp; הודיה שירזי &amp; שולמית מור יוסף</div>
+  <div class="s12-text">שאלות</div>
 </div>
 
 <!-- ══════════════════════════════════════  Navigation -->
-<div class="dots" id="dotsEl"></div>
-<div class="nav">
-  <button onclick="go(-1)" title="קודם">›</button>
-  <div class="ctr" id="ctr">1 / 12</div>
-  <button onclick="go(1)" title="הבא">‹</button>
-</div>
 
 <script>
   const slides = document.querySelectorAll('.slide');
   const total = slides.length;
   let cur = 0;
 
-  // Build dots
-  const dotsEl = document.getElementById('dotsEl');
-  slides.forEach((_, i) => {
-    const d = document.createElement('div');
-    d.className = 'dot' + (i === 0 ? ' active' : '');
-    d.onclick = () => goTo(i);
-    dotsEl.appendChild(d);
-  });
-
   function updateUI() {
-    document.getElementById('ctr').textContent = (cur+1) + ' / ' + total;
     document.getElementById('prog').style.width = ((cur+1)/total*100) + '%';
-    document.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('active', i===cur));
   }
 
   function goTo(n) {

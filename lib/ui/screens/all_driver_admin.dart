@@ -293,7 +293,7 @@ class _AllDriverAdminState extends State<AllDriverAdmin> {
                           onPressed: () => Navigator.pop(context),
                         ),
                         const Expanded(
-                          child: Text("נהגים שליה",
+                          child: Text("הנהגים שלי",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 32,

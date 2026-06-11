@@ -123,6 +123,8 @@ class _EnteringScreenState extends State<EnteringScreen> {
     String displayMessage = message;
     if (message.contains('different role')) {
       displayMessage = 'המשתמש רשום עם תפקיד אחר במערכת.\nלא ניתן להתחבר עם תפקיד זה.';
+    } else if (message.contains('driver not pre-registered')) {
+      displayMessage = 'כתובת המייל שלך אינה רשומה כנהג במערכת.\nפנה למנהל הארגון כדי להוסיף אותך.';
     }
     showDialog(
       context: context,

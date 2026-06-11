@@ -3,6 +3,7 @@ const allowedOrigins = [
   "https://collecta-125aa.web.app",
   "https://collecta-125aa.firebaseapp.com",
   "https://collecta-125aa-control.web.app",
+  "https://collecta-125aa-control.firebaseapp.com",
 ];
 module.exports = cors({
   origin: (origin, callback) => {
