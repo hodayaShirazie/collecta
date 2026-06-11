@@ -444,9 +444,65 @@
 <div class="slide sprob">
   <svg class="circuit-bg" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="url(#cpat)"/></svg>
   <div class="glow-dot gd-gold" style="width:200px;height:200px;bottom:80px;right:120px;"></div>
-  <div class="prob-title" style="font-weight:300;font-size:clamp(80px,10vw,132px);">תהליכים <span>ידניים</span></div>
-  <div class="prob-rule" style="width:80px;margin:0 auto 52px;"></div>
-  <div class="prob-desc" style="font-size:clamp(32px,3.5vw,48px);max-width:720px;line-height:1.75;">תיאום האיסוף והחלוקה מבוסס על עבודה ידנית ומעקב אנושי</div>
+  <div class="prob-chip">בעיה #1</div>
+  <div style="position:relative;z-index:1;width:280px;margin:0 auto 20px;border-radius:20px;background:white;box-shadow:0 8px 32px rgba(26,45,90,.12);display:flex;align-items:center;justify-content:center;">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 280" width="280" height="261">
+  <defs>
+    <marker id="arw3" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto">
+      <polygon points="0 0,7 2.5,0 5" fill="#1A2D5A" opacity=".8"/>
+    </marker>
+    <g id="hnd">
+      <rect x="-20" y="-13" width="22" height="26" rx="3" fill="#EDF4FA" stroke="#1A2D5A" stroke-width="1.5"/>
+      <line x1="2" y1="-13" x2="2" y2="13" stroke="#9BBCCC" stroke-width="1"/>
+      <rect x="2" y="-12" width="21" height="24" rx="3" fill="#D5E8F5" stroke="#1A2D5A" stroke-width="1.5"/>
+      <rect x="9" y="-21" width="14" height="10" rx="5" fill="#C2DBF0" stroke="#1A2D5A" stroke-width="1.3"/>
+      <rect x="14" y="-20" width="11" height="9" rx="4" fill="#C2DBF0" stroke="#1A2D5A" stroke-width="1.3"/>
+      <rect x="19" y="-18" width="8" height="8" rx="4" fill="#C2DBF0" stroke="#1A2D5A" stroke-width="1.3"/>
+      <rect x="21" y="-6" width="36" height="12" rx="6" fill="#D5E8F5" stroke="#1A2D5A" stroke-width="1.5"/>
+      <rect x="4" y="12" width="17" height="9" rx="4" fill="#C2DBF0" stroke="#1A2D5A" stroke-width="1.3"/>
+    </g>
+  </defs>
+  <!-- Gear top-left (blue) -->
+  <path d="M53,50 L48.6,45.6 L48.6,39.4 L42.4,39.4 L38,35 L33.6,39.4 L27.4,39.4 L27.4,45.6 L23,50 L27.4,54.4 L27.4,60.6 L33.6,60.6 L38,65 L42.4,60.6 L48.6,60.6 L48.6,54.4 Z" fill="#C8DDEF" stroke="#1A2D5A" stroke-width="1.2" stroke-linejoin="round"/>
+  <circle cx="38" cy="50" r="5" fill="white" stroke="#1A2D5A" stroke-width="1.2"/>
+  <!-- Gear top-right (gold) -->
+  <path d="M271,55 L267.2,51.2 L267.2,45.8 L261.8,45.8 L258,42 L254.2,45.8 L248.8,45.8 L248.8,51.2 L245,55 L248.8,58.8 L248.8,64.2 L254.2,64.2 L258,68 L261.8,64.2 L267.2,64.2 L267.2,58.8 Z" fill="#E8C94A" stroke="#1A2D5A" stroke-width="1.2" stroke-linejoin="round"/>
+  <circle cx="258" cy="55" r="4.5" fill="white" stroke="#1A2D5A" stroke-width="1.2"/>
+  <!-- Gear bottom-left (blue) -->
+  <path d="M72,225 L68.3,221.6 L68.5,216.5 L63.4,216.7 L60,213 L56.6,216.7 L51.5,216.5 L51.7,221.6 L48,225 L51.7,228.4 L51.5,233.5 L56.6,233.3 L60,237 L63.4,233.3 L68.5,233.5 L68.3,228.4 Z" fill="#C8DDEF" stroke="#1A2D5A" stroke-width="1.2" stroke-linejoin="round"/>
+  <circle cx="60" cy="225" r="4" fill="white" stroke="#1A2D5A" stroke-width="1.2"/>
+  <!-- Gear bottom-right (gold) -->
+  <path d="M266,228 L262.9,224.8 L262.8,220.2 L258.3,220.2 L255,217 L251.8,220.2 L247.2,220.2 L247.2,224.8 L244,228 L247.2,231.3 L247.2,235.8 L251.8,235.9 L255,239 L258.3,235.9 L262.8,235.8 L262.9,231.3 Z" fill="#E8C94A" stroke="#1A2D5A" stroke-width="1.2" stroke-linejoin="round"/>
+  <circle cx="255" cy="228" r="4" fill="white" stroke="#1A2D5A" stroke-width="1.2"/>
+  <!-- Connector arrows (behind shapes) -->
+  <line x1="150" y1="83" x2="150" y2="98" stroke="#1A2D5A" stroke-width="1.8" marker-end="url(#arw3)" opacity=".7"/>
+  <line x1="132" y1="115" x2="100" y2="115" stroke="#1A2D5A" stroke-width="1.8" marker-end="url(#arw3)" opacity=".7"/>
+  <line x1="168" y1="115" x2="200" y2="115" stroke="#1A2D5A" stroke-width="1.8" marker-end="url(#arw3)" opacity=".7"/>
+  <path d="M80,128 L80,173 L131,173" fill="none" stroke="#1A2D5A" stroke-width="1.8" marker-end="url(#arw3)" opacity=".7"/>
+  <path d="M220,128 L220,173 L169,173" fill="none" stroke="#1A2D5A" stroke-width="1.8" marker-end="url(#arw3)" opacity=".7"/>
+  <line x1="150" y1="189" x2="150" y2="202" stroke="#1A2D5A" stroke-width="1.8" marker-end="url(#arw3)" opacity=".7"/>
+  <!-- Start oval -->
+  <rect x="108" y="53" width="84" height="30" rx="15" fill="white" stroke="#1A2D5A" stroke-width="2"/>
+  <!-- Diamond 1 (gold-pale) -->
+  <polygon points="150,99 172,115 150,131 128,115" fill="#F5EBB0" stroke="#1A2D5A" stroke-width="2"/>
+  <!-- Left rectangle (blue) -->
+  <rect x="62" y="102" width="36" height="26" rx="4" fill="#C8DDEF" stroke="#1A2D5A" stroke-width="2"/>
+  <!-- Right rectangle (blue) -->
+  <rect x="202" y="102" width="36" height="26" rx="4" fill="#C8DDEF" stroke="#1A2D5A" stroke-width="2"/>
+  <!-- Diamond 2 (gold-pale) -->
+  <polygon points="150,157 168,173 150,189 132,173" fill="#F5EBB0" stroke="#1A2D5A" stroke-width="2"/>
+  <!-- End oval (gold) -->
+  <rect x="108" y="202" width="84" height="28" rx="14" fill="#E8C94A" stroke="#1A2D5A" stroke-width="2" opacity=".8"/>
+  <!-- Hands at 4 corners -->
+  <use href="#hnd" transform="translate(42,62) rotate(45)"/>
+  <use href="#hnd" transform="translate(258,62) rotate(135)"/>
+  <use href="#hnd" transform="translate(42,218) rotate(-45)"/>
+  <use href="#hnd" transform="translate(258,218) rotate(-135)"/>
+  </svg>
+  </div>
+  <div class="prob-title">תהליכים <span>ידניים</span></div>
+  <div class="prob-rule"></div>
+  <div class="prob-desc">תיאום האיסוף והחלוקה מבוסס על עבודה ידנית ומעקב אנושי</div>
 </div>
 
 <!-- ══════════════════════════════════════  SLIDE 4 — Problem 2 -->
