@@ -55,6 +55,7 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
   List<DonationModel> donations = [];
   DestinationModel? _todayDestination;
   final Set<String> _collectedIds = {};
+  String? _driverId;
 
   bool isLoading = true;
   bool isOptimizing = false;
@@ -210,6 +211,7 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
         // the visual route (route is displayed bottom-first).
         donations = [...missingCollected, ...fetchedDonations];
         _todayDestination = todayDest;
+        _driverId = driverProfile.user.id;
         isOptimized = false;
       });
 
@@ -224,27 +226,37 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
     }
   }
 
-  Future<void> _optimizeRoute() async {
+  Future<void> _optimizeRoute({bool useCache = false}) async {
     if (donations.isEmpty) return;
     setState(() => isOptimizing = true);
     try {
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
+      List<DonationModel> optimized;
+      if (useCache) {
+        optimized = await _optimizationService.optimizeDonationRoute(
+          donations,
+          driverId: _driverId ?? '',
+          useCache: true,
+        );
+      } else {
+        LocationPermission permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+        }
+        if (permission == LocationPermission.deniedForever ||
+            permission == LocationPermission.denied) {
+          _showError('לא ניתן לגשת למיקום — אנא אשר הרשאה בהגדרות');
+          return;
+        }
+        final position = await Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+        );
+        optimized = await _optimizationService.optimizeDonationRoute(
+          donations,
+          driverId: _driverId ?? '',
+          startLat: position.latitude,
+          startLng: position.longitude,
+        );
       }
-      if (permission == LocationPermission.deniedForever ||
-          permission == LocationPermission.denied) {
-        _showError('לא ניתן לגשת למיקום — אנא אשר הרשאה בהגדרות');
-        return;
-      }
-      final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
-      );
-      final optimized = await _optimizationService.optimizeDonationRoute(
-        donations,
-        startLat: position.latitude,
-        startLng: position.longitude,
-      );
       setState(() {
         donations = optimized;
         isOptimized = true;
@@ -373,6 +385,8 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
             await Future.wait([
               _driverService.clearDriverStops(),
               _clearPersistedCollectedData(),
+              if (_driverId != null)
+                _optimizationService.clearDriverCache(_driverId!),
             ]);
             if (!mounted) return;
             Navigator.pop(context);
@@ -484,7 +498,7 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
                                   ? Colors.green.shade500
                                   : HomepageTheme.latetBlue.withValues(alpha: 0.5)),
                           padding: EdgeInsets.zero,
-                          onPressed: _optimizeRoute,
+                          onPressed: () => _optimizeRoute(useCache: true),
                         ),
                       ),
               ),

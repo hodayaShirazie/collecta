@@ -55,24 +55,24 @@ module.exports = async (req, res) => {
     if (!firebaseUser) return;
 
     try {
-      const { points } = req.body;
+      const { nodes, driver_id } = req.body;
+      const useCache = !nodes || nodes.length === 0;
 
-      if (!points || !Array.isArray(points) || points.length === 0) {
-        return res.status(400).send({ error: "Missing or invalid points" });
-      }
-
-      if (points.length > MAX_MATRIX_SIZE) {
+      if (!useCache && nodes.length > MAX_MATRIX_SIZE) {
         return res.status(400).send({
           error: `Too many points: maximum ${MAX_MATRIX_SIZE} supported per request`,
         });
       }
 
-      const googleKey = config.value().google.key;
-      const trafficMatrix = await buildTrafficMatrix(points, googleKey);
+      let trafficMatrix = null;
+      if (!useCache) {
+        const googleKey = config.value().google.key;
+        trafficMatrix = await buildTrafficMatrix(nodes, googleKey);
+      }
 
       const lgcnResponse = await axios.post(
         LGCN_URL,
-        { nodes: points, traffic_matrix: trafficMatrix },
+        { driver_id: driver_id ?? "default_driver", nodes: nodes ?? [], traffic_matrix: trafficMatrix },
         { headers: { "Content-Type": "application/json" } }
       );
 
