@@ -198,6 +198,10 @@ exports.computeRoutes = onRequest(
   require("./routes/computeRoutes")
 );
 
+exports.deleteDriver = onRequest(
+  require("./routes/deleteDriver")
+);
+
 exports.assignDriverToDonation = onRequest(
   require("./donations/assignDriverToDonation")
 );
