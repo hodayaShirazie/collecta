@@ -1,5 +1,11 @@
+import 'dart:convert';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
 import '../../services/admin_service.dart';
 import '../../services/org_manager.dart';
 import '../widgets/custom_popup_dialog.dart';
@@ -42,10 +48,16 @@ class _AdminEnteringScreenState extends State<AdminEnteringScreen> {
   Future<void> _signInAsAdmin() async {
     setState(() => _isSigningIn = true);
     try {
-      final provider = GoogleAuthProvider();
-      provider.setCustomParameters({'prompt': 'select_account'});
-      final credential =
-          await FirebaseAuth.instance.signInWithPopup(provider);
+      UserCredential credential;
+      if (kIsWeb) {
+        final provider = GoogleAuthProvider();
+        provider.setCustomParameters({'prompt': 'select_account'});
+        credential = await FirebaseAuth.instance.signInWithPopup(provider);
+      } else if (Platform.isWindows) {
+        credential = await _signInWithGoogleDesktop();
+      } else {
+        throw UnsupportedError('Unsupported platform for admin sign-in');
+      }
 
       if (credential.user == null) {
         setState(() => _isSigningIn = false);
@@ -54,6 +66,7 @@ class _AdminEnteringScreenState extends State<AdminEnteringScreen> {
 
       await _verifyAndNavigate();
     } catch (e) {
+      debugPrint('[AdminSignIn] error: $e');
       if (e is FirebaseAuthException &&
           (e.code == 'popup-closed-by-user' || e.code == 'canceled')) {
         setState(() => _isSigningIn = false);
@@ -64,6 +77,59 @@ class _AdminEnteringScreenState extends State<AdminEnteringScreen> {
         _showError('שגיאה בהתחברות. נסה שוב.');
       }
     }
+  }
+
+  /// Signs in with Google on Windows desktop via a system-browser OAuth flow:
+  /// opens the consent screen, captures the redirect on a local loopback
+  /// port, exchanges the code for tokens, then completes Firebase sign-in.
+  Future<UserCredential> _signInWithGoogleDesktop() async {
+    const port = 8085;
+    const redirectUri = 'http://localhost:$port';
+    final clientId = dotenv.env['GOOGLE_DESKTOP_CLIENT_ID']!;
+    final clientSecret = dotenv.env['GOOGLE_DESKTOP_CLIENT_SECRET']!;
+
+    final authUrl = Uri.https('accounts.google.com', '/o/oauth2/v2/auth', {
+      'client_id': clientId,
+      'redirect_uri': redirectUri,
+      'response_type': 'code',
+      'scope': 'openid email profile',
+      'prompt': 'select_account',
+    });
+
+    final result = await FlutterWebAuth2.authenticate(
+      url: authUrl.toString(),
+      callbackUrlScheme: redirectUri,
+      options: const FlutterWebAuth2Options(useWebview: false),
+    );
+
+    final code = Uri.parse(result).queryParameters['code'];
+    if (code == null) {
+      throw FirebaseAuthException(
+          code: 'canceled', message: 'No authorization code received');
+    }
+
+    final tokenResponse = await http.post(
+      Uri.parse('https://oauth2.googleapis.com/token'),
+      body: {
+        'code': code,
+        'client_id': clientId,
+        'client_secret': clientSecret,
+        'redirect_uri': redirectUri,
+        'grant_type': 'authorization_code',
+      },
+    );
+
+    final tokenData = jsonDecode(tokenResponse.body) as Map<String, dynamic>;
+    if (tokenData['id_token'] == null) {
+      throw Exception('Token exchange failed: ${tokenResponse.body}');
+    }
+
+    final googleCredential = GoogleAuthProvider.credential(
+      idToken: tokenData['id_token'] as String,
+      accessToken: tokenData['access_token'] as String?,
+    );
+
+    return FirebaseAuth.instance.signInWithCredential(googleCredential);
   }
 
   Future<void> _verifyAndNavigate() async {
