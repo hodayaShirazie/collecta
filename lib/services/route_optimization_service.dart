@@ -14,23 +14,20 @@ class RouteOptimizationService {
   Future<List<DonationModel>> optimizeDonationRoute(
     List<DonationModel> donations, {
     required String driverId,
-    bool useCache = false,
     double startLat = 0.0,
     double startLng = 0.0,
   }) async {
     if (donations.isEmpty) return donations;
 
-    final points = useCache
-        ? <List<double>>[]
-        : <List<double>>[
-            [startLat, startLng, 0.0, 24.0, 0.0],
-            ...donations.map((d) {
-              final tw = d.pickupTimes.isNotEmpty ? d.pickupTimes.first : null;
-              final twStart = tw != null ? _parseTimeToFloat(tw.from) : 0.0;
-              final twEnd   = tw != null ? _parseTimeToFloat(tw.to)   : 24.0;
-              return [d.businessAddress.lat, d.businessAddress.lng, twStart, twEnd, 20.0];
-            }),
-          ];
+    final points = <List<double>>[
+      [startLat, startLng, 0.0, 24.0, 0.0],
+      ...donations.map((d) {
+        final tw = d.pickupTimes.isNotEmpty ? d.pickupTimes.first : null;
+        final twStart = tw != null ? _parseTimeToFloat(tw.from) : 0.0;
+        final twEnd   = tw != null ? _parseTimeToFloat(tw.to)   : 24.0;
+        return [d.businessAddress.lat, d.businessAddress.lng, twStart, twEnd, 20.0];
+      }),
+    ];
 
     final orderedIndices = await _repo.getOptimalRoute(points, driverId);
 
