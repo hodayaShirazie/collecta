@@ -4,15 +4,24 @@ import '../../../config/api_config.dart';
 import 'api_source.dart';
 
 class RouteOptimizationApi extends ApiSource {
-  Future<List<int>> computeOptimalRoute(
-      List<List<double>> points, String driverId) async {
+  // currentLocation = driver's current position, stops = donation pickups,
+  // endPoint = today's destination (optional). The server returns route ids
+  // with -1 marking current_location and -2 marking end_point (when sent).
+  Future<List<int>> computeOptimalRoute({
+    required List<double> currentLocation,
+    required List<List<double>> stops,
+    List<double>? endPoint,
+    required String driverId,
+  }) async {
     final response = await http
         .post(
           Uri.parse('${ApiConfig.baseUrl}/computeRoutes'),
           headers: await headers(),
           body: jsonEncode({
             'driver_id': driverId,
-            'nodes': points,
+            'current_location': currentLocation,
+            'nodes': stops,
+            if (endPoint != null) 'end_point': endPoint,
           }),
         )
         .timeout(const Duration(seconds: 30));
@@ -27,12 +36,7 @@ class RouteOptimizationApi extends ApiSource {
       throw Exception(data['message'] ?? 'שגיאה לא ידועה מהשרת');
     }
 
-    final rawRoute = (data['routes']['0'] as List).cast<int>();
-
-    if (rawRoute.length > 1 && rawRoute.first == rawRoute.last) {
-      return rawRoute.sublist(0, rawRoute.length - 1);
-    }
-    return rawRoute;
+    return (data['routes']['0'] as List).cast<int>();
   }
 
   Future<void> clearDriverCache(String driverId) async {

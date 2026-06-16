@@ -55,10 +55,17 @@ module.exports = async (req, res) => {
     if (!firebaseUser) return;
 
     try {
-      const { nodes, driver_id } = req.body;
-      const useCache = !nodes || nodes.length === 0;
+      const { current_location, nodes, end_point, driver_id } = req.body;
 
-      if (!useCache && nodes.length > MAX_MATRIX_SIZE) {
+      // Combine all points (start, stops, end) to compute one traffic matrix.
+      const allPoints = [
+        ...(current_location ? [current_location] : []),
+        ...(nodes || []),
+        ...(end_point ? [end_point] : []),
+      ];
+      const useCache = allPoints.length === 0;
+
+      if (!useCache && allPoints.length > MAX_MATRIX_SIZE) {
         return res.status(400).send({
           error: `Too many points: maximum ${MAX_MATRIX_SIZE} supported per request`,
         });
@@ -67,12 +74,18 @@ module.exports = async (req, res) => {
       let trafficMatrix = null;
       if (!useCache) {
         const googleKey = config.value().google.key;
-        trafficMatrix = await buildTrafficMatrix(nodes, googleKey);
+        trafficMatrix = await buildTrafficMatrix(allPoints, googleKey);
       }
 
       const lgcnResponse = await axios.post(
         LGCN_URL,
-        { driver_id: driver_id ?? "default_driver", nodes: nodes ?? [], traffic_matrix: trafficMatrix },
+        {
+          driver_id: driver_id ?? "default_driver",
+          current_location: current_location ?? null,
+          nodes: nodes ?? [],
+          end_point: end_point ?? null,
+          traffic_delays: trafficMatrix,
+        },
         { headers: { "Content-Type": "application/json" } }
       );
 

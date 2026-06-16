@@ -247,6 +247,8 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
         driverId: _driverId ?? '',
         startLat: position.latitude,
         startLng: position.longitude,
+        endLat: _todayDestination?.address.lat,
+        endLng: _todayDestination?.address.lng,
       );
       setState(() {
         donations = optimized;
