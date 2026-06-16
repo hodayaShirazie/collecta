@@ -226,37 +226,28 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
     }
   }
 
-  Future<void> _optimizeRoute({bool useCache = false}) async {
+  Future<void> _optimizeRoute() async {
     if (donations.isEmpty) return;
     setState(() => isOptimizing = true);
     try {
-      List<DonationModel> optimized;
-      if (useCache) {
-        optimized = await _optimizationService.optimizeDonationRoute(
-          donations,
-          driverId: _driverId ?? '',
-          useCache: true,
-        );
-      } else {
-        LocationPermission permission = await Geolocator.checkPermission();
-        if (permission == LocationPermission.denied) {
-          permission = await Geolocator.requestPermission();
-        }
-        if (permission == LocationPermission.deniedForever ||
-            permission == LocationPermission.denied) {
-          _showError('לא ניתן לגשת למיקום — אנא אשר הרשאה בהגדרות');
-          return;
-        }
-        final position = await Geolocator.getCurrentPosition(
-          locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
-        );
-        optimized = await _optimizationService.optimizeDonationRoute(
-          donations,
-          driverId: _driverId ?? '',
-          startLat: position.latitude,
-          startLng: position.longitude,
-        );
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
       }
+      if (permission == LocationPermission.deniedForever ||
+          permission == LocationPermission.denied) {
+        _showError('לא ניתן לגשת למיקום — אנא אשר הרשאה בהגדרות');
+        return;
+      }
+      final position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+      );
+      final optimized = await _optimizationService.optimizeDonationRoute(
+        donations,
+        driverId: _driverId ?? '',
+        startLat: position.latitude,
+        startLng: position.longitude,
+      );
       setState(() {
         donations = optimized;
         isOptimized = true;
@@ -498,7 +489,7 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
                                   ? Colors.green.shade500
                                   : HomepageTheme.latetBlue.withValues(alpha: 0.5)),
                           padding: EdgeInsets.zero,
-                          onPressed: () => _optimizeRoute(useCache: true),
+                          onPressed: _loadDriverRoute,
                         ),
                       ),
               ),
