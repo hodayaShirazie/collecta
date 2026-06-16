@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:io' show Platform;
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'config/firebase_options.dart';
@@ -31,9 +32,10 @@ Future<void> main() async {
   debugPrint('[AdminView] main: hasPendingView=${AdminViewManager.hasPendingView} '
       'url=${Uri.base}');
 
-  // Mobile only
   if (!kIsWeb) {
-    await FlutterDownloader.initialize(debug: false);
+    if (Platform.isAndroid || Platform.isIOS) {
+      await FlutterDownloader.initialize(debug: false);
+    }
     await _handleInitialDeepLink();
   }
 

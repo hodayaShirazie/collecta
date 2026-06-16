@@ -97,12 +97,28 @@
       var isIOS    = /iPhone|iPad|iPod/i.test(ua);
       var isAndroid = /Android/i.test(ua);
       var isMobile = isIOS || isAndroid;
+      var isWindows = /Win(dows|32|64)/i.test(ua) && !/Windows Phone/.test(ua);
 
       // In-app browser detection
       var isGmail     = /GSA\//.test(ua);                         // Gmail iOS
       var isInAppBrowser = isGmail
                         || /FBAN|FBAV/.test(ua)                  // Facebook
                         || (isIOS && /.*AppleWebKit(?!.*Safari)/.test(ua) && !/Chrome/.test(ua)); // generic WKWebView
+
+      window._isWindowsWithOrg = isWindows && !!orgId;
+
+      // Windows desktop: redirect to the installed Collecta app
+      if (orgId && isWindows && !isMobile) {
+        var deepLink = 'collecta://start?orgId=' + orgId;
+        var el = document.getElementById('app-redirect');
+        el.style.display = 'flex';
+        document.getElementById('redirect-title').textContent = 'פתיחת Collecta';
+        document.getElementById('redirect-subtitle').textContent = 'לחצי לפתיחת אפליקציית Collecta';
+        document.getElementById('open-app-btn').style.display = 'inline-block';
+        window._deepLink = deepLink;
+        setTimeout(function() { window.location.href = deepLink; }, 500);
+        return;
+      }
 
       if (!orgId || !isMobile) return; // desktop or no orgId — load Flutter normally
 
@@ -169,7 +185,7 @@
       var params    = new URLSearchParams(window.location.search);
       var orgId     = params.get('orgId');
       var isMobile  = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-      if (!orgId || !isMobile) {
+      if (!orgId || (!isMobile && !window._isWindowsWithOrg)) {
         var s = document.createElement('script');
         s.src = 'flutter_bootstrap.js';
         document.body.appendChild(s);
