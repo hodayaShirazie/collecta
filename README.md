@@ -1,149 +1,12 @@
-# collecta
+<h2 align="center">Overview</h2>
 
-A new Flutter project.
-
-## Getting Started
-clone repo then type in terminal: flutter pub get
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-
-
-# Project structure (expanded for platform-specific files)
-
-collecta/
-
-├── android/
-│   ├── build.gradle.kts
-│   ├── gradle.properties
-│   ├── local.properties
-│   ├── settings.gradle.kts
-│   └── app/
-│       ├── build.gradle.kts
-│       ├── google-services.json
-│       └── src/
-│           └── main/
-│               ├── AndroidManifest.xml
-│               └── kotlin/ (or java)/
-│                   └── com/yourcompany/yourapp/
-│                       └── MainActivity.kt
-│
-├── ios/
-│   ├── Flutter/
-│   │   ├── AppFrameworkInfo.plist
-│   │   └── Generated.xcconfig
-│   ├── Runner/
-│   │   ├── AppDelegate.swift
-│   │   ├── Assets.xcassets/
-│   │   ├── Info.plist
-│   │   └── Runner-Bridging-Header.h
-│   ├── Runner.xcodeproj/
-│   └── Runner.xcworkspace/
-│
-├── web/
-│   ├── index.html
-│   ├── manifest.json
-│   └── icons/
-│
-├── macos/
-│   ├── Runner/
-│   │   └── AppDelegate.swift
-│   └── Flutter/
-│
-├── linux/
-│   ├── CMakeLists.txt
-│   └── runner/
-│
-├── windows/
-│   ├── CMakeLists.txt
-│   └── runner/
-
-├── lib/
-│   ├── main.dart
-│   ├── app/
-│   │   ├── app.dart
-│   │   ├── routes.dart
-│   │   └── theme.dart
-│   ├── config/
-│   │   ├── firebase_options.dart
-│   │   ├── api_config.dart
-│   │   └── permissions.dart
-│   ├── data/
-│   │   ├── models/
-│   │   │   ├── organization_model.dart
-│   │   │   └── user_model.dart
-│   │   ├── datasources/
-│   │   │   ├── remote/
-│   │   │   │   └── api_source.dart
-│   │   │   └── local/
-│   │   │       └── local_storage.dart
-│   │   └── repositories/
-│   │       ├── organization_repository.dart
-│   │       └── user_repository.dart
-│   ├── services/
-│   │   ├── user_service.dart
-│   │   └── organization_service.dart
-│   └── ui/
-│       ├── components/
-│       ├── dialogs/
-│       ├── screens/
-│       │   ├── debug_firestore_screen.dart
-│       │   └── entering.dart
-│       └── widgets/
-│
-├── assets/
-│   ├── images/
-│   └── fonts/
-
-├── functions/
-│   └── index.js
-
-├── tools/
-│   └── seed_firestore.dart
-
-├── pubspec.yaml
-├── firebase.json
-├── cors.json
-└── .env
-│   ├── services/
-│   │   ├── user_service.dart
-│   │   └── organization_service.dart
-│   │
-│   │
-│   ├── ui/
-│   │   └── screens/
-│   │           ├── debug_firestore_screen.dart
-│   │           └── entering.dart
-│   │
-│   └── assets/ //TODO CHECK LOCATION
-│
-├── tools/
-│   └── seed_firestore.dart
-│
-├── .env
-└── pubspec.yaml
-
----
-
----
-
-# Collecta — Improved Documentation
-
-## Overview
 
 **Collecta** is a Flutter application for managing food donation pickups. It connects **Donors**, **Drivers**, and **Admins** via a Firebase backend.
 
 ---
 
-## Features by Role
+<h2 align="center">Features by Role</h2>
+
 
 ### Donor (Business)
 - Sign in with Google
@@ -168,7 +31,8 @@ collecta/
 
 ---
 
-## Tech Stack
+<h2 align="center">Tech Stack</h2>
+
 
 | Layer | Technology |
 |---|---|
@@ -187,7 +51,8 @@ collecta/
 
 ---
 
-## Supported Platforms
+<h2 align="center">Supported Platforms</h2>
+
 
 - Android
 - iOS
@@ -198,7 +63,8 @@ collecta/
 
 ---
 
-## Project Structure
+<h2 align="center">Project Structure</h2>
+
 
 ```
 collecta/
@@ -356,7 +222,8 @@ collecta/
 
 ---
 
-## Getting Started
+<h2 align="center">Getting Started</h2>
+
 
 ### Prerequisites
 
@@ -413,7 +280,8 @@ firebase deploy --only functions
 
 ---
 
-## Architecture Notes
+<h2 align="center">Architecture Notes</h2>
+
 
 - **Multi-tenant**: `OrgManager` reads the `orgId` from the browser URL (web) or a deep link / `SharedPreferences` (mobile). All Firestore queries are scoped to that `orgId`.
 - **Admin impersonation**: An admin can view any driver's screen via `AdminViewManager` without logging in as that driver.
@@ -421,7 +289,8 @@ firebase deploy --only functions
 
 ---
 
-## Environment Variables
+<h2 align="center">Environment Variables</h2>
+
 
 The app loads a `.env` file from `assets/config/.env` at runtime using `flutter_dotenv`. Required keys:
 
@@ -429,4 +298,14 @@ The app loads a `.env` file from `assets/config/.env` at runtime using `flutter_
 |---|---|
 | `GOOGLE_MAPS_API_KEY` | Places autocomplete and geocoding |
 | `API_BASE_URL` | Backend Cloud Functions base URL |
+
+---
+
+<h2 align="center"> System Demo</h2>
+
+<p align="center">
+  <a href="https://drive.google.com/file/d/1x5LU6s-RB2vycgIOxlZ5rtnyIESxNRaN/view">
+    <img src="assets/images/logo/video_README_image.png" width="800" alt="COLLECTA Demo"/>
+  </a>
+</p>
 
