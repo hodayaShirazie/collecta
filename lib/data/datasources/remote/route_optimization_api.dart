@@ -51,4 +51,17 @@ class RouteOptimizationApi extends ApiSource {
       throw Exception('שגיאה באיפוס הנהג בשרת (${response.statusCode}): ${response.body}');
     }
   }
+
+  Future<void> removeDriverStop(String driverId, double lat, double lng) async {
+    final uri = Uri.parse('${ApiConfig.baseUrl}/removeDriverStop/$driverId')
+        .replace(queryParameters: {'x': lat.toString(), 'y': lng.toString()});
+
+    final response = await http
+        .delete(uri, headers: await headers())
+        .timeout(const Duration(seconds: 15));
+
+    if (response.statusCode != 200) {
+      throw Exception('שגיאה בהסרת תחנה מהשרת (${response.statusCode}): ${response.body}');
+    }
+  }
 }

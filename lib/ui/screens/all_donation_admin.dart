@@ -5,6 +5,7 @@ import '../../data/models/donation_model.dart';
 import '../../data/models/driver_model.dart';
 import '../../services/donation_service.dart';
 import '../../services/driver_service.dart';
+import '../../services/route_optimization_service.dart';
 import '../../services/export_service.dart';
 import '../../services/org_manager.dart';
 import '../widgets/donation_widgets/donation_receipt_button.dart';
@@ -21,6 +22,7 @@ class AllDonationsAdmin extends StatefulWidget {
 class _AllDonationsAdminState extends State<AllDonationsAdmin> {
   final DonationService _service = DonationService();
   final DriverService _driverService = DriverService();
+  final RouteOptimizationService _routeService = RouteOptimizationService();
 
   String selectedStatus = "הכל";
   DateTimeRange? selectedDateRange;
@@ -338,10 +340,16 @@ class _AllDonationsAdminState extends State<AllDonationsAdmin> {
                                 }
                                 Navigator.pop(ctx);
                                 try {
+                                  final oldDriverId = donation.driverId;
                                   await _service.assignDriverToDonation(
                                     donationId: donation.id,
                                     driverId: chosenDriver.user.id,
                                   );
+                                  if (oldDriverId.isNotEmpty) {
+                                    _routeService
+                                        .removeDriverStop(oldDriverId, donation)
+                                        .catchError((e) => debugPrint('removeDriverStop: $e'));
+                                  }
                                   setState(() {
                                     donations[donationIndex] =
                                         donation.copyWith(driverId: chosenDriver.user.id);

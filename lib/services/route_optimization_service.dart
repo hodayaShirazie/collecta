@@ -50,4 +50,12 @@ class RouteOptimizationService {
   Future<void> clearDriverCache(String driverId) {
     return _repo.clearDriverCache(driverId);
   }
+
+  Future<void> removeDriverStop(String driverId, DonationModel donation) {
+    return _repo.removeDriverStop(
+      driverId,
+      donation.businessAddress.lat,
+      donation.businessAddress.lng,
+    );
+  }
 }

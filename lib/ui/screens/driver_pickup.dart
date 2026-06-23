@@ -9,6 +9,7 @@ import '../widgets/loading_indicator.dart';
 import '../widgets/custom_popup_dialog.dart';
 import '../../data/models/donation_model.dart';
 import '../../services/donation_service.dart';
+import '../../services/route_optimization_service.dart';
 import '../../data/models/product_model.dart';
 
 class DriverPickupPage extends StatefulWidget {
@@ -21,6 +22,7 @@ class DriverPickupPage extends StatefulWidget {
 
 class _DriverPickupPageState extends State<DriverPickupPage> {
   final DonationService _donationService = DonationService();
+  final RouteOptimizationService _routeService = RouteOptimizationService();
 
   final businessNameController = TextEditingController();
   final businessPhoneController = TextEditingController();
@@ -115,6 +117,12 @@ class _DriverPickupPageState extends State<DriverPickupPage> {
         donorId: donation!.donorId,
         products: productsToUpdate,
       );
+      final driverId = donation!.driverId;
+      if (driverId.isNotEmpty) {
+        _routeService
+            .removeDriverStop(driverId, donation!)
+            .catchError((e) => debugPrint('removeDriverStop: $e'));
+      }
 
       if (!mounted) return;
 
