@@ -20,4 +20,8 @@ class RouteOptimizationRepository {
   Future<void> clearDriverCache(String driverId) {
     return _api.clearDriverCache(driverId);
   }
+
+  Future<void> removeDriverStop(String driverId, double lat, double lng) {
+    return _api.removeDriverStop(driverId, lat, lng);
+  }
 }

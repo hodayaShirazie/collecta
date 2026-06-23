@@ -336,6 +336,11 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
                   setState(() => _collectedIds.add(donation.id));
                   await _persistCollectedDonation(donation);
                   _scrollToCurrentStop();
+                  if (_driverId != null) {
+                    _optimizationService
+                        .removeDriverStop(_driverId!, donation)
+                        .catchError((e) => debugPrint('removeDriverStop: $e'));
+                  }
                 }
               },
         onCancel: isCollected

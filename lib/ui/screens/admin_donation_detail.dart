@@ -18,6 +18,7 @@ import '../utils/donation/donation_constants.dart';
 import '../../data/models/donation_model.dart';
 import '../../data/models/driver_model.dart';
 import '../../services/donation_service.dart';
+import '../../services/route_optimization_service.dart';
 
 class AdminDonationDetail extends StatefulWidget {
   final String donationId;
@@ -35,6 +36,7 @@ class AdminDonationDetail extends StatefulWidget {
 
 class _AdminDonationDetailState extends State<AdminDonationDetail> {
   final DonationService _service = DonationService();
+  final RouteOptimizationService _routeService = RouteOptimizationService();
   late ValueNotifier<bool> _isCancellingNotifier;
 
   DonationModel? donation;
@@ -428,10 +430,17 @@ class _AdminDonationDetailState extends State<AdminDonationDetail> {
                               }
                               Navigator.pop(ctx);
                               try {
+                                final oldDriverId = d.driverId;
                                 await _service.assignDriverToDonation(
                                   donationId: d.id,
                                   driverId: chosenDriver.user.id,
                                 );
+                                // Remove stop from old driver's cache if it was assigned
+                                if (oldDriverId.isNotEmpty) {
+                                  _routeService
+                                      .removeDriverStop(oldDriverId, d)
+                                      .catchError((e) => debugPrint('removeDriverStop: $e'));
+                                }
                                 setState(() {
                                   donation =
                                       d.copyWith(driverId: chosenDriver.user.id);

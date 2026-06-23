@@ -213,3 +213,7 @@ exports.verifyAdmin = onRequest(
 exports.clearDriverStops = onRequest(
   require("./drivers/clearDriverStops")
 );
+
+exports.removeDriverStop = onRequest(
+  require("./routes/removeDriverStop")
+);
