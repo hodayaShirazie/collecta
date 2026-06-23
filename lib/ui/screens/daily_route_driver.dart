@@ -242,8 +242,16 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
       final position = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
       );
-      final optimized = await _optimizationService.optimizeDonationRoute(
-        donations,
+      final collected = donations.where((d) => _collectedIds.contains(d.id)).toList();
+      final pending = donations.where((d) => !_collectedIds.contains(d.id)).toList();
+
+      if (pending.isEmpty) {
+        setState(() => isOptimized = true);
+        return;
+      }
+
+      final optimizedPending = await _optimizationService.optimizeDonationRoute(
+        pending,
         driverId: _driverId ?? '',
         startLat: position.latitude,
         startLng: position.longitude,
@@ -251,7 +259,8 @@ class _DailyRouteDriverPageState extends State<DailyRouteDriverPage> {
         endLng: _todayDestination?.address.lng,
       );
       setState(() {
-        donations = optimized;
+        // Collected stops stay at the front (displayed at bottom), optimized pending follow
+        donations = [...collected, ...optimizedPending];
         isOptimized = true;
       });
     } catch (e) {
