@@ -1,4 +1,4 @@
-package com.example.collecta
+package com.collecta.app
 
 import io.flutter.embedding.android.FlutterActivity
 
