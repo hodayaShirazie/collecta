@@ -64,4 +64,4 @@ COLLECTA
 
 ## יצירת קשר
 בכל שאלה או בקשה לגבי מדיניות פרטיות ותנאי שימוש, יש ליצור קשר עם:
-- דואר אלקטרוני: **support@collecta.example.com**
+- דואר אלקטרוני: **support.collecta@gmail.com**
