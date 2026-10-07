@@ -1,67 +1,72 @@
-# מדיניות פרטיות ותנאי שימוש
+# Privacy Policy and Terms of Use
 
-## מבוא
-ברוכים הבאים לאפליקציית **COLLECTA**. המסמך הזה מפרט את מדיניות הפרטיות ותנאי השימוש של האפליקציה.
+## Introduction
+Welcome to the **COLLECTA** application. This document sets out the Privacy Policy and Terms of Use governing the application.
 
-## שם האפליקציה
+## Application Name
 COLLECTA
 
-## מי האחראי על הנתונים
-האפליקציה מתוחזקת על ידי צוות הפרויקט של **Collecta** ומתופעלת ע"י צוות מחלקת ביטחון תזונתי של ארגון **לתת**.
+## Data Controller
+The application is maintained by the **Collecta** project team and operated by the Food Security Department of the **Latet** organization.
 
-## מידע שנאסף
-האפליקציה אוספת אך ורק את המידע הדרוש לתפקוד התקין של השירותים הבאים:
-- אימות משתמשים באמצעות **Google Sign-In** ו-**Firebase Authentication**.
-- פרטי משתמש בסיסיים: שם, אימייל, מזהה משתמש (UID) ותמונת פרופיל אם הם ניתנים על-ידי Google (לאחר אישור המשתמש).
-- נתוני עסק: פרטי העסק של תורם, כתובת העסק, שם העסק ופרטי התקשרות.
-- פרטי תרומה: סוגי מוצרים, כמות, זמנים לאיסוף, סטטוס תרומה ונתוני הכתובות הנדרשים לאיסוף.
-- מיקום גיאוגרפי: בעת שימוש בתכונות מסלול pickup, האפליקציה עשויה לבקש הרשאת גישה למיקום כדי לחשב את מסלול הנסיעה ואת נקודות האיסוף.
-- מידע על נהגים: פרטי משתמש וכתובות יעד לצורך הקצאת מסלולים ואיסוף.
+## Information Collected
+The application collects only the information necessary for the proper operation of the following services:
 
-### מידע שלא נאסף
-האפליקציה אינה אוספת מידע אישי כלשהו מעבר למה שתואר מעלה ללא קבלת הסכמה מפורשת.
-אין שימוש במעקב לניטור פעילות חיצונית, אין איסוף אוטומטי של אנשי קשר מהמכשיר, אין איסוף הודעות SMS, וללא שימוש בנתוני אנליטיקה חיצוניים מעבר לפעולות השירותים המוגדרים.
+- User authentication through **Google Sign-In** and **Firebase Authentication**.
+- Basic user information: name, email address, user ID (UID), and profile picture, if provided by Google (with the user's consent).
+- Business information: donor business details, business address, business name, and contact information.
+- Donation details: product types, quantities, pickup times, donation status, and address information required for collection.
+- Geolocation data: when using pickup route features, the application may request access to the user's location in order to calculate driving routes and pickup points.
+- Driver information: user details and destination addresses required for route assignment and collection.
 
-## מטרות השימוש במידע
-האפליקציה משתמשת במידע עבור:
-- הרשמה ואימות משתמשים.
-- ניהול פרופילי תורמים ונהגים.
-- קביעת מסלולי איסוף ותיאום בין תורמים לנהגים.
-- אחסון וקריאה של נתוני תרומות וסטטוס איסוף ב-**Cloud Firestore**.
-- הצגת מיקומים ותכונות חיפוש באמצעות **Google Places API**.
+### Information Not Collected
+The application does not collect any personal information beyond what is described above without obtaining explicit consent.
 
-## שירותים צד שלישי
-האפליקציה עושה שימוש בשירותי צד שלישי הבאים:
+The application does not use tracking to monitor activity outside the application, does not automatically collect contacts from the device, does not collect SMS messages, and does not use external analytics data beyond the operations required for the defined services.
+
+## Purposes of Data Use
+The application uses the collected information for the following purposes:
+
+- User registration and authentication.
+- Managing donor and driver profiles.
+- Planning pickup routes and coordinating between donors and drivers.
+- Storing and retrieving donation data and pickup status using **Cloud Firestore**.
+- Displaying locations and providing search functionality using the **Google Places API**.
+
+## Third-Party Services
+The application uses the following third-party services:
+
 - **Firebase Authentication**
 - **Google Sign-In**
 - **Cloud Firestore**
-- **Firebase Storage** (אם רלוונטי לאחסון קבצים)
+- **Firebase Storage** (if applicable for file storage)
 - **Google Places API**
-- **Google Maps / Geolocation API** לצורך חישוב מסלולים והצגת כתובות.
+- **Google Maps / Geolocation API** for route calculation and address display.
 
-## עוגיות (Cookies)
-האפליקציה מבוססת Flutter וניתנת לפעולה גם כיישום מובייל. במקרה של הפעלה בדפדפן, העוגיות יישארו בהתאם למדיניות Google ו-Firebase ונועדו לשמור על ההתחברות ולתפעל את ממשק המשתמש.
+## Cookies
+The application is built with Flutter and can also operate as a mobile application. When operated through a web browser, cookies may be used in accordance with Google and Firebase policies to maintain user authentication and support the operation of the user interface.
 
-## אבטחת מידע
-- הנתונים נשמרים באמצעות תשתית **Firebase** המאובטחת.
-- הגישה לנתונים מוגבלת לפי הרשאות המשתמש ובעזרת מערכת אימות Firebase.
-- האפליקציה לא משתפת את המידע עם צדדים שלישיים למטרות פרסום.
+## Data Security
+- Data is stored using secure **Firebase** infrastructure.
+- Access to data is restricted according to user permissions and protected through Firebase's authentication system.
+- The application does not share user information with third parties for advertising purposes.
 
-## זכויות משתמש
-- המשתמשים רשאים לבקש תיקון או מחיקה של נתונים אישיים.
-- המשתמשים רשאים לבקש מידע על הנתונים הנאכפים לגביהם.
-- לצורך בקשות כאלה, יש ליצור קשר עם צוות התמיכה של **COLLECTA** כפי שמופיע באפליקציה ובתחתית המסמך.
+## User Rights
+- Users may request the correction or deletion of their personal data.
+- Users may request information about the data stored and maintained about them.
+- For such requests, users should contact the **COLLECTA** support team using the contact information provided in the application and at the bottom of this document.
 
-## תנאי שימוש
-1. האפליקציה מסופקת כפי שהיא, ללא אחריות מלאה על זמינות, שלמות או התאמה למטרה מסוימת.
-2. אין להעתיק, לשכפל או להפיץ את הקוד ואת התוכן של האפליקציה ללא אישור מפורש של צוות COLLECTA.
-3. השימוש באפליקציה מצריך עמידה בכללים ובהנחיות שנקבעו על ידי Firebase, Google וכל ספק שירות אחר.
-4. המשתמש מתחייב שלא להשתמש באפליקציה לפעילויות אסורות או לפגיעה בפרטיותם של משתמשים אחרים.
-5. צוות הפרויקט רשאי לשנות את מדיניות הפרטיות ואת תנאי השימוש בכל עת. שינויים יהיו בתוקף מרגע פרסומם.
+## Terms of Use
+1. The application is provided "as is", without any guarantee regarding its availability, completeness, or suitability for a particular purpose.
+2. The application's code and content may not be copied, reproduced, or distributed without the explicit permission of the COLLECTA project team.
+3. Use of the application requires compliance with the rules and guidelines established by Firebase, Google, and any other applicable service provider.
+4. Users agree not to use the application for prohibited activities or in a manner that violates the privacy of other users.
+5. The project team reserves the right to modify this Privacy Policy and these Terms of Use at any time. Changes will take effect upon publication.
 
-## הסרת מידע
-אם ברצונך למחוק את חשבונך או את הנתונים האישיים שלך, יש ליצור קשר עם צוות הפרויקט באמצעות פרטי יצירת קשר המתאימים.
+## Data Deletion
+If you wish to delete your account or personal data, please contact the project team using the applicable contact information provided below.
 
-## יצירת קשר
-בכל שאלה או בקשה לגבי מדיניות פרטיות ותנאי שימוש, יש ליצור קשר עם:
-- דואר אלקטרוני: **support.collecta@gmail.com**
+## Contact Us
+For any questions or requests regarding this Privacy Policy and Terms of Use, please contact:
+
+- Email: **support.collecta@gmail.com**
